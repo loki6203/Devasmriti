@@ -13,15 +13,24 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('users')){
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->string('mobile_number',15)->unique();
+                $table->string('password');
+                $table->string('company_name')->nullable();
+                $table->enum('user_type', ['business', 'admin' ,'support' , 'user','superadmin'])->default('user');
+                $table->string('referel_code')->nullable();
+                $table->string('account_number')->nullable(false)->change();
+                $table->string('profile_pic')->nullable();
+                $table->enum('is_active', ['active', 'inactive','not_verified'])->default('not_verified');
+                $table->text('about_me')->nullable();
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
     }
 
     /**
