@@ -40,6 +40,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+
 class User extends Model
 {
 	protected $table = 'users';
@@ -62,7 +65,7 @@ class User extends Model
 		'about_me',
 		'remember_token'
 	];
-
+	use HasApiTokens, HasFactory, Notifiable;
 	public function account_deposits()
 	{
 		return $this->hasMany(AccountDeposit::class);
