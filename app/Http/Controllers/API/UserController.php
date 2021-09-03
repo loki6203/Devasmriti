@@ -3,7 +3,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request; 
 use App\Http\Controllers\Controller; 
 use Illuminate\Support\Facades\Hash;
-use App\User;
+use App\Models\User;
 use App\Models\UserDetail;
 
 class UserController extends Controller 
@@ -14,7 +14,7 @@ class UserController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function getTokenAndRefreshToken(OClient $oClient, $email, $password) { 
+    public function getTokenAndRefreshToken(OClient $oClient, $email, $password){
         $oClient = OClient::where('password_client', 1)->first();
         $http = new Client;
         $response = $http->request('POST', 'http://mylemp-nginx/oauth/token', [
@@ -62,7 +62,6 @@ class UserController extends Controller
                 'expires_in' => $tokendata->expires_in,
                 'refresh_token' => $tokendata->refresh_token
             ]);
-            //return response()->json($tokendata, $this->successStatus);
             $Candidate = Candidate::where('user_id', '=',$user->id)->get();
             $cand = $Candidate[0]->id;
             $user->candidate_id=$cand;
@@ -83,6 +82,9 @@ class UserController extends Controller
     }
     public function signup(Request $request) 
     {
+        $data=array();
+        $message='';
+        $success=1;
         $validator = Validator::make($request->all(), [ 
             'name' => 'required', 
             'email' => 'required', 
@@ -90,9 +92,7 @@ class UserController extends Controller
             'password' => 'required', 
             'c_password' => 'required', 
         ]);
-        $message='';
-        $status=1;
-		if ($validator->fails()) {
+        if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
         }else{
             $Em_check = User::where('email', '=', $request->email)->count();
@@ -109,58 +109,113 @@ class UserController extends Controller
                     }
                     $NewUser->save();
                     $user_id = $NewUser->id;
-                    $UserDetail_Check = UserDetail::find($user_id);
+                    $UserDetail_Check = UserDetail::where('user_id','=',$user_id)->first();
                     if(is_null($UserDetail_Check)){
-                        $sms_otp                        = 1;
-                        $email_otp                      = 2;
+                        $sms_otp                        = Generate_Otp();
+                        $email_otp                      = Generate_Otp();
                         $NewUser_Detail                 = new UserDetail();
                         $NewUser_Detail->user_id        = $user_id;
                         $NewUser_Detail->mobile_otp     = $email_otp;
                         $NewUser_Detail->email_otp      = $sms_otp;
                         $NewUser_Detail->save();
+                    }else{
+                        $UserDetail_Check->sms_otp                        = Generate_Otp();
+                        $UserDetail_Check->email_otp                      = Generate_Otp();
+                        $UserDetail_Check->save();
                     }
+                    $message='Please enter email and sms otp';
+                    $data = array('sms'=>$sms_otp,'email'=>$email_otp,'user_id'=>$user_id);
                 }else{
-                    $status=0;
+                    $success=0;
                     $message='Mobile number already existed';
                 }
             }else{
-                $status=0;
+                $success=0;
                 $message='Email is already existed';
             }
         }
-
+        $resp = array('success'=>$status,'message'=>$message,'data'=>$data);
+        return response()->json($resp,200);
+    }
+    public function resend_otp(Request $request , $sms_type){
+        $data=array();
+        $message='';
+        $success=1;
+        $validator = Validator::make($request->all(), [ 
+            'type' => 'required', 
+            'user_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+        }else{
+            $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id)->first();
+            if($request->type=='email'){
+                $UserDetail_Check->sms_otp                        = Generate_Otp();
+            }else{
+                $UserDetail_Check->email_otp                      = Generate_Otp();
+            }
+            $UserDetail_Check->save();
+            $message = 'Otp sent successfully';
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp,200);
+    }
+    public function Check_Otp(Request $request , $sms_type){
+        $data=array();
+        $message='';
+        $success=1;
+        $validator = Validator::make($request->all(), [ 
+            'otp' => 'required', 
+            'user_id' => 'required',
+            'type' => 'required',
+        ]);
+        if ($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+        }else{
+            if($request->type=='mobile'){
+                $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id,'mobile_otp','=',$request->otp)->count();
+            }else{
+                $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id,'email_otp','=',$request->otp)->count();
+            }
+            if($UserDetail_Check>0){
+                $message = 'Otp validated';
+            }else{
+                $success=0;
+                $message = 'Invalid otp';
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp,200);
+    }
+    public function Otp_Verification(Request $request){
+        
     }
     public function user_change_password(Request $request){
 		$validator = Validator::make($request->all(), [
-			'user_id' => 'required',
 			'old_password' => 'required',
 			'new_password' => 'required',
 			'confirm_new_password'=> 'required',
 		]);
 		if ($validator->fails()) {
-			return response()->json(
-				array('data' =>
-				[
-					'status' => 0, 'message' => 'fields marked * were mandatory'
-				])
-			);
-		}
-		$userid=$request->input('user_id');
-		$old_password=($request->input('old_password'));
-		$new_password=$request->input('new_password');
-        $confirm_new_password=$request->input('confirm_new_password');
-        $Ucheck=User::find($userid);
-		if($new_password == $confirm_new_password){
-            if( Auth::attempt(['email'=>$Ucheck->email, 'password'=>$old_password]) ) {
-                $Ucheck->password =bcrypt($new_password);
-				$Ucheck->save();
-				$return = array("status" => 1, "message" => "Password changed successfully");
-            }else{
-                $return = array("status" => 0, "message" => "Invalid old password");
-            }
+            $return = array("success" => 0, "message" => "fields marked * were mandatory");
 		}else{
-			$return = array("status" =>0, "message" => "Password not matched.");
-		}
-		return response()->json(array('data' =>$return));
+            $userid = login_User_ID();
+            $old_password=($request->input('old_password'));
+            $new_password=$request->input('new_password');
+            $confirm_new_password=$request->input('confirm_new_password');
+            $Ucheck=User::find($userid);
+            if($new_password == $confirm_new_password){
+                if(Auth::attempt(['email'=>$Ucheck->email, 'password'=>$old_password]) ){
+                    $Ucheck->password =bcrypt($new_password);
+                    $Ucheck->save();
+                    $return = array("success" => 1, "message" => "Password changed successfully");
+                }else{
+                    $return = array("success" => 0, "message" => "Invalid old password");
+                }
+            }else{
+                $return = array("success" =>0, "message" => "Password not matched.");
+            }
+        }
+		return response()->json(array('data' =>$return),200);
     }
 }
