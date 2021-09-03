@@ -20,6 +20,7 @@ class CreatePayagentTables extends Migration
                 $table->foreign('user_id')->references('id')->on('users');
                 $table->string('first_name');
                 $table->string('last_name')->nullable();
+                $table->string('acc_number',20)->nullable();
                 $table->decimal('acc_balance', 10, 2)->default(0);
                 $table->string('tpin')->nullable();
                 $table->string('pan_number',15)->nullable();
