@@ -2,7 +2,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\UserDetail;
 
+if(!function_exists('curr_dt')){
+    function curr_dt(){
+        return date('Y-m-d H:i:s');
+    }
+}
 if(!function_exists('user_email')){
     function user_email(){
         $user = Auth::user();
@@ -21,13 +27,13 @@ if(!function_exists('login_User_ID')){
 }
 if(!function_exists('Generate_Otp')){
     function Generate_Otp(){
-        return (rand(10,100));
+        return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Acc_No_Generate')){
     function Acc_No_Generate(){
         $Acc_Num = substr(str_shuffle("0123456789"), 0, 12);
-        $Acc_Check = User::where('acc_number','=',$Acc_Num)->count();
+        $Acc_Check = UserDetail::where('acc_number','=',$Acc_Num)->count();
         if($Acc_Check>0){
             $this->Acc_No_Generate();
         }else{
@@ -70,5 +76,18 @@ if(!function_exists('Date_Month_Name')){
 if(!function_exists('Delivery_Date_With_Time')){
     function Delivery_Date_With_Time($original_date){
         return date("M-d-Y H:i:s", strtotime($original_date));
+    }
+}
+if (! function_exists('asset')) {
+    /**
+     * Generate an asset path for the application.
+     *
+     * @param  string  $path
+     * @param  bool    $secure
+     * @return string
+     */
+    function asset($path, $secure = null)
+    {
+        return app('url')->asset($path, $secure);
     }
 }
