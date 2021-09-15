@@ -98,7 +98,7 @@ class UserController extends Controller
                         $NewUser->name          = $request->name;
                     }else{
                         $NewUser->name          = $request->company_name;
-                        $NewUser->name          = $request->company_name;
+                        $NewUser->company_name  = $request->company_name;
                     }
                     $NewUser->user_type     = $request->user_type;
                     $NewUser->email         = $request->email;
@@ -117,10 +117,12 @@ class UserController extends Controller
                         $NewUser_Detail->user_id        = $user_id;
                         $NewUser_Detail->mobile_otp     = $email_otp;
                         $NewUser_Detail->email_otp      = $sms_otp;
+                        $NewUser_Detail->first_name     = $NewUser->name;
                         $NewUser_Detail->save();
                     }else{
-                        $UserDetail_Check->sms_otp                        = Generate_Otp();
-                        $UserDetail_Check->email_otp                      = Generate_Otp();
+                        $UserDetail_Check->sms_otp      = Generate_Otp();
+                        $UserDetail_Check->email_otp    = Generate_Otp();
+                        $NewUser_Detail->first_name     = $NewUser->name;
                         $UserDetail_Check->save();
                     }
                     $message='Please enter email and sms otp';
@@ -245,7 +247,7 @@ class UserController extends Controller
                     if(strtolower(trim($adhar_name))==strtolower(trim($pan_name))){
                         $UserDetails->adhar_otp        = $adhar_otp;
                         $UserDetails->adhar_response   = $adhar_response;
-                        User::where('user_id','=',$request->user_id).update(array('first_name'=>$name));
+                        User::where('user_id','=',$request->user_id).update(array('name'=>$name));
                         $return = array("success" => 1, "message" => "Pan && adhar verified successfully" ,'data'=>$data);
                     }else{
                         $return = array("success" => 1, "message" => "Pan and adhar names not matched try again" ,'data'=>$data);
@@ -261,7 +263,7 @@ class UserController extends Controller
             $UserDetails->pan_number    = $pan_number;
             $UserDetails->adhar_number  = $adhar_number;
             $UserDetails->pan_attempts  = $UserDetails->pan_attempts+1;
-            $UserDetails->name          = $name;
+            $UserDetails->first_name    = $name;
             $UserDetails->save();
         }
         return response()->json($return, $this->successStatus);
@@ -294,6 +296,26 @@ class UserController extends Controller
         }
 		return response()->json($return, $this->successStatus);
     }
+    public function add_or_change_tpin(Request $request){
+		$validator = Validator::make($request->all(), [
+			'tpin_pin' => 'required',
+		]);
+		if ($validator->fails()) {
+            $return = array("success" => 0, "message" => "fields marked * were mandatory");
+		}else{
+            $userid = login_User_ID();
+            $UserDetail = UserDetail::where('user_id','=',$userid)->first();
+            if(is_null($UserDetail->tpin)){
+                $type = 'added';
+            }else{
+                $type = 'updated';
+            }
+            $UserDetail->tpin = $request->tpin_pin;
+            $UserDetail->save();
+            $return = array("success" => 1, "message" => "Pin ".$type." successfully");
+        }
+		return response()->json($return, $this->successStatus);
+    }
     public function check_pan_adhar_tpin_status(Request $request){
         $userid = login_User_ID();
         $pan_status  = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('pan_verified_at')->count();
@@ -309,6 +331,14 @@ class UserController extends Controller
         $userid = login_User_ID();
         $tpin_status = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('tpin')->count();
         $data['tpin_status'] = ($tpin_status>0)?1:0;
+        $return = array("success" =>1, "message" =>"","data"=>$data);
+        return response()->json(array('data' =>$return), $this->successStatus);
+    }
+    public function check_tpin_valid_or_not(Request $request,$tpin){
+        $userid = login_User_ID();
+        $tpin_status  = UserDetail::where('user_id','=',$request->user_id)->where('tpin','=',$tpin)->count();
+        $tpin_status  = ($tpin_status>0)?1:0;
+        $data['tpin_status']=$tpin_status;
         $return = array("success" =>1, "message" =>"","data"=>$data);
         return response()->json(array('data' =>$return), $this->successStatus);
     }
