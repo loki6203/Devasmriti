@@ -27,4 +27,12 @@ Route::get('/contact_us', 'API\UserController@contact_us');
 Route::middleware('auth:api')->group(function () {
     Route::post('/user_change_password', 'API\UserController@user_change_password');
     Route::get('/check_pan_adhar_tpin_status', 'API\UserController@check_pan_adhar_tpin_status');
+    Route::post('/add_or_change_tpin', 'API\UserController@add_or_change_tpin');
+    Route::get('/check_tpin_valid_or_not/{tpin}', 'API\UserController@check_tpin_valid_or_not');
+    Route::post('/internal_transfer_Search', 'API\InternalController@internal_transfer_Search');
+    Route::get('/int_trnsf_individual_history/{user_id}', 'API\InternalController@int_trnsf_individual_history');
+    Route::get('/int_trnsf_all_history', 'API\InternalController@int_trnsf_all_history');
+    Route::post('/int_trnsf_amount_paying', 'API\InternalController@int_trnsf_amount_paying');
+    Route::post('/check_wallet_amount', 'API\InternalController@check_wallet_amount');
+    Route::post('/add_money_to_wallet', 'API\RechargeController@add_money_to_wallet');
 });
