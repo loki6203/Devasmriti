@@ -9,7 +9,8 @@ use App\Models\UserDetail;
 
 class UserController extends Controller 
 {
-    public $successStatus = 200;
+    public $succ = 200;
+    public $err  = 202;
     /** 
      * login api 
      * 
@@ -29,7 +30,7 @@ class UserController extends Controller
             ],
         ]);
         $result = json_decode((string) $response->getBody(), true);
-        return response()->json($result, $this->successStatus);
+        return response()->json($result, $status);
     }
     public function login(Request $request){
         $validator = Validator::make($request->all(), [
@@ -41,9 +42,13 @@ class UserController extends Controller
         $success=1;
         if($validator->fails()) {
             $message = 'Please enter all (*) fields';
+            $status = $this->err;
         }else{
             if(Auth::attempt(['mobile_number'=>$request->mobile,'password'=>$request->password])){
                 $user = Auth::user();
+                if(is_null($user->email_verified_at)){
+                    $user->email_verified_at  = date('Y-m-d H:i:s');
+                }
                 $request->user()->tokens()->delete();
                 $client = \Laravel\Passport\Client::where('password_client', 1)->first();
                 $request->request->add([
@@ -64,14 +69,16 @@ class UserController extends Controller
                     'refresh_token' => $tokendata->refresh_token
                 ]);
                 $message = 'Logined successfully';
-                $data['token'] =$tokendata->access_token;
-                $data['userdetails'] =$user;
+                $data['token'] = $tokendata->access_token;
+                $data['userdetails'] = $user;
+                $status = $this->succ;
             }else{
                 $message = 'Invalid credentials';
+                $status = $this->err;
             }
         }
         $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
-        return response()->json($result, $this->successStatus);
+        return response()->json($result, $status);
     }
     public function signup(Request $request) 
     {
@@ -88,6 +95,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
+            $status = $this->err;
         }else{
             $Em_check = User::where('email', '=', $request->email)->count();
             if($Em_check==0){
@@ -112,11 +120,11 @@ class UserController extends Controller
                     $UserDetail_Check = UserDetail::where('user_id','=',$user_id)->first();
                     if(is_null($UserDetail_Check)){
                         $sms_otp                        = Generate_Otp();
-                        $email_otp                      = Generate_Otp();
+                        //$email_otp                      = Generate_Otp();
                         $NewUser_Detail                 = new UserDetail();
                         $NewUser_Detail->user_id        = $user_id;
                         $NewUser_Detail->mobile_otp     = $email_otp;
-                        $NewUser_Detail->email_otp      = $sms_otp;
+                        //$NewUser_Detail->email_otp      = $sms_otp;
                         $NewUser_Detail->first_name     = $NewUser->name;
                         $NewUser_Detail->save();
                     }else{
@@ -125,19 +133,22 @@ class UserController extends Controller
                         $NewUser_Detail->first_name     = $NewUser->name;
                         $UserDetail_Check->save();
                     }
-                    $message='Please enter email and sms otp';
-                    $data = array('sms'=>$sms_otp,'email'=>$email_otp,'user_id'=>$user_id);
+                    $message='Please enter otp';
+                    $data = array('otp'=>$sms_otp,'user_id'=>$user_id);
+                    $status = $this->succ;
                 }else{
                     $success=0;
                     $message='Mobile number already existed';
+                    $status = $this->err;
                 }
             }else{
                 $success=0;
                 $message='Email is already existed';
+                $status = $this->err;
             }
         }
-        $resp = array('success'=>$status,'message'=>$message,'data'=>$data);
-        return response()->json($resp, $this->successStatus);
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp, $status);
     }
     public function resend_otp(Request $request){
         $data=array();
@@ -149,6 +160,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
+            $status = $this->err;
         }else{
             $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id)->first();
             if($request->type=='email'){
@@ -158,9 +170,10 @@ class UserController extends Controller
             }
             $UserDetail_Check->save();
             $message = 'Otp sent successfully';
+            $status = $this->succ;
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
-        return response()->json($resp, $this->successStatus);
+        return response()->json($resp, $status);
     }
     public function Check_Otp(Request $request){
         $data=array();
@@ -173,6 +186,7 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
+            $status = $this->err;
         }else{
             if($request->type=='mobile'){
                 $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id,'mobile_otp','=',$request->otp)->count();
@@ -181,45 +195,49 @@ class UserController extends Controller
             }
             if($UserDetail_Check>0){
                 $message = 'Otp validated';
+                $status = $this->succ;
             }else{
                 $success=0;
                 $message = 'Invalid otp';
+                $status = $this->err;
             }
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
-        return response()->json($resp, $this->successStatus);
+        return response()->json($resp, $status);
     }
     public function Otp_Verification(Request $request){
         $data = array();
         $validator = Validator::make($request->all(), [
 			'user_id' => 'required',
 			'mobile_otp' => 'required',
-			'email_otp'=> 'required',
 		]);
         if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
+            $status = $this->err;
 		}else{
             $Mb_Check = UserDetail::where('user_id','=',$request->user_id,'mobile_otp','=',$request->mobile_otp)->count();
             if($Mb_Check>0){
-                $Em_Check = UserDetail::where('user_id','=',$request->user_id,'email_otp','=',$request->email_otp)->count();
-                if($Em_Check>0){
+                //$Em_Check = UserDetail::where('user_id','=',$request->user_id,'email_otp','=',$request->email_otp)->count();
+                //if($Em_Check>0){
                     $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
                     $curr_dt = curr_dt();
-                    $UserDetails->email_verified_at  = $curr_dt;
+                    //$UserDetails->email_verified_at  = $curr_dt;
                     $UserDetails->mobile_verified_at = $curr_dt;
                     $UserDetails->acc_number       = Acc_No_Generate();
                     $UserDetails->save();
                     User::where('user_id','=',$request->user_id).update(array('is_active'=>'active'));
                     $data['user_id']=$request->user_id;
                     $return = array("success" =>1, "message" => "Otp verified successfully,Please enter pan and adhar numbers",'user_id'=>$request->user_id , 'data'=>$data);
-                }else{
-                    $return = array("success" => 0, "message" => "Invalid emailid otp", 'data'=>$data);
-                }
+                    $status = $this->succ;
+                //}else{
+                   // $return = array("success" => 0, "message" => "Invalid emailid otp", 'data'=>$data);
+                //}
             }else{
                 $return = array("success" => 0, "message" => "Invalid mobile number otp", 'data'=>$data);
+                $status = $this->err;
             }
         }
-        return response()->json($return, $this->successStatus);
+        return response()->json($return, $status);
     }
     public function pan_adhar_verification(Request $request){
         $data = array();
@@ -231,6 +249,7 @@ class UserController extends Controller
         $name='';
         if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
+            $status = $this->err;
 		}else{
             $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
             $pan_check=1;
@@ -249,16 +268,20 @@ class UserController extends Controller
                         $UserDetails->adhar_response   = $adhar_response;
                         User::where('user_id','=',$request->user_id).update(array('name'=>$name));
                         $return = array("success" => 1, "message" => "Pan && adhar verified successfully" ,'data'=>$data);
+                        $status = $this->succ;
                     }else{
                         $return = array("success" => 1, "message" => "Pan and adhar names not matched try again" ,'data'=>$data);
+                        $status = $this->err;
                     }
                 }else{
                     $return = array("success" => 1, "message" => "Pan verified successfully and invalid adhar number" ,'data'=>$data);
+                    $status = $this->err;
                 }
                 $UserDetails->pan_verified_at   = $curr_dt;
                 $UserDetails->pan_response      = $pan_response;
             }else{
                 $return = array("success" => 0, "message" => "Invalid pan nunber" ,'data'=>$data);
+                $status = $this->err;
             }
             $UserDetails->pan_number    = $pan_number;
             $UserDetails->adhar_number  = $adhar_number;
@@ -266,7 +289,7 @@ class UserController extends Controller
             $UserDetails->first_name    = $name;
             $UserDetails->save();
         }
-        return response()->json($return, $this->successStatus);
+        return response()->json($return, $status);
     }
     public function user_change_password(Request $request){
 		$validator = Validator::make($request->all(), [
@@ -276,6 +299,7 @@ class UserController extends Controller
 		]);
 		if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
+            $status = $this->err;
 		}else{
             $userid = login_User_ID();
             $old_password=($request->input('old_password'));
@@ -287,14 +311,17 @@ class UserController extends Controller
                     $Ucheck->password =bcrypt($new_password);
                     $Ucheck->save();
                     $return = array("success" => 1, "message" => "Password changed successfully");
+                    $status = $this->succ;
                 }else{
                     $return = array("success" => 0, "message" => "Invalid old password");
+                    $status = $this->err;
                 }
             }else{
                 $return = array("success" =>0, "message" => "Password not matched.");
+                $status = $this->err;
             }
         }
-		return response()->json($return, $this->successStatus);
+		return response()->json($return, $status);
     }
     public function add_or_change_tpin(Request $request){
 		$validator = Validator::make($request->all(), [
@@ -302,6 +329,7 @@ class UserController extends Controller
 		]);
 		if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
+            $status = $this->err;
 		}else{
             $userid = login_User_ID();
             $UserDetail = UserDetail::where('user_id','=',$userid)->first();
@@ -313,8 +341,9 @@ class UserController extends Controller
             $UserDetail->tpin = $request->tpin_pin;
             $UserDetail->save();
             $return = array("success" => 1, "message" => "Pin ".$type." successfully");
+            $status = $this->succ;
         }
-		return response()->json($return, $this->successStatus);
+		return response()->json($return, $status);
     }
     public function check_pan_adhar_tpin_status(Request $request){
         $userid = login_User_ID();
@@ -325,14 +354,14 @@ class UserController extends Controller
         $data['adhar_status']   = ($adr_status>0)?1:0;
         $data['tpin_status']    = ($tpin_status>0)?1:0;
         $return = array("success" =>1, "message" =>"","data"=>$data);
-        return response()->json(array('data' =>$return), $this->successStatus);
+        return response()->json($return, $this->succ);
     }
     public function check_tpin_generated_or_not(Request $request){
         $userid = login_User_ID();
         $tpin_status = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('tpin')->count();
         $data['tpin_status'] = ($tpin_status>0)?1:0;
         $return = array("success" =>1, "message" =>"","data"=>$data);
-        return response()->json(array('data' =>$return), $this->successStatus);
+        return response()->json($return, $this->succ);
     }
     public function check_tpin_valid_or_not(Request $request,$tpin){
         $userid = login_User_ID();
@@ -340,6 +369,172 @@ class UserController extends Controller
         $tpin_status  = ($tpin_status>0)?1:0;
         $data['tpin_status']=$tpin_status;
         $return = array("success" =>1, "message" =>"","data"=>$data);
-        return response()->json(array('data' =>$return), $this->successStatus);
+        return response()->json($return, $this->succ);
+    }
+    public function verify_adhar_or_resend_otp(Request $request,$adharnumber){
+        $userid = login_User_ID();
+        $status  = $this->err;
+        $success = 0;
+        $data    = array();
+        if($adharnumber!=''){
+            $YOUR_TOKEN=1;
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+              CURLOPT_URL => 'https://kyc-api.aadhaarkyc.io/api/v1/aadhaar-v2/generate-otp',
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => '',
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 0,
+              CURLOPT_FOLLOWLOCATION => true,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => 'POST',
+              CURLOPT_POSTFIELDS =>'{
+                "id_number": "'.$adharnumber.'"
+              }',
+              CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$YOUR_TOKEN
+              ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            if($response!=''){
+                $resp = json_decode($response,true);
+                if(trim($resp['success'])==true){
+                    $data = $resp['data'];
+                    $UserDetails = UserDetail::where('user_id',$userid)->first();
+                    $UserDetails->adhar_response = $response;
+                    $UserDetails->save();
+                    $return = array("success" =>1, "message" =>"Otp sent to register mobile number","data"=>$data);
+                }else{
+                    $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                }
+            }else{
+                $return = array("success" =>0, "message" =>"Try again","data"=>$data);
+            }
+        }else{
+            $return = array("success" =>0, "message" =>"Please enter adharnumber","data"=>$data);
+        }
+        return response()->json($return, $status);
+    }
+    public function submit_adhar_with_otp(Request $request){
+        $userid = login_User_ID();
+        $YOUR_TOKEN=1;
+        $data=array();
+        $message='';
+        $success=0;
+        $status = $this->err;
+        $validator = Validator::make($request->all(), [
+            'mobile' => 'required',
+            'password' => 'required'
+        ]);
+        if($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+        }else{
+            $client_id      = $request->client_id;
+            $mobile_number  = $request->mobile_number;
+            $otp            = $request->otp;
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://kyc-api.aadhaarkyc.io/api/v1/aadhaar-v2/submit-otp',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>'{
+                "client_id": "'.$client_id.'",
+                "otp": "'.$otp.'",
+                "mobile_number": "'.$mobile_number.'"
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$YOUR_TOKEN
+            ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            if($response!=''){
+                $resp = json_decode($response,true);
+                if(trim($resp['status_code'])==200){
+                    $data = $resp['data'];
+                    $UserDetails = UserDetail::where('user_id',$userid)->first();
+                    $UserDetails = UserDetail::where('user_id',$userid)->first();
+                    if(!is_null($UserDetails->aadhaar_number)){
+                        $Pan_Det    = $UserDetails->pan_response;
+                        $Pan_Arr_Dt = json_decode($Pan_Det,true);
+                        $pan_name   = trim(strtolower($Pan_Arr_Dt['full_name']));
+                        $adhar_name = trim(strtolower($data['full_name']));
+                        if($pan_name==$adhar_name){
+                            UserDetail::where('user_id',$userid)->update(['adhar_number'=>$data['aadhaar_number'],'adhar_verified_at'=>$date('Y-m-d H:i:s'),'adhar_response'=>$response]);
+                            $return = array("success" =>1, "message" =>"Adhar verified successfully","data"=>$data);
+                        }else{
+                            $return = array("success" =>0, "message" =>"Adhar name not matching with pan please verify proper pancard first","data"=>$data);
+                        }
+                    }else{
+                        $return = array("success" =>0, "message" =>"Please verify pan card","data"=>$data);
+                    }
+                }else{
+                    $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                }
+            }else{
+                $return = array("success" =>$success, "message" =>"Invalid otp","data"=>$data);
+            }
+        }
+        $return = array("success" =>$success, "message" =>$message,"data"=>$data);
+        return response()->json($return, $status);
+    }
+    public function verify_pan(Request $request,$pannumber){
+        $YOUR_TOKEN=1;
+        $data = array();
+        if($pannumber!=''){
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+              CURLOPT_URL => 'https://kyc-api.aadhaarkyc.io/api/v1/pan/pan',
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => '',
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 0,
+              CURLOPT_FOLLOWLOCATION => true,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => 'POST',
+              CURLOPT_POSTFIELDS =>'{
+                "id_number": "'.$pannumber.'"
+            }',
+              CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'Authorization:Bearer '.$YOUR_TOKEN
+              ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            if($response!=''){
+                $resp = json_decode($response,true);
+                if(trim($resp['status_code'])==200){
+                    $data = $resp['data'];
+                    $pan_number = $data['pan_number'];
+                    $full_name  = $data['full_name'];
+                    $client_id  = $data['client_id'];
+                    $userid     = login_User_ID();
+                    $Us_Detail  = User::find($userid);
+                    UserDetail::where('user_id',$userid)->update(['pan_number'=>$pan_number,'pan_verified_at'=>$date('Y-m-d H:i:s'),'pan_response'=>$response]);
+                    $return = array("success" =>1, "message" =>'Pan verified successfully',"data"=>$data);
+                    $status = $this->succ;
+                }else{
+                    $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                    $status = $this->err;
+                }
+            }else{
+                $return = array("success" =>0, "message"=>"Try again","data"=>$data);
+                $status = $this->err;
+            }
+        }else{
+            $return = array("success" =>0, "message" =>"Please enter pannumber","data"=>$data);
+            $status = $this->err;
+        }
+        return response()->json($return, $status);
     }
 }
