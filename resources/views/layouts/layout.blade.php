@@ -3,12 +3,18 @@
 
     <head>
         <meta charset="utf-8" />
-        <title>Dashboard | Veltrix - Responsive Bootstrap 4 Admin Dashboard</title>
+        <title>Dashboard | PayAgent</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-        <meta content="Themesbrand" name="author" />
+        <meta content="PayAgent" name="description" />
+        <meta content="PayAgent" name="PayAgent" />
         <!-- App favicon -->
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+
+        <link href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+
+        <!-- Responsive datatable examples -->
+        <link href="{{ asset('assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
         <link href="{{ asset('assets/libs/chartist/chartist.min.css') }}" rel="stylesheet">
 
@@ -53,87 +59,10 @@
                         <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn">
                             <i class="mdi mdi-menu"></i>
                         </button>
-
-                        <div class="d-none d-sm-block">
-                            <div class="dropdown pt-3 d-inline-block">
-                                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Create <i class="mdi mdi-chevron-down"></i>
-                                    </a>
-
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <a class="dropdown-item" href="#">Another action</a>
-                                    <a class="dropdown-item" href="#">Something else here</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Separated link</a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="d-flex">
-                          <!-- App Search-->
-                          <form class="app-search d-none d-lg-block">
-                            <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="fa fa-search"></span>
-                            </div>
-                        </form>
 
-                        <div class="dropdown d-inline-block d-lg-none ml-2">
-                            <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-search-dropdown"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-magnify"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right p-0"
-                                aria-labelledby="page-header-search-dropdown">
-                    
-                                <form class="p-3">
-                                    <div class="form-group m-0">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div class="dropdown d-none d-md-block ml-2">
-                            <button type="button" class="btn header-item waves-effect"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="mr-2" src="assets/images/flags/us_flag.jpg" alt="Header Language" height="16"> English <span class="mdi mdi-chevron-down"></span>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right">
-                    
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <img src="assets/images/flags/germany_flag.jpg" alt="user-image" class="mr-1" height="12"> <span class="align-middle"> German </span>
-                                </a>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <img src="assets/images/flags/italy_flag.jpg" alt="user-image" class="mr-1" height="12"> <span class="align-middle"> Italian </span>
-                                </a>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <img src="assets/images/flags/french_flag.jpg" alt="user-image" class="mr-1" height="12"> <span class="align-middle"> French </span>
-                                </a>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <img src="assets/images/flags/spain_flag.jpg" alt="user-image" class="mr-1" height="12"> <span class="align-middle"> Spanish </span>
-                                </a>
-
-                                 <!-- item-->
-                                 <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <img src="assets/images/flags/russia_flag.jpg" alt="user-image" class="mr-1" height="12"> <span class="align-middle"> Russian </span>
-                                </a>
-                            </div>
-                        </div>
 
                         <div class="dropdown d-none d-lg-inline-block">
                             <button type="button" class="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
@@ -172,7 +101,7 @@
                                             </div>
                                         </div>
                                     </a>
-                        
+
                                     <a href="" class="text-reset notification-item">
                                         <div class="media">
                                             <div class="avatar-xs mr-3">
@@ -256,18 +185,11 @@
                                 <a class="dropdown-item" href="#"><i class="mdi mdi-account-circle font-size-17 align-middle mr-1"></i> Profile</a>
                                 <a class="dropdown-item" href="#"><i class="mdi mdi-wallet font-size-17 align-middle mr-1"></i> My Wallet</a>
                                 <a class="dropdown-item d-block" href="#"><span class="badge badge-success float-right">11</span><i class="mdi mdi-settings font-size-17 align-middle mr-1"></i> Settings</a>
-                                <a class="dropdown-item" href="#"><i class="mdi mdi-lock-open-outline font-size-17 align-middle mr-1"></i> Lock screen</a>
+
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" href="#"><i class="bx bx-power-off font-size-17 align-middle mr-1 text-danger"></i> Logout</a>
                             </div>
                         </div>
-
-                        <div class="dropdown d-inline-block">
-                            <button type="button" class="btn header-item noti-icon right-bar-toggle waves-effect">
-                                <i class="mdi mdi-settings-outline"></i>
-                            </button>
-                        </div>
-            
                     </div>
                 </div>
             </header>
@@ -281,232 +203,75 @@
                     <div id="sidebar-menu">
                         <!-- Left Menu Start -->
                         <ul class="metismenu list-unstyled" id="side-menu">
-                            <li class="menu-title">Main</li>
+                            <li class="menu-title">Management menu</li>
 
                             <li>
-                                <a href="index.html" class="waves-effect">
-                                    <i class="ti-home"></i><span class="badge badge-pill badge-primary float-right">2</span>
+                                <a href="dashboard" class="waves-effect">
+                                    <i class="ti-dashboard"></i>
                                     <span>Dashboard</span>
                                 </a>
                             </li>
 
                             <li>
+                                <a href="admin_management" class=" waves-effect">
+                                    <i class="ti-settings"></i>
+                                    <span>Admin</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="calendar.html" class=" waves-effect">
-                                    <i class="ti-calendar"></i>
-                                    <span>Calendar</span>
+                                    <i class="ti-user"></i>
+                                    <span>User</span>
                                 </a>
                             </li>
-
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-email"></i>
-                                    <span>Email</span>
+                                <a href="calendar.html" class=" waves-effect">
+                                    <i class="ti-credit-card"></i>
+                                    <span>Payment Gateway</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="email-inbox.html">Inbox</a></li>
-                                    <li><a href="email-read.html">Email Read</a></li>
-                                    <li><a href="email-compose.html">Email Compose</a></li>
-                                </ul>
                             </li>
-
-                            <li class="menu-title">Components</li>
-
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-package"></i>
-                                    <span>UI Elements</span>
+                                <a href="calendar.html" class=" waves-effect">
+                                    <i class="ti-wallet"></i>
+                                    <span>Wallet</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="ui-alerts.html">Alerts</a></li>
-                                    <li><a href="ui-buttons.html">Buttons</a></li>
-                                    <li><a href="ui-cards.html">Cards</a></li>
-                                    <li><a href="ui-carousel.html">Carousel</a></li>
-                                    <li><a href="ui-dropdowns.html">Dropdowns</a></li>
-                                    <li><a href="ui-grid.html">Grid</a></li>
-                                    <li><a href="ui-images.html">Images</a></li>
-                                    <li><a href="ui-lightbox.html">Lightbox</a></li>
-                                    <li><a href="ui-modals.html">Modals</a></li>
-                                    <li><a href="ui-rangeslider.html">Range Slider</a></li>
-                                    <li><a href="ui-session-timeout.html">Session Timeout</a></li>
-                                    <li><a href="ui-progressbars.html">Progress Bars</a></li>
-                                    <li><a href="ui-sweet-alert.html">Sweet-Alert</a></li>
-                                    <li><a href="ui-tabs-accordions.html">Tabs &amp; Accordions</a></li>
-                                    <li><a href="ui-typography.html">Typography</a></li>
-                                    <li><a href="ui-video.html">Video</a></li>
-                                    <li><a href="ui-general.html">General</a></li>
-                                    <li><a href="ui-colors.html">Colors</a></li>
-                                    <li><a href="ui-rating.html">Rating</a></li>
-                                </ul>
                             </li>
-
                             <li>
-                                <a href="javascript: void(0);" class="waves-effect">
-                                    <i class="ti-receipt"></i>
-                                    <span class="badge badge-pill badge-success float-right">6</span>
-                                    <span>Forms</span>
+                                <a href="calendar.html" class=" waves-effect">
+                                    <i class="ti-ticket"></i>
+                                    <span>Referral</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="form-elements.html">Form Elements</a></li>
-                                    <li><a href="form-validation.html">Form Validation</a></li>
-                                    <li><a href="form-advanced.html">Form Advanced</a></li>
-                                    <li><a href="form-editors.html">Form Editors</a></li>
-                                    <li><a href="form-uploads.html">Form File Upload</a></li>
-                                    <li><a href="form-xeditable.html">Form Xeditable</a></li>
-                                    <li><a href="form-repeater.html">Form Repeater</a></li>
-                                    <li><a href="form-wizard.html">Form Wizard</a></li>
-                                    <li><a href="form-mask.html">Form Mask</a></li>
-                                </ul>
                             </li>
-
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-pie-chart"></i>
-                                    <span>Charts</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="charts-morris.html">Morris Chart</a></li>
-                                    <li><a href="charts-chartist.html">Chartist Chart</a></li>
-                                    <li><a href="charts-chartjs.html">Chartjs Chart</a></li>
-                                    <li><a href="charts-flot.html">Flot Chart</a></li>
-                                    <li><a href="charts-knob.html">Jquery Knob Chart</a></li>
-                                    <li><a href="charts-sparkline.html">Sparkline Chart</a></li>
-                                </ul>
-                            </li>
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-view-grid"></i>
-                                    <span>Tables</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="tables-basic.html">Basic Tables</a></li>
-                                    <li><a href="tables-datatable.html">Data Table</a></li>
-                                    <li><a href="tables-responsive.html">Responsive Table</a></li>
-                                    <li><a href="tables-editable.html">Editable Table</a></li>
-                                </ul>
-                            </li>
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-face-smile"></i>
-                                    <span>Icons</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="icons-material.html">Material Design</a></li>
-                                    <li><a href="icons-fontawesome.html">Font Awesome</a></li>
-                                    <li><a href="icons-ion.html">Ion Icons</a></li>
-                                    <li><a href="icons-themify.html">Themify Icons</a></li>
-                                    <li><a href="icons-dripicons.html">Dripicons</a></li>
-                                    <li><a href="icons-typicons.html">Typicons Icons</a></li>
-                                </ul>
-                            </li>
-
-                            <li>
-                                <a href="javascript: void(0);" class="waves-effect">
-                                    <i class="ti-location-pin"></i>
-                                    <span class="badge badge-pill badge-danger float-right">2</span>
-                                    <span>Maps</span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="maps-google.html"> Google Map</a></li>
-                                    <li><a href="maps-vector.html"> Vector Map</a></li>
-                                </ul>
-                            </li>
-
-                            <li class="menu-title">Extras</li>
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-layout"></i>
-                                    <span> Layouts </span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="layouts-horizontal.html">Horizontal</a></li>
-                                    <li><a href="layouts-compact-sidebar.html">Compact Sidebar</a></li>
-                                    <li><a href="layouts-icon-sidebar.html">Icon Sidebar</a></li>
-                                    <li><a href="layouts-boxed.html">Boxed Layout</a></li>
-                                </ul>
-                            </li>
-
-
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-archive"></i>
-                                    <span> Authentication </span>
-                                </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="pages-login.html">Login 1</a></li>
-                                    <li><a href="pages-login-2.html">Login 2</a></li>
-                                    <li><a href="pages-register.html">Register 1</a></li>
-                                    <li><a href="pages-register-2.html">Register 2</a></li>
-                                    <li><a href="pages-recoverpw.html">Recover Password 1</a></li>
-                                    <li><a href="pages-recoverpw-2.html">Recover Password 2</a></li>
-                                    <li><a href="pages-lock-screen.html">Lock Screen 1</a></li>
-                                    <li><a href="pages-lock-screen-2.html">Lock Screen 2</a></li>
-                                </ul>
-                            </li>
-
-                            <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="calendar.html" class=" waves-effect">
                                     <i class="ti-support"></i>
-                                    <span>  Extra Pages  </span>
+                                    <span>Support</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="pages-timeline.html">Timeline</a></li>
-                                    <li><a href="pages-invoice.html">Invoice</a></li>
-                                    <li><a href="pages-directory.html">Directory</a></li>
-                                    <li><a href="pages-blank.html">Blank Page</a></li>
-                                    <li><a href="pages-404.html">Error 404</a></li>
-                                    <li><a href="pages-500.html">Error 500</a></li>
-                                    <li><a href="pages-pricing.html">Pricing</a></li>
-                                    <li><a href="pages-gallery.html">Gallery</a></li>
-                                    <li><a href="pages-maintenance.html">Maintenance</a></li>
-                                    <li><a href="pages-comingsoon.html">Coming Soon</a></li>
-                                    <li><a href="pages-faq.html">FAQs</a></li>
-                                </ul>
                             </li>
-
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-bookmark-alt"></i>
-                                    <span>  Email Templates  </span>
+                                <a href="calendar.html" class=" waves-effect">
+                                    <i class="ti-receipt"></i>
+                                    <span>Transactions</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="false">
-                                    <li><a href="email-template-basic.html">Basic Action Email</a></li>
-                                    <li><a href="email-template-Alert.html">Alert Email</a></li>
-                                    <li><a href="email-template-Billing.html">Billing Email</a></li>
-                                </ul>
                             </li>
-
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
-                                    <i class="ti-more"></i>
-                                    <span>Multi Level</span>
+                                <a href="calendar.html" class=" waves-effect">
+                                    <i class="ti-clipboard"></i>
+                                    <span>Payouts</span>
                                 </a>
-                                <ul class="sub-menu" aria-expanded="true">
-                                    <li><a href="javascript: void(0);">Level 1.1</a></li>
-                                    <li><a href="javascript: void(0);" class="has-arrow">Level 1.2</a>
-                                        <ul class="sub-menu" aria-expanded="true">
-                                            <li><a href="javascript: void(0);">Level 2.1</a></li>
-                                            <li><a href="javascript: void(0);">Level 2.2</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
                             </li>
-
                         </ul>
                     </div>
                     <!-- Sidebar -->
                 </div>
             </div>
             <!-- Left Sidebar End -->
-            @yield('content')   
+            @yield('content')
             <footer class="footer">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
-                            © <script>document.write(new Date().getFullYear())</script> Veltrix<span class="d-none d-sm-inline-block"> - Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand.</span>
+                            © <script>document.write(new Date().getFullYear())</script> PayAgent<span class="d-none d-sm-inline-block"> - Crafted with <i class="mdi mdi-heart text-danger"></i> by Headrun.</span>
                         </div>
                     </div>
                 </div>
@@ -537,16 +302,16 @@
                         <input type="checkbox" class="custom-control-input theme-choice" id="light-mode-switch" checked />
                         <label class="custom-control-label" for="light-mode-switch">Light Mode</label>
                     </div>
-    
+
                     <div class="mb-2">
                         <img src="assets/images/layouts/layout-2.jpg" class="img-fluid img-thumbnail" alt="">
                     </div>
                     <div class="custom-control custom-switch mb-3">
-                        <input type="checkbox" class="custom-control-input theme-choice" id="dark-mode-switch" data-bsStyle="assets/css/bootstrap-dark.min.css" 
+                        <input type="checkbox" class="custom-control-input theme-choice" id="dark-mode-switch" data-bsStyle="assets/css/bootstrap-dark.min.css"
                             data-appStyle="assets/css/app-dark.min.css" />
                         <label class="custom-control-label" for="dark-mode-switch">Dark Mode</label>
                     </div>
-    
+
                     <div class="mb-2">
                         <img src="assets/images/layouts/layout-3.jpg" class="img-fluid img-thumbnail" alt="">
                     </div>
@@ -558,7 +323,7 @@
                     <a href="https://1.envato.market/grNDB" class="btn btn-primary btn-block mt-3" target="_blank"><i class="mdi mdi-cart mr-1"></i> Purchase Now</a>
 
                 </div>
-            </div> 
+            </div>
             <!-- end slimscroll-menu-->
         </div>
         <!-- /Right-bar -->
@@ -577,5 +342,34 @@
         <script src="{{ asset('assets/libs/chartist-plugin-tooltips/chartist-plugin-tooltip.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/dashboard.init.js') }}"></script>
         <script src="{{ asset('assets/js/app.js') }}"></script>
+           <!-- Required datatable js -->
+           <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+        <!-- Buttons examples -->
+        <script src="{{ asset('assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/jszip/jszip.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/pdfmake/build/pdfmake.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/pdfmake/build/vfs_fonts.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-buttons/js/buttons.colVis.min.js') }}"></script>
+        <!-- Responsive examples -->
+        <script src="{{ asset('assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js') }}"></script>
+
+        <!-- Datatable init js -->
+        <script src="{{ asset('assets/js/pages/datatables.init.js') }}"></script>
+
+        <script src="{{ asset('assets/js/app.js') }}"></script>
+        <!-- form repeater js -->
+        <script src="{{ asset('assets/libs/jquery.repeater/jquery.repeater.min.js') }}"></script>
+
+        <script src="{{ asset('assets/js/pages/form-repeater.int.js') }}"></script>
+        <script>
+            $(document).ready( function () {
+                $('#admin_table').DataTable();
+            } );
+        </script>
     </body>
 </html>

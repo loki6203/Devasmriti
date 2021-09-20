@@ -18,12 +18,21 @@ class SuperadminController extends Controller
      */
 	public function __construct()
     {
-        
+
     }
 	public function index(){
 		return view('admin/index');
 	}
 	public function dashboard(){
 		return view('admin/dashboard');
+	}
+    public function admin_management(){
+		return view('admin/admin_management');
+	}
+    public function add_admin(){
+		return view('admin/add_admin');
+	}
+    public function edit_admin(){
+		return view('admin/edit_admin');
 	}
 }
