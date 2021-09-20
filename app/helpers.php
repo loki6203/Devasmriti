@@ -86,8 +86,9 @@ if(!function_exists('asset')) {
     }
 }
 if(!function_exists('Invoice_id')) {
-    function Invoice_id($last_id)
+    function Invoice_id($gateway_type)
     {
+        $last_id=1;
         if(strlen($last_id) == 1){
             $dynamic_id   = $string. '000' . $last_id;
         }else if(strlen($last_id) == 2){
@@ -120,5 +121,13 @@ if(!function_exists('Updated_User_Amt')){
        $UserDetail = UserDetail::where('user_id','=',$user_id)->first();
        $UserDetail->acc_balance = $Tot_Amt;
        $UserDetail->save();
+    }
+}
+
+
+if(!function_exists('Cr_Or_Dr_Amount')){
+    function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$transaction_id)
+    {
+
     }
 }
