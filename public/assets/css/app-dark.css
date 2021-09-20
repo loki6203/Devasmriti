@@ -1,11 +1,4 @@
-/*
-Template Name: Veltrix - Responsive Bootstrap 4 Admin Dashboard
-Author: Themesbrand
-Version: 3.3.0
-Website: https://themesbrand.com/
-Contact: themesbrand@gmail.com
-File: Main dark Css File
-*/
+
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500|Sarabun:400,600,700&display=swap");
 #page-topbar {
   position: fixed;
@@ -796,10 +789,10 @@ body[data-layout="horizontal"][data-layout-size="boxed"] .container-fluid, body[
 
 /*!
  * Waves v0.7.6
- * http://fian.my.id/Waves 
- * 
- * Copyright 2014-2018 Alfiana E. Sibuea and other contributors 
- * Released under the MIT license 
+ * http://fian.my.id/Waves
+ *
+ * Copyright 2014-2018 Alfiana E. Sibuea and other contributors
+ * Released under the MIT license
  * https://github.com/fians/Waves/blob/master/LICENSE */
 .waves-effect {
   position: relative;

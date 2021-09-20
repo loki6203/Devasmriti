@@ -14,3 +14,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'Admin\SuperadminController@index');
 Route::get('/dashboard', 'Admin\SuperadminController@dashboard');
+Route::get('/admin_management', 'Admin\SuperadminController@admin_management');
+Route::get('/add_admin', 'Admin\SuperadminController@add_admin');
+Route::get('/edit_admin', 'Admin\SuperadminController@edit_admin');
