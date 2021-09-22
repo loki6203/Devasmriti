@@ -537,4 +537,30 @@ class UserController extends Controller
         }
         return response()->json($return, $status);
     }
+    public function forgot_password(Request $request){
+        $data=array();
+        $status = $this->err;
+        $message='';
+        $success=0;
+        $validator = Validator::make($request->all(),['mobile' => 'required']);
+        if($validator->fails()) {
+            $message = 'Mobile number is required';
+        }else{
+            $Check_Mobile = User::where('mobile_number','=',$request->mobile)->first();
+            if(is_null($Check_Mobile)){
+                $message = 'Invalid mobile number';
+            }else{
+                $otp = Generate_Otp();
+                $User_Detail = UserDetail::where('user_id','=',$Check_Mobile->id)->first();
+                $User_Detail->email_otp  = $otp;
+                $User_Detail->mobile_otp = $otp;
+                $User_Detail->save();
+                $success = 1;
+                $status = $this->succ;
+                $message = 'Your new password sent to registered mobilenumber successfully';
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp, $status);
+    }
 }

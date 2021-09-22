@@ -68,7 +68,7 @@ class InternalController extends Controller
                 $InternalTransfer->payment_status       = 'Success';
                 $InternalTransfer->acc_debited_status   = 'Success';
                 $InternalTransfer->save();
-                $InternalTransfer->invoice_id           = Invoice_id($InternalTransfer->id);
+                $InternalTransfer->invoice_id           = Invoice_id('internal_transfer',$InternalTransfer->id);
                 $InternalTransfer->save();
 
                 $AccountHistory           =   new AccountHistory();

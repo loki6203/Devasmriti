@@ -14,4 +14,9 @@ class CmsController extends Controller
         $resp = array('success'=>$status,'message'=>$message,'data'=>$data);
         return response()->json($resp, $this->succ);
     }
+    public function countries(Request $request){}
+    public function states(Request $request){}
+    public function cities(Request $request){}
+    public function state_based_on_country(Request $request){}
+    public function city_based_on_country_and_state(Request $request){}
 }
