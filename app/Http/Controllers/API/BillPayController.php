@@ -5,10 +5,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
-use App\Models\PaymentGateway;
-use App\Models\AccountDeposit;
+use App\Models\User;
 
-class RechargeController extends Controller 
+class BillPayController extends Controller 
 {
     public $succ = 200;
     public $err  = 202;
@@ -107,7 +106,7 @@ class RechargeController extends Controller
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
     }
-    public function recharge_payment(Request $request){
+    public function Recharge_PaYment(Request $request){
         $userid = login_User_ID();
         $data=array();
         $status = $this->err;
@@ -143,12 +142,5 @@ class RechargeController extends Controller
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
-    }
-    public function payment_history(Request $request){
-        $userid = login_User_ID();
-        $data=array();
-        $status = $this->err;
-        $message='';
-        $success=1;
     }
 }

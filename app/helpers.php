@@ -28,7 +28,8 @@ if(!function_exists('login_User_ID')){
 }
 if(!function_exists('Generate_Otp')){
     function Generate_Otp(){
-        return substr(str_shuffle("0123456789"), 0, 5);
+        return 12345;
+        //return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Acc_No_Generate')){
@@ -86,9 +87,8 @@ if(!function_exists('asset')) {
     }
 }
 if(!function_exists('Invoice_id')) {
-    function Invoice_id($gateway_type)
+    function Invoice_id($gateway_type,$last_id)
     {
-        $last_id=1;
         if(strlen($last_id) == 1){
             $dynamic_id   = $string. '000' . $last_id;
         }else if(strlen($last_id) == 2){
@@ -123,11 +123,18 @@ if(!function_exists('Updated_User_Amt')){
        $UserDetail->save();
     }
 }
-
-
 if(!function_exists('Cr_Or_Dr_Amount')){
-    function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$transaction_id)
+    function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$Details)
     {
-
+        $AccountHistory = new AccountHistory();
+        $AccountHistory->user_id = $user_id;
+        $AccountHistory->amount = $amount;
+        $AccountHistory->action_type = $paymtype;
+        $AccountHistory->description = $Details->description;
+        $AccountHistory->transaction_id = $Details->id;
+        $AccountHistory->created_at = curr_dt();
+        $AccountHistory->payment_details = $Details;
+        $AccountHistory->save();
+        $this->Updated_User_Amt($user_id);
     }
 }
