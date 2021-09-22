@@ -13,7 +13,7 @@ class CmsController extends Controller
     public $succ = 200;
     public $err  = 202;
     public function contact_us(Request $request){
-        $Setting = Setting::first('address','emails');
+        $Setting = Setting::first(['address','emails']);
         $resp = array('success'=>1,'message'=>'','data'=>$Setting);
         return response()->json($resp, $this->succ);
     }
@@ -38,7 +38,7 @@ class CmsController extends Controller
         return response()->json($resp, $this->succ);
     }
     public function city_based_on_country_and_state(Request $request,$country_id,$state_id){
-        $data = State::with('country')->where('country_id','=',$country_id)->where('state_id','=',$state_id)->get();
+        $data = State::with('country')->where('country_id','=',$country_id)->where('id','=',$state_id)->get();
         $resp = array('success'=>1,'message'=>'','data'=>$data);
         return response()->json($resp, $this->succ);
     }

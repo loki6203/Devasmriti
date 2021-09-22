@@ -299,13 +299,15 @@ class UserController extends Controller
             $status = $this->err;
 		}else{
             $userid = login_User_ID();
-            $old_password=($request->input('old_password'));
-            $new_password=$request->input('new_password');
-            $confirm_new_password=$request->input('confirm_new_password');
+            
+            $old_password=$request->old_password;
+            $new_password=$request->new_password;
+            $confirm_new_password=$request->confirm_new_password;
             $Ucheck=User::find($userid);
+            $request['mobile_number'] = $Ucheck->mobile_number;
             if($new_password == $confirm_new_password){
-                if(Auth::attempt(['email'=>$Ucheck->email, 'password'=>$old_password]) ){
-                    $Ucheck->password =bcrypt($new_password);
+                if(Hash::check($old_password, auth()->user()->password)){
+                    $Ucheck->password = bcrypt($new_password);
                     $Ucheck->save();
                     $return = array("success" => 1, "message" => "Password changed successfully");
                     $status = $this->succ;
@@ -344,10 +346,10 @@ class UserController extends Controller
     }
     public function check_pan_adhar_tpin_status(Request $request){
         $userid = login_User_ID();
-        $pan_status  = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('pan_verified_at')->count();
-        $adr_status  = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('adhar_verified_at')->count();
-        $tpin_status = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('tpin')->count();
-        $data['pan_stats']      = ($pan_status>0)?1:0;
+        $pan_status  = UserDetail::where('user_id','=',$userid)->whereNotNull('pan_verified_at')->count();
+        $adr_status  = UserDetail::where('user_id','=',$userid)->whereNotNull('adhar_verified_at')->count();
+        $tpin_status = UserDetail::where('user_id','=',$userid)->whereNotNull('tpin')->count();
+        $data['pan_status']      = ($pan_status>0)?1:0;
         $data['adhar_status']   = ($adr_status>0)?1:0;
         $data['tpin_status']    = ($tpin_status>0)?1:0;
         $return = array("success" =>1, "message" =>"","data"=>$data);
@@ -355,14 +357,14 @@ class UserController extends Controller
     }
     public function check_tpin_generated_or_not(Request $request){
         $userid = login_User_ID();
-        $tpin_status = UserDetail::where('user_id','=',$request->user_id)->whereNotNull('tpin')->count();
+        $tpin_status = UserDetail::where('user_id','=',$userid)->whereNotNull('tpin')->count();
         $data['tpin_status'] = ($tpin_status>0)?1:0;
         $return = array("success" =>1, "message" =>"","data"=>$data);
         return response()->json($return, $this->succ);
     }
     public function check_tpin_valid_or_not(Request $request,$tpin){
         $userid = login_User_ID();
-        $tpin_status  = UserDetail::where('user_id','=',$request->user_id)->where('tpin','=',$tpin)->count();
+        $tpin_status  = UserDetail::where('user_id','=',$userid)->where('tpin','=',$tpin)->count();
         $tpin_status  = ($tpin_status>0)?1:0;
         $data['tpin_status']=$tpin_status;
         $return = array("success" =>1, "message" =>"","data"=>$data);
