@@ -14,21 +14,25 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/* 
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+}); 
+*/
+Route::middleware('json')->group(function(){
+    Route::post('/login', 'API\UserController@login');
+    Route::post('/signup', 'API\UserController@signup');
+    Route::post('/resend_otp', 'API\UserController@resend_otp');
+    Route::post('/Check_Otp', 'API\UserController@Check_Otp');
+    Route::post('/Otp_Verification', 'API\UserController@Otp_Verification');
+    Route::post('/forgot_password', 'API\UserController@forgot_password');
+    Route::get('/contact_us', 'API\CmsController@contact_us');
+    Route::get('/countries', 'API\CmsController@countries');
+    Route::get('/states', 'API\CmsController@states');
+    Route::get('/cities', 'API\CmsController@cities');
+    Route::get('/state_based_on_country/{country_id}', 'API\CmsController@state_based_on_country');
+    Route::get('/city_based_on_country_and_state/{country_id}/{state_id}', 'API\CmsController@city_based_on_country_and_state');
 });
-Route::post('/login', 'API\UserController@login');
-Route::post('/signup', 'API\UserController@signup');
-Route::post('/resend_otp', 'API\UserController@resend_otp');
-Route::post('/Check_Otp', 'API\UserController@Check_Otp');
-Route::post('/Otp_Verification', 'API\UserController@Otp_Verification');
-Route::get('/contact_us', 'API\UserController@contact_us');
-Route::post('/forgot_password', 'API\UserController@forgot_password');
-Route::get('/countries', 'API\CmsController@countries'); ##
-Route::get('/states', 'API\CmsController@states'); ##
-Route::get('/cities', 'API\CmsController@cities'); ##
-Route::get('/state_based_on_country/{country_id}', 'API\CmsController@state_based_on_country'); ##
-Route::get('/city_based_on_country_and_state/{country_id}/{state_id}', 'API\CmsController@city_based_on_country_and_state'); ##
 
 Route::middleware('auth:api')->group(function(){
     Route::post('/user_change_password', 'API\UserController@user_change_password');
@@ -39,8 +43,8 @@ Route::middleware('auth:api')->group(function(){
     Route::get('/verify_pan/{pannumber}', 'API\UserController@verify_pan');
     Route::post('/submit_adhar_with_otp', 'API\UserController@submit_adhar_with_otp');
     Route::post('/upload_photo', 'API\UserController@upload_photo'); ##
-    Route::post('/update_contact_details', 'API\UserController@update_contact_details'); ##
-    Route::get('/user_details', 'API\UserController@user_details'); ##
+    Route::post('/update_contact_details', 'API\UserController@update_contact_details');
+    Route::get('/user_details', 'API\UserController@user_details');
     Route::post('/internal_transfer_Search', 'API\InternalController@internal_transfer_Search');
     Route::get('/int_trnsf_individual_history/{user_id}', 'API\InternalController@int_trnsf_individual_history');
     Route::get('/int_trnsf_all_history', 'API\InternalController@int_trnsf_all_history');

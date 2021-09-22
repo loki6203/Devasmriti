@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $acc_number
+ * @property string|null $bank_name
  * 
  * @property User $user
  * @property Collection|BillPay[] $bill_pays
@@ -41,7 +43,9 @@ class Biller extends Model
 		'ifsc_code',
 		'name',
 		'api_response',
-		'is_active'
+		'is_active',
+		'acc_number',
+		'bank_name'
 	];
 
 	public function user()

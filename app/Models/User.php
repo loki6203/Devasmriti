@@ -9,6 +9,9 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 /**
  * Class User
@@ -40,11 +43,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @package App\Models
  */
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
-
 class User extends Model
 {
+	use HasApiTokens, Notifiable;
 	protected $table = 'users';
 
 	protected $hidden = [
@@ -65,7 +66,7 @@ class User extends Model
 		'about_me',
 		'remember_token'
 	];
-	use HasApiTokens, HasFactory, Notifiable;
+
 	public function account_deposits()
 	{
 		return $this->hasMany(AccountDeposit::class);
@@ -110,4 +111,8 @@ class User extends Model
 	{
 		return $this->hasMany(UserDetail::class);
 	}
+	public function tokens()
+    {
+        return $this->hasMany(Passport::tokenModel(), 'user_id')->orderBy('created_at', 'desc');
+    }
 }

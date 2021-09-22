@@ -52,15 +52,15 @@ class CreateUserRelatedTablesTable extends Migration
                     $table->smallInteger ('pincode')->nullable();
                 }
                 if(!Schema::hasColumn('user_details', 'country_id')) {
-                    $table->foreignId('country_id')->nullable(false);
+                    $table->foreignId('country_id')->nullable();
                     $table->foreign('country_id')->references('id')->on('countries');
                 }
                 if(!Schema::hasColumn('user_details', 'state_id')) {
-                    $table->foreignId('state_id')->nullable(false);
+                    $table->foreignId('state_id')->nullable();
                     $table->foreign('state_id')->references('id')->on('states');
                 }
                 if(!Schema::hasColumn('user_details', 'city_id')) {
-                    $table->foreignId('city_id')->nullable(false);
+                    $table->foreignId('city_id')->nullable();
                     $table->foreign('city_id')->references('id')->on('cities');
                 }
             });

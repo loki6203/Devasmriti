@@ -23,7 +23,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $card_details
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int $gate_way_id
  * 
+ * @property PaymentGateway $payment_gateway
  * @property User $user
  *
  * @package App\Models
@@ -33,7 +35,8 @@ class AccountDeposit extends Model
 	protected $table = 'account_deposits';
 
 	protected $casts = [
-		'user_id' => 'int'
+		'user_id' => 'int',
+		'gate_way_id' => 'int'
 	];
 
 	protected $fillable = [
@@ -44,8 +47,14 @@ class AccountDeposit extends Model
 		'transaction_id',
 		'invoice_id',
 		'payment_response',
-		'card_details'
+		'card_details',
+		'gate_way_id'
 	];
+
+	public function payment_gateway()
+	{
+		return $this->belongsTo(PaymentGateway::class, 'gate_way_id');
+	}
 
 	public function user()
 	{

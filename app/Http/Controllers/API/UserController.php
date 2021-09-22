@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserDetail;
 
@@ -49,25 +50,25 @@ class UserController extends Controller
                 if(is_null($user->email_verified_at)){
                     $user->email_verified_at  = date('Y-m-d H:i:s');
                 }
-                $request->user()->tokens()->delete();
+                // $request->user()->tokens()->delete();
                 $client = \Laravel\Passport\Client::where('password_client', 1)->first();
                 $request->request->add([
                     'grant_type' => 'password',
                     'client_id' => $client->id,
                     'client_secret' => $client->secret,
                     'scope' => null,
-                    'username' => request('email'),
+                    'username' => $user->email,
                     'password' => request('password'),
                 ]);
                 $proxy = Request::create('oauth/token','POST');
                 $tokens = \Route::dispatch($proxy);
                 $tokrnresponse = (array) $tokens->getContent();
                 $tokendata = json_decode($tokrnresponse[0]);
-                $request->user()->tokens()->update([
-                    'access_token' => $tokendata->access_token,
-                    'expires_in' => $tokendata->expires_in,
-                    'refresh_token' => $tokendata->refresh_token
-                ]);
+                // $request->user()->tokens()->update([
+                //     'access_token' => $tokendata->access_token,
+                //     'expires_in' => $tokendata->expires_in,
+                //     'refresh_token' => $tokendata->refresh_token
+                // ]);
                 $message = 'Logined successfully';
                 $data['token'] = $tokendata->access_token;
                 $data['userdetails'] = $user;
@@ -119,22 +120,24 @@ class UserController extends Controller
                     $user_id = $NewUser->id;
                     $UserDetail_Check = UserDetail::where('user_id','=',$user_id)->first();
                     if(is_null($UserDetail_Check)){
-                        $sms_otp                        = Generate_Otp();
-                        //$email_otp                      = Generate_Otp();
+                        $otp                            = Generate_Otp();
                         $NewUser_Detail                 = new UserDetail();
                         $NewUser_Detail->user_id        = $user_id;
-                        $NewUser_Detail->mobile_otp     = $email_otp;
-                        //$NewUser_Detail->email_otp      = $sms_otp;
+                        $NewUser_Detail->mobile_otp     = $otp;
+                        $NewUser_Detail->email_otp      = $otp;
                         $NewUser_Detail->first_name     = $NewUser->name;
+                        $NewUser_Detail->pan_attempts   = 0;
                         $NewUser_Detail->save();
                     }else{
-                        $UserDetail_Check->sms_otp      = Generate_Otp();
-                        $UserDetail_Check->email_otp    = Generate_Otp();
-                        $NewUser_Detail->first_name     = $NewUser->name;
+                        $otp                            = Generate_Otp();
+                        $UserDetail_Check->sms_otp      = $otp;
+                        $UserDetail_Check->email_otp    = $otp;
+                        $UserDetail_Check->first_name   = $NewUser->name;
+                        $UserDetail_Check->pan_attempts = 0;
                         $UserDetail_Check->save();
                     }
                     $message='Please enter otp';
-                    $data = array('otp'=>$sms_otp,'user_id'=>$user_id);
+                    $data = array('otp'=>$otp,'user_id'=>$user_id);
                     $status = $this->succ;
                 }else{
                     $success=0;
@@ -189,12 +192,12 @@ class UserController extends Controller
             $status = $this->err;
         }else{
             if($request->type=='mobile'){
-                $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id,'mobile_otp','=',$request->otp)->count();
+                $UserDetail_Check = UserDetail::where([['user_id','=',$request->user_id],['mobile_otp','=',$request->otp]])->count();
             }else{
-                $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id,'email_otp','=',$request->otp)->count();
+                $UserDetail_Check = UserDetail::where([['user_id','=',$request->user_id],['email_otp','=',$request->otp]])->count();
             }
             if($UserDetail_Check>0){
-                $message = 'Otp validated';
+                $message = 'Otp validated successfully';
                 $status = $this->succ;
             }else{
                 $success=0;
@@ -215,23 +218,17 @@ class UserController extends Controller
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
             $status = $this->err;
 		}else{
-            $Mb_Check = UserDetail::where('user_id','=',$request->user_id,'mobile_otp','=',$request->mobile_otp)->count();
-            if($Mb_Check>0){
-                //$Em_Check = UserDetail::where('user_id','=',$request->user_id,'email_otp','=',$request->email_otp)->count();
-                //if($Em_Check>0){
+            $Mb_Check = UserDetail::where('user_id','=',$request->user_id)->where('mobile_otp','=',$request->mobile_otp)->count();
+            if($Mb_Check>0){ 
                     $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
                     $curr_dt = curr_dt();
-                    //$UserDetails->email_verified_at  = $curr_dt;
                     $UserDetails->mobile_verified_at = $curr_dt;
                     $UserDetails->acc_number       = Acc_No_Generate();
                     $UserDetails->save();
-                    User::where('user_id','=',$request->user_id).update(array('is_active'=>'active'));
+                    User::where('id','=',$request->user_id)->update(array('is_active'=>'active'));
                     $data['user_id']=$request->user_id;
-                    $return = array("success" =>1, "message" => "Otp verified successfully,Please enter pan and adhar numbers",'user_id'=>$request->user_id , 'data'=>$data);
+                    $return = array("success" =>1, "message" => "Otp verified successfully",'data'=>$data);
                     $status = $this->succ;
-                //}else{
-                   // $return = array("success" => 0, "message" => "Invalid emailid otp", 'data'=>$data);
-                //}
             }else{
                 $return = array("success" => 0, "message" => "Invalid mobile number otp", 'data'=>$data);
                 $status = $this->err;
@@ -562,5 +559,42 @@ class UserController extends Controller
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
+    }
+    public function upload_photo(Request $request){
+
+    }
+    public function update_contact_details(Request $request){
+        $userid = login_User_ID();
+        $data=array();
+        $status = $this->err;
+        $message='';
+        $success=0;
+        $validator = Validator::make($request->all(),[
+            'address'       => 'required',
+            'pincode'       => 'required',
+            'country_id'    => 'required',
+            'state_id'      => 'required',
+            'city_id'       => 'required'
+        ]);
+        if($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+        }else{
+            $User_Detail = UserDetail::where('user_id','=',$userid)->first();
+            $User_Detail->address       = $address;
+            $User_Detail->pincode       = $pincode;
+            $User_Detail->country_id    = $country_id;
+            $User_Detail->state_id      = $state_id;
+            $User_Detail->city_id       = $city_id;
+            $User_Detail->save();
+            $message = 'Contact details added successfully';
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp, $status);
+    }
+    public function user_details(Request $request){
+        $userid = login_User_ID();
+        $User = User::with('user_details')->find($userid);
+        $resp = array('success'=>1,'message'=>'','data'=>$User);
+        return response()->json($resp, $this->succ);
     }
 }

@@ -47,11 +47,8 @@ class InternalTransfer extends Model
 		'invoice_id',
 		'payment_response'
 	];
-	public function from_user()
-	{
-		return $this->belongsTo(User::class, 'from_user_id');
-	}
-	public function to_user()
+
+	public function user()
 	{
 		return $this->belongsTo(User::class, 'to_user_id');
 	}

@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $payment_details
  * 
  * @property User $user
  *
@@ -42,7 +43,8 @@ class AccountHistory extends Model
 		'cr_or_dr',
 		'action_type',
 		'description',
-		'transaction_id'
+		'transaction_id',
+		'payment_details'
 	];
 
 	public function user()

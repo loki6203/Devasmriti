@@ -31,10 +31,10 @@ class CreatePayagentTables extends Migration
                 $table->timestamp('adhar_verified_at')->nullable();
                 $table->text('pan_response')->nullable();
                 $table->text('adhar_response')->nullable();
-                $table->smallInteger('mobile_otp');
-                $table->smallInteger('pan_attempts');
-                $table->smallInteger('adhar_otp');
-                $table->smallInteger('email_otp');
+                $table->smallInteger('mobile_otp')->nullable();
+                $table->smallInteger('pan_attempts')->nullable();
+                $table->smallInteger('adhar_otp')->nullable();
+                $table->smallInteger('email_otp')->nullable();
                 $table->decimal('gateway_charge', 10, 2)->nullable();
                 $table->decimal('referal_code_percentage', 10, 2)->nullable();
                 $table->decimal('beneficiary_amount', 10, 2)->nullable();
