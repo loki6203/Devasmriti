@@ -40,39 +40,40 @@ class UserController extends Controller
         ]);
         $data=array();
         $message='';
-        $success=1;
+        $success=0;
         if($validator->fails()) {
             $message = 'Please enter all (*) fields';
             $status = $this->err;
         }else{
             if(Auth::attempt(['mobile_number'=>$request->mobile,'password'=>$request->password])){
                 $user = Auth::user();
-                if(is_null($user->email_verified_at)){
-                    $user->email_verified_at  = date('Y-m-d H:i:s');
-                }
-                // $request->user()->tokens()->delete();
-                $client = \Laravel\Passport\Client::where('password_client', 1)->first();
-                $request->request->add([
-                    'grant_type' => 'password',
-                    'client_id' => $client->id,
-                    'client_secret' => $client->secret,
-                    'scope' => null,
-                    'username' => $user->email,
-                    'password' => request('password'),
-                ]);
-                $proxy = Request::create('oauth/token','POST');
-                $tokens = \Route::dispatch($proxy);
-                $tokrnresponse = (array) $tokens->getContent();
-                $tokendata = json_decode($tokrnresponse[0]);
-                // $request->user()->tokens()->update([
-                //     'access_token' => $tokendata->access_token,
-                //     'expires_in' => $tokendata->expires_in,
-                //     'refresh_token' => $tokendata->refresh_token
+                // if(is_null($user->email_verified_at)){
+                //     $user->email_verified_at  = date('Y-m-d H:i:s');
+                // }
+                // // $request->user()->tokens()->delete();
+                // $client = \Laravel\Passport\Client::where('password_client', 1)->first();
+                // $request->request->add([
+                //     'grant_type' => 'password',
+                //     'client_id' => $client->id,
+                //     'client_secret' => $client->secret,
+                //     'scope' => null,
+                //     'username' => $user->email,
+                //     'password' => request('password'),
                 // ]);
+                // $proxy = Request::create('oauth/token','POST');
+                // $tokens = \Route::dispatch($proxy);
+                // $tokrnresponse = (array) $tokens->getContent();
+                // $tokendata = json_decode($tokrnresponse[0]);
+                // // $request->user()->tokens()->update([
+                // //     'access_token' => $tokendata->access_token,
+                // //     'expires_in' => $tokendata->expires_in,
+                // //     'refresh_token' => $tokendata->refresh_token
+                // // ]);
                 $message = 'Logined successfully';
-                $data['token'] = $tokendata->access_token;
+                $data['token'] = 'Bearer  '.$user->createToken('PayAgent')->accessToken;
                 $data['userdetails'] = $user;
                 $status = $this->succ;
+                $success=1;
             }else{
                 $message = 'Invalid credentials';
                 $status = $this->err;
