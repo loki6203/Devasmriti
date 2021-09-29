@@ -24,6 +24,10 @@
         <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
         <!-- App Css-->
         <link href="{{ asset('assets/css/app.min.css') }}" id="app-style" rel="stylesheet" type="text/css" />
+        <!-- Sweet Alert-->
+        <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
 
     </head>
 
@@ -48,10 +52,10 @@
 
                             <a href="index.html" class="logo logo-light">
                                 <span class="logo-sm">
-                                    <img src="assets/images/logo-sm.png" alt="" height="22">
+                                    <img src="assets/images/logo-sm-light.png" alt="" width="30px">
                                 </span>
                                 <span class="logo-lg">
-                                    <img src="assets/images/logo-light.png" alt="" height="18">
+                                    <img src="assets/images/logo-light.png" alt="" width="150px">
                                 </span>
                             </a>
                         </div>
@@ -219,13 +223,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="calendar.html" class=" waves-effect">
+                                <a href="user_management" class=" waves-effect">
                                     <i class="ti-user"></i>
                                     <span>User</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="calendar.html" class=" waves-effect">
+                                <a href="payment_gateway_management" class="waves-effect">
                                     <i class="ti-credit-card"></i>
                                     <span>Payment Gateway</span>
                                 </a>
@@ -341,7 +345,7 @@
         <script src="{{ asset('assets/libs/chartist/chartist.min.js') }}"></script>
         <script src="{{ asset('assets/libs/chartist-plugin-tooltips/chartist-plugin-tooltip.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/dashboard.init.js') }}"></script>
-        <script src="{{ asset('assets/js/app.js') }}"></script>
+
            <!-- Required datatable js -->
            <script src="{{ asset('assets/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset('assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -360,16 +364,33 @@
 
         <!-- Datatable init js -->
         <script src="{{ asset('assets/js/pages/datatables.init.js') }}"></script>
-
-        <script src="{{ asset('assets/js/app.js') }}"></script>
         <!-- form repeater js -->
         <script src="{{ asset('assets/libs/jquery.repeater/jquery.repeater.min.js') }}"></script>
 
         <script src="{{ asset('assets/js/pages/form-repeater.int.js') }}"></script>
+
+        <!-- Sweet Alerts js -->
+        <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/sweet-alerts.init.js') }}"></script>
+
+        <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js') }}"></script>
+        <script src="{{ asset('assets/libs/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+
         <script>
             $(document).ready( function () {
                 $('#admin_table').DataTable();
             } );
         </script>
+        <script>
+            $(document).ready( function () {
+                $('#user_table').DataTable();
+            } );
+        </script>
+          <script src="{{ asset('assets/js/app.js') }}"></script>
     </body>
 </html>

@@ -53,13 +53,14 @@
                                                         <input type="text" id="subject" class="form-control"/>
                                                     </div>
 
-                                                    <div class="col-lg-3 align-self-center">
-                                                        <input data-repeater-delete type="button" class="btn btn-primary btn-block" value="Delete"/>
+                                                    <div class="col-lg-1 align-self-center">
+
+                                                        <input data-repeater-delete type="button" class="btn btn-danger btn-block" value="Delete"/>
                                                     </div>
                                                 </div>
 
                                             </div>
-                                            <input data-repeater-create type="button" class="btn btn-success mo-mt-2" value="Add"/>
+                                            <input data-repeater-create type="button" class="btn btn-success mo-mt-2" value="Add More"/>
 
                                             <div class="submit_cnt">
                                                 <button class="btn btn-primary waves-effect waves-light" type="submit">Submit</button>

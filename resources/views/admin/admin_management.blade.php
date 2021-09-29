@@ -53,7 +53,7 @@
                                                 <td>Tiger Nixon</td>
                                                 <td>System@domain.com</td>
                                                 <td>9988776655</td>
-                                                <td align="center"><a href="edit_admin" class="btn btn-primary  waves-effect waves-light" href="#"><i class="ti-pencil mr-2"></i>Edit</a> <button class="btn btn-primary  waves-effect waves-light"><i class="ti-trash mr-2"></i> Delete</button></td>
+                                                <td align="center"><a href="edit_admin" class="btn btn-primary  waves-effect waves-light" href="#"><i class="ti-pencil mr-2"></i>Edit</a> <button class="btn btn-danger  waves-effect waves-light" id="sa-warning"><i class="ti-trash mr-2"></i> Delete</button></td>
                                             </tr>
                                             </tbody>
                                         </table>
