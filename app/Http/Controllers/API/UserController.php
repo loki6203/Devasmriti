@@ -17,143 +17,6 @@ class UserController extends Controller
      * 
      * @return \Illuminate\Http\Response 
      */ 
-    public function getTokenAndRefreshToken(OClient $oClient, $email, $password){
-        $oClient = OClient::where('password_client', 1)->first();
-        $http = new Client;
-        $response = $http->request('POST', 'http://mylemp-nginx/oauth/token', [
-            'form_params' => [
-                'grant_type' => 'password',
-                'client_id' => $oClient->id,
-                'client_secret' => $oClient->secret,
-                'username' => $email,
-                'password' => $password,
-                'scope' => '*',
-            ],
-        ]);
-        $result = json_decode((string) $response->getBody(), true);
-        return response()->json($result, $status);
-    }
-    public function login(Request $request){
-        $validator = Validator::make($request->all(), [
-            'mobile' => 'required',
-            'password' => 'required'
-        ]);
-        $data=array();
-        $message='';
-        $success=0;
-        if($validator->fails()) {
-            $message = 'Please enter all (*) fields';
-            $status = $this->err;
-        }else{
-            if(Auth::attempt(['mobile_number'=>$request->mobile,'password'=>$request->password])){
-                $user = Auth::user();
-                // if(is_null($user->email_verified_at)){
-                //     $user->email_verified_at  = date('Y-m-d H:i:s');
-                // }
-                // // $request->user()->tokens()->delete();
-                // $client = \Laravel\Passport\Client::where('password_client', 1)->first();
-                // $request->request->add([
-                //     'grant_type' => 'password',
-                //     'client_id' => $client->id,
-                //     'client_secret' => $client->secret,
-                //     'scope' => null,
-                //     'username' => $user->email,
-                //     'password' => request('password'),
-                // ]);
-                // $proxy = Request::create('oauth/token','POST');
-                // $tokens = \Route::dispatch($proxy);
-                // $tokrnresponse = (array) $tokens->getContent();
-                // $tokendata = json_decode($tokrnresponse[0]);
-                // // $request->user()->tokens()->update([
-                // //     'access_token' => $tokendata->access_token,
-                // //     'expires_in' => $tokendata->expires_in,
-                // //     'refresh_token' => $tokendata->refresh_token
-                // // ]);
-                $message = 'Logined successfully';
-                $data['token'] = 'Bearer  '.$user->createToken('PayAgent')->accessToken;
-                $data['userdetails'] = $user;
-                $status = $this->succ;
-                $success=1;
-            }else{
-                $message = 'Invalid credentials';
-                $status = $this->err;
-            }
-        }
-        $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
-        return response()->json($result, $status);
-    }
-    public function signup(Request $request) 
-    {
-        $data=array();
-        $message='';
-        $success=1;
-        $validator = Validator::make($request->all(), [ 
-            'name' => 'required', 
-            'email' => 'required', 
-            'mobile_number' => 'required', 
-            'user_type' => 'required',
-            'password' => 'required', 
-            'c_password' => 'required',
-        ]);
-        if ($validator->fails()) {
-            $message = 'Please enter all (*) fields';
-            $status = $this->err;
-        }else{
-            $Em_check = User::where('email', '=', $request->email)->count();
-            if($Em_check==0){
-                $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->count();
-                if($Ph_check==0){
-                    $NewUser                = new User();
-                    if($request->user_type=='user'){
-                        $NewUser->name          = $request->name;
-                    }else{
-                        $NewUser->name          = $request->company_name;
-                        $NewUser->company_name  = $request->company_name;
-                    }
-                    $NewUser->user_type     = $request->user_type;
-                    $NewUser->email         = $request->email;
-                    $NewUser->mobile_number = $request->mobile_number;
-                    $NewUser->password      = Hash::make($request->password);
-                    if($request->has('referel_code')){
-                        $NewUser->referel_code  = $request->referel_code;
-                    }
-                    $NewUser->save();
-                    $user_id = $NewUser->id;
-                    $UserDetail_Check = UserDetail::where('user_id','=',$user_id)->first();
-                    if(is_null($UserDetail_Check)){
-                        $otp                            = Generate_Otp();
-                        $NewUser_Detail                 = new UserDetail();
-                        $NewUser_Detail->user_id        = $user_id;
-                        $NewUser_Detail->mobile_otp     = $otp;
-                        $NewUser_Detail->email_otp      = $otp;
-                        $NewUser_Detail->first_name     = $NewUser->name;
-                        $NewUser_Detail->pan_attempts   = 0;
-                        $NewUser_Detail->save();
-                    }else{
-                        $otp                            = Generate_Otp();
-                        $UserDetail_Check->sms_otp      = $otp;
-                        $UserDetail_Check->email_otp    = $otp;
-                        $UserDetail_Check->first_name   = $NewUser->name;
-                        $UserDetail_Check->pan_attempts = 0;
-                        $UserDetail_Check->save();
-                    }
-                    $message='Please enter otp';
-                    $data = array('otp'=>$otp,'user_id'=>$user_id);
-                    $status = $this->succ;
-                }else{
-                    $success=0;
-                    $message='Mobile number already existed';
-                    $status = $this->err;
-                }
-            }else{
-                $success=0;
-                $message='Email is already existed';
-                $status = $this->err;
-            }
-        }
-        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
-        return response()->json($resp, $status);
-    }
     public function resend_otp(Request $request){
         $data=array();
         $message='';
@@ -165,16 +28,23 @@ class UserController extends Controller
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
             $status = $this->err;
+            $success=0;
         }else{
             $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id)->first();
-            if($request->type=='email'){
-                $UserDetail_Check->sms_otp                        = Generate_Otp();
+            if(!is_null($UserDetail_Check)){
+                if($request->type=='email'){
+                    $UserDetail_Check->sms_otp                        = Generate_Otp();
+                }else{
+                    $UserDetail_Check->email_otp                      = Generate_Otp();
+                }
+                $UserDetail_Check->save();
+                $message = 'Otp sent successfully';
+                $status = $this->succ;
             }else{
-                $UserDetail_Check->email_otp                      = Generate_Otp();
+                $message = 'Invalid user';
+                $success=0;
+                $status = $this->err;
             }
-            $UserDetail_Check->save();
-            $message = 'Otp sent successfully';
-            $status = $this->succ;
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
@@ -220,7 +90,7 @@ class UserController extends Controller
             $status = $this->err;
 		}else{
             $Mb_Check = UserDetail::where('user_id','=',$request->user_id)->where('mobile_otp','=',$request->mobile_otp)->count();
-            if($Mb_Check>0){ 
+            if($Mb_Check>0){
                     $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
                     $curr_dt = curr_dt();
                     $UserDetails->mobile_verified_at = $curr_dt;
@@ -552,8 +422,14 @@ class UserController extends Controller
             }else{
                 $otp = Generate_Otp();
                 $User_Detail = UserDetail::where('user_id','=',$Check_Mobile->id)->first();
-                $User_Detail->email_otp  = $otp;
-                $User_Detail->mobile_otp = $otp;
+                if(is_null($User_Detail)){
+                    $User_Detail = new UserDetail();
+                    $User_Detail->user_id       = $Check_Mobile->id;
+                    $User_Detail->first_name    = $Check_Mobile->name;
+                }else{
+                    $User_Detail->email_otp  = $otp;
+                    $User_Detail->mobile_otp = $otp;
+                }
                 $User_Detail->save();
                 $success = 1;
                 $status = $this->succ;
@@ -593,11 +469,5 @@ class UserController extends Controller
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
-    }
-    public function user_details(Request $request){
-        $userid = login_User_ID();
-        $User = User::with('user_details')->find($userid);
-        $resp = array('success'=>1,'message'=>'','data'=>$User);
-        return response()->json($resp, $this->succ);
     }
 }

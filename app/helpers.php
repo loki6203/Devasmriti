@@ -12,18 +12,18 @@ if(!function_exists('curr_dt')){
 }
 if(!function_exists('user_email')){
     function user_email(){
-        $user = Auth::user();
+        $user = auth('api')->user();
         return $user->email;
     }
 }
 if(!function_exists('logined_User')){
     function logined_User(){
-        return Auth::user();
+        return auth('api')->user();
     }
 }
 if(!function_exists('login_User_ID')){
     function login_User_ID(){
-        return Auth::user()->id;
+        return auth('api')->user()->id;
     }
 }
 if(!function_exists('Generate_Otp')){
