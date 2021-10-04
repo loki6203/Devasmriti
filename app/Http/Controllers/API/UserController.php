@@ -195,23 +195,31 @@ class UserController extends Controller
     }
     public function add_or_change_tpin(Request $request){
 		$validator = Validator::make($request->all(), [
-			'tpin_pin' => 'required',
+			'new_tpin' => 'required',
+            'reenter_tpin' => 'required',
+            'old_tpin' => 'required',
 		]);
 		if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
             $status = $this->err;
 		}else{
-            $userid = login_User_ID();
-            $UserDetail = UserDetail::where('user_id','=',$userid)->first();
-            if(is_null($UserDetail->tpin)){
-                $type = 'added';
+            if(trim($request->new_tpin)==trim($request->reenter_tpin)){
+                $userid = login_User_ID();
+                $UserDetail = UserDetail::where(['user_id'=>$userid])->first();
+                $tpin = $request->old_tpin;
+                if($UserDetail->tpin!=$tpin && !is_null($UserDetail->tpin)){
+                    $return = array("success" => 0, "message" => "Invalid old tpin");
+                    $status = $this->err;
+                }else{
+                    $UserDetail->tpin = $request->new_tpin;
+                    $UserDetail->save();
+                    $return = array("success" => 1, "message" => "Tpin updated successfully");
+                    $status = $this->succ;
+                }
             }else{
-                $type = 'updated';
+                $return = array("success" => 0, "message" => "New and re enter tpin not matched");
+                $status = $this->err;
             }
-            $UserDetail->tpin = $request->tpin_pin;
-            $UserDetail->save();
-            $return = array("success" => 1, "message" => "Pin ".$type." successfully");
-            $status = $this->succ;
         }
 		return response()->json($return, $status);
     }
@@ -247,40 +255,45 @@ class UserController extends Controller
         $success = 0;
         $data    = array();
         if($adharnumber!=''){
-            $YOUR_TOKEN=1;
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-              CURLOPT_URL => 'https://kyc-api.aadhaarkyc.io/api/v1/aadhaar-v2/generate-otp',
-              CURLOPT_RETURNTRANSFER => true,
-              CURLOPT_ENCODING => '',
-              CURLOPT_MAXREDIRS => 10,
-              CURLOPT_TIMEOUT => 0,
-              CURLOPT_FOLLOWLOCATION => true,
-              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-              CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS =>'{
-                "id_number": "'.$adharnumber.'"
-              }',
-              CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json',
-                'Authorization: Bearer '.$YOUR_TOKEN
-              ),
-            ));
-            $response = curl_exec($curl);
-            curl_close($curl);
-            if($response!=''){
-                $resp = json_decode($response,true);
-                if(trim($resp['success'])==true){
-                    $data = $resp['data'];
-                    $UserDetails = UserDetail::where('user_id',$userid)->first();
-                    $UserDetails->adhar_response = $response;
-                    $UserDetails->save();
-                    $return = array("success" =>1, "message" =>"Otp sent to register mobile number","data"=>$data);
+            $UserDetails = UserDetail::where('user_id',$userid)->first();
+            if(!is_null($UserDetails->pan_verified_at)){
+                $YOUR_TOKEN=PAN_ADHAR_TOKEN();
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://kyc-api.aadhaarkyc.io/api/v1/aadhaar-v2/generate-otp',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS =>'{
+                    "id_number": "'.$adharnumber.'"
+                }',
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                    'Authorization: Bearer '.$YOUR_TOKEN
+                ),
+                ));
+                $response = curl_exec($curl);
+                curl_close($curl);
+                if($response!=''){
+                    $resp = json_decode($response,true);
+                    if(trim($resp['success'])==true){
+                        $data = $resp['data'];
+                        $UserDetails = UserDetail::where('user_id',$userid)->first();
+                        $UserDetails->adhar_response = $response;
+                        $UserDetails->save();
+                        $return = array("success" =>1, "message" =>"Otp sent to register mobile number","data"=>$data);
+                    }else{
+                        $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                    }
                 }else{
-                    $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                    $return = array("success" =>0, "message" =>"Try again","data"=>$data);
                 }
             }else{
-                $return = array("success" =>0, "message" =>"Try again","data"=>$data);
+                $return = array("success" =>0, "message" =>"Before verifying the adhar first verify your  pancard","data"=>$data);
             }
         }else{
             $return = array("success" =>0, "message" =>"Please enter adharnumber","data"=>$data);
@@ -289,14 +302,15 @@ class UserController extends Controller
     }
     public function submit_adhar_with_otp(Request $request){
         $userid = login_User_ID();
-        $YOUR_TOKEN=1;
+        $YOUR_TOKEN=PAN_ADHAR_TOKEN();
         $data=array();
         $message='';
         $success=0;
         $status = $this->err;
         $validator = Validator::make($request->all(), [
-            'mobile' => 'required',
-            'password' => 'required'
+            'client_id' => 'required',
+            'mobile_number' => 'required',
+            'otp' => 'required'
         ]);
         if($validator->fails()) {
             $message = 'Please enter all (*) fields';
@@ -331,8 +345,7 @@ class UserController extends Controller
                 if(trim($resp['status_code'])==200){
                     $data = $resp['data'];
                     $UserDetails = UserDetail::where('user_id',$userid)->first();
-                    $UserDetails = UserDetail::where('user_id',$userid)->first();
-                    if(!is_null($UserDetails->aadhaar_number)){
+                    if(!is_null($UserDetails->pan_verified_at)){
                         $Pan_Det    = $UserDetails->pan_response;
                         $Pan_Arr_Dt = json_decode($Pan_Det,true);
                         $pan_name   = trim(strtolower($Pan_Arr_Dt['full_name']));
@@ -347,17 +360,18 @@ class UserController extends Controller
                         $return = array("success" =>0, "message" =>"Please verify pan card","data"=>$data);
                     }
                 }else{
-                    $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
+                    $msg = ($resp['message']=='')?'Invali details provided':$resp['message'];
+                    $return = array("success" =>0, "message"=>$msg,"data"=>$data);
                 }
             }else{
                 $return = array("success" =>$success, "message" =>"Invalid otp","data"=>$data);
             }
         }
-        $return = array("success" =>$success, "message" =>$message,"data"=>$data);
         return response()->json($return, $status);
     }
     public function verify_pan(Request $request,$pannumber){
-        $YOUR_TOKEN=1;
+        $userid = login_User_ID();
+        $YOUR_TOKEN=PAN_ADHAR_TOKEN();
         $data = array();
         if($pannumber!=''){
             $curl = curl_init();
@@ -405,6 +419,9 @@ class UserController extends Controller
             $return = array("success" =>0, "message" =>"Please enter pannumber","data"=>$data);
             $status = $this->err;
         }
+        $Pan = UserDetail::where('user_id',$userid)->first('pan_attempts');
+        $pan_attempts = $Pan['pan_attempts']+1;
+        UserDetail::where('user_id',$userid)->update(['pan_attempts'=>$pan_attempts]);
         return response()->json($return, $status);
     }
     public function forgot_password(Request $request){
@@ -439,8 +456,29 @@ class UserController extends Controller
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
     }
-    public function upload_photo(Request $request){
-
+    public function upload_profile_pic(Request $request){
+        $userid = login_User_ID();
+        $data=array();
+        $status = $this->err;
+        $message='Upload profile pic';
+        $success=0;
+        $profile = @$request->file('file');
+        if(!file_exists('uploads')) {mkdir('uploads', 0777, true);}
+		$destinationPath = public_path('uploads');
+		if($profile!= '' && $profile!=null && $profile!='undefined'){
+			$file = request()->file('file');
+			$image = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+			$file->move($destinationPath, $image);
+            $user = User::find($userid);
+            $user->profile_pic = 'uploads/'.$image;
+            $user->save();
+            $status = $this->succ;
+            $message='Profile pic uploaded successfully';
+            $success=1;
+            $data['profile_pic']=$user->profile_pic;
+		}
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp, $status);
     }
     public function update_contact_details(Request $request){
         $userid = login_User_ID();
@@ -459,13 +497,74 @@ class UserController extends Controller
             $message = 'Please enter all (*) fields';
         }else{
             $User_Detail = UserDetail::where('user_id','=',$userid)->first();
-            $User_Detail->address       = $address;
-            $User_Detail->pincode       = $pincode;
-            $User_Detail->country_id    = $country_id;
-            $User_Detail->state_id      = $state_id;
-            $User_Detail->city_id       = $city_id;
+            $User_Detail->address       = $request->address;
+            $User_Detail->pincode       = $request->pincode;
+            $User_Detail->country_id    = $request->country_id;
+            $User_Detail->state_id      = $request->state_id;
+            $User_Detail->city_id       = $request->city_id;
             $User_Detail->save();
             $message = 'Contact details added successfully';
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return response()->json($resp, $status);
+    }
+    public function kyc_update(Request $request){
+        $userid = login_User_ID();
+        $data=array();
+        $status = $this->err;
+        $message='';
+        $success=0;
+        $validator = Validator::make($request->all(),[
+            'address'       => 'required',
+            'pincode'       => 'required',
+            'country_id'    => 'required',
+            'state_id'      => 'required',
+            'city_id'       => 'required',
+            'name'          => 'required',
+            'email'          => 'required',
+            'dob'            => 'required',
+            'adhar_file'     => 'required',
+            'pan_file'       => 'required',
+            'pan_number'     => 'required',
+            'adhar_number'   => 'required'
+        ]);
+        if($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+        }else{
+            $User_Detail = UserDetail::where('user_id','=',$userid)->first();
+            $User_Detail->address       = $request->address;
+            $User_Detail->pincode       = $request->pincode;
+            $User_Detail->country_id    = $request->country_id;
+            $User_Detail->state_id      = $request->state_id;
+            $User_Detail->city_id       = $request->city_id;
+            $User_Detail->first_name    = $request->name;
+            $User_Detail->dob           = YY_MM_DD($request->dob);
+            $User_Detail->adhar_number  = $request->city_id;
+            $User_Detail->pan_number    = $request->city_id;
+            $adhar_file = @$request->file('adhar_file');
+            if(!file_exists('uploads')) {mkdir('uploads', 0777, true);}
+            $destinationPath = public_path('uploads');
+            if($adhar_file!= '' && $adhar_file!=null && $adhar_file!='undefined'){
+                $file = request()->file('adhar_file');
+                $image = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+                $file->move($destinationPath, $image);
+                $User_Detail->adhar_file = 'uploads/'.$image;
+            }
+            $pan_file = @$request->file('pan_file');
+            if(!file_exists('uploads')) {mkdir('uploads', 0777, true);}
+            $destinationPath = public_path('uploads');
+            if($pan_file!= '' && $pan_file!=null && $pan_file!='undefined'){
+                $file = request()->file('pan_file');
+                $image = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+                $file->move($destinationPath, $image);
+                $User_Detail->pan_file = 'uploads/'.$image;
+            }
+            $User_Detail->save();
+            $user = User::find($userid);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+            $message = 'kyc details updated successfully';
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);

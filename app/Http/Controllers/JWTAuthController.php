@@ -19,7 +19,7 @@ class JWTAuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['login', 'signup']]);
+        $this->middleware('jwt', ['except' => ['login', 'signup','check_referal_code']]);
     }
     public $succ = 200;
     public $err  = 202;
@@ -38,13 +38,12 @@ class JWTAuthController extends Controller
             'email' => 'required', 
             'mobile_number' => 'required', 
             'user_type' => 'required',
-            'password' => 'required', 
-            'c_password' => 'required',
         ]);
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
             $status = $this->err;
         }else{
+            $password=Generate_Password();
             $Em_check = User::where('email', '=', $request->email)->count();
             if($Em_check==0){
                 $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->count();
@@ -59,9 +58,12 @@ class JWTAuthController extends Controller
                     $NewUser->user_type     = $request->user_type;
                     $NewUser->email         = $request->email;
                     $NewUser->mobile_number = $request->mobile_number;
-                    $NewUser->password      = Hash::make($request->password);
+                    $NewUser->password      = Hash::make($password);
                     if($request->has('referel_code')){
-                        $NewUser->referel_code  = $request->referel_code;
+                        $Check = User::where('mobile_number','=',$request->referel_code)->count();
+                        if($Check){
+                            $NewUser->referel_code  = $request->referel_code;
+                        }
                     }
                     $NewUser->save();
                     $user_id = $NewUser->id;
@@ -74,6 +76,7 @@ class JWTAuthController extends Controller
                         $NewUser_Detail->email_otp      = $otp;
                         $NewUser_Detail->first_name     = $NewUser->name;
                         $NewUser_Detail->pan_attempts   = 0;
+                        $NewUser_Detail->tpin           = Generate_Tpin();
                         $NewUser_Detail->save();
                     }else{
                         $otp                            = Generate_Otp();
@@ -81,6 +84,7 @@ class JWTAuthController extends Controller
                         $UserDetail_Check->email_otp    = $otp;
                         $UserDetail_Check->first_name   = $NewUser->name;
                         $UserDetail_Check->pan_attempts = 0;
+                        $UserDetail_Check->tpin         = Generate_Tpin();
                         $UserDetail_Check->save();
                     }
                     $message='Please enter otp';
@@ -129,6 +133,29 @@ class JWTAuthController extends Controller
             }else{
                 $message = 'Invalid credentials';
                 $status = $this->err;
+            }
+        }
+        $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
+        return response()->json($result, $status);
+    }
+    public function check_referal_code(Request $request){
+        $data=array();
+        $message='';
+        $success=0;
+        $status = $this->err;
+        $validator = Validator::make($request->all(), [
+            'referel_code' => 'required',
+        ]);
+        if($validator->fails()) {
+            $message = 'Please enter referal code';
+        }else{
+            $Check = User::where('mobile_number','=',$request->referel_code)->count();
+            if($Check){
+                $message='Referel code existed';
+                $success=1;
+                $status = $this->succ;
+            }else{
+                $message='Referel code not existed';
             }
         }
         $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);

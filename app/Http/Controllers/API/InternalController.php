@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\UserDetail;
 use App\Models\InternalTransfer;
 use App\Models\AccountHistory;
 
@@ -21,10 +22,10 @@ class InternalController extends Controller
         if ($validator->fails()) {
             $message = 'Please enter atleast one letter';
         }else{
-            $data = User::where('mobile_number', 'like', '%'.$request->keyword.'%')->orWhere('first_name', 'like', '%'.$request->keyword.'%')->get();
+            $data = User::where('mobile_number', 'like', '%'.$request->keyword.'%')->orWhere('name', 'like', '%'.$request->keyword.'%')->get();
             $status = $this->succ;
         }
-        $resp = array('success'=>$status,'message'=>$message,'data'=>$data);
+        $resp = array('success'=>1,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
     }
     public function int_trnsf_individual_history(Request $request,$user_id){
@@ -59,12 +60,12 @@ class InternalController extends Controller
                 $InternalTransfer = new InternalTransfer();
                 $InternalTransfer->amount = $request->amount;
                 $InternalTransfer->from_user_id = $from_user_id;
-                $InternalTransfer->to_user_id = $to_user_id;
+                $InternalTransfer->to_user_id = $request->to_user_id;
                 if($request->has('message')){
                     $InternalTransfer->message = $request->message;
                 }
                 $InternalTransfer->description          = '';
-                $InternalTransfer->transaction_id       = $this->TransactionId();
+                $InternalTransfer->transaction_id       = Generate_Transaction('internal_transfer');
                 $InternalTransfer->payment_status       = 'Success';
                 $InternalTransfer->acc_debited_status   = 'Success';
                 $InternalTransfer->save();
@@ -77,7 +78,7 @@ class InternalController extends Controller
                 $AccountHistory->cr_or_dr =   'debit';
                 $AccountHistory->action_type =  'internal_transfer';
                 $AccountHistory->description =   '';
-                $AccountHistory->transaction_id =   $InternalTransfer->transaction_id;
+                $AccountHistory->transaction_id =   $InternalTransfer->id;
                 $AccountHistory->save();
                 $Updated_User_Amt = Updated_User_Amt($from_user_id);
                 $success=1;

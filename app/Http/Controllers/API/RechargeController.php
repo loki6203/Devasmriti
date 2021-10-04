@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\PaymentGateway;
 use App\Models\AccountDeposit;
+use Razorpay\Api\Api as Razorpay;
 
 class RechargeController extends Controller 
 {
@@ -30,28 +31,37 @@ class RechargeController extends Controller
             $amount         = $request->amount;
             $gate_way_id    = $request->gate_way_id;
             $PaymentGateway = PaymentGateway::find($gate_way_id);
-            $PaymtDetails   = $PaymentGateway['keys'];
-            $GateDetails    = json_decode($PaymtDetails,true);
             if($PaymentGateway->name=='zaakpay'){
 
             }else if($PaymentGateway->name=='razorpay'){
                 if($PaymentGateway->type=='test'){
-                    $key_id = $GateDetails['test']['key_id'];
-                    $key_secret = $GateDetails['test']['key_secret'];
+                    $PaymtDetails   = $PaymentGateway->test;
+                    $GateDetails    = json_decode($PaymtDetails,true);
+                    $key_id = $GateDetails['KEY_ID'];
+                    $key_secret =  $GateDetails['SECRET_KEY'];
                 }else{
-                    $key_id = $GateDetails['live']['key_id'];
-                    $key_secret = $GateDetails['live']['key_secret'];
+                    $PaymtDetails   = $PaymentGateway->live;
+                    $GateDetails    = json_decode($PaymtDetails,true);
+                    $key_id = $GateDetails['KEY_ID'];
+                    $key_secret =  $GateDetails['SECRET_KEY'];
                 }
-                $api = new Razorpay($key_id, $key_secret);
+                $api = new Razorpay('rzp_live_SCCUPJYTWQvAVQ','jAUskVzf4hwRbFVCf0qFXPDe');
+                $transaction_id = Generate_Transaction('deposit');
                 $order = $api->order->create(array(
-                    'receipt' => $bossjobspayment->receipt_id,
+                    'receipt' => $transaction_id,
                     'amount' => $amount,
                     'payment_capture' => 1,
                     'currency' => 'INR'
                 ));
                 if(isset($order['id'])) {
+                    $dt = array(
+                        'id'=>$order['id'],
+                        'entity'=>$order['entity'],
+                        'receipt'=>$order['receipt'],
+                        'offer_id'=>$order['offer_id'],
+                        'attempts'=>$order['attempts']
+                    );
                     $success=1;
-                    $transaction_id = 1;
                     $AccountDeposit = new AccountDeposit();
                     $AccountDeposit->user_id        = $userid;
                     $AccountDeposit->amount         = $amount;
@@ -64,7 +74,7 @@ class RechargeController extends Controller
                     $AccountDeposit->save();
                     $data = array(
                         'payment_id' => $AccountDeposit->id,
-                        'order_details'=>$order
+                        'order_details'=>$dt
                     );
                     $message = "Order created successfully";
                 }else{
@@ -90,6 +100,7 @@ class RechargeController extends Controller
             'payment_status'   =>  'required',
             'payment_response' =>  'required'
         ]);
+        $payment_status=0;
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
             $success=0;
@@ -101,10 +112,12 @@ class RechargeController extends Controller
             $AccountDeposit->created_at       = curr_dt();
             $AccountDeposit->save();
             if($AccountDeposit->payment_status=='Success'){
+                $payment_status=1;         
                 Cr_Or_Dr_Amount('deposit',$AccountDeposit->amount,'credit',$userid,$AccountDeposit);
             }
+            $message='Status changed successfully';
         }
-        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        $resp = array('success'=>$success,'payment_status'=>$payment_status,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
     }
     public function recharge_payment(Request $request){
