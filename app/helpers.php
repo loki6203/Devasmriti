@@ -32,21 +32,26 @@ if(!function_exists('Generate_Otp')){
         //return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
-if(!function_exists('Acc_No_Generate')){
-    function Acc_No_Generate(){
-        $Acc_Num = substr(str_shuffle("0123456789"), 0, 12);
-        $Acc_Check = UserDetail::where('acc_number','=',$Acc_Num)->count();
-        if($Acc_Check>0){
-            $this->Acc_No_Generate();
-        }else{
-            return $Acc_Num;
-        }
+if(!function_exists('Generate_Password')){
+    function Generate_Password(){
+        return 'root';
+    }
+}
+if(!function_exists('Generate_Tpin')){
+    function Generate_Tpin(){
+        return 12345;
+        //return substr(str_shuffle("0123456789"), 0, 5);
+    }
+}
+if(!function_exists('PAN_ADHAR_TOKEN')){
+    function PAN_ADHAR_TOKEN(){
+        return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyOTQzNzE2OSwianRpIjoiOGQxMGYwMmItYmUzZi00YWRjLWEyMzctNDhlZjMyYjZkNzdiIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmNzZWtoYXJjaGFsbGFndW5kbGFAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTYyOTQzNzE2OSwiZXhwIjoxOTQ0Nzk3MTY5LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.LpVw0P5Ix4wyMm5TMHDOwV_OnUNEp9IxkkMsv2BhWuw';
     }
 }
 if(!function_exists('Acc_No_Generate')){
     function Acc_No_Generate(){
         $Acc_Num = substr(str_shuffle("0123456789"), 0, 12);
-        $Acc_Check = User::where('acc_number','=',$Acc_Num)->count();
+        $Acc_Check = UserDetail::where('acc_number','=',$Acc_Num)->count();
         if($Acc_Check>0){
             $this->Acc_No_Generate();
         }else{
@@ -89,6 +94,7 @@ if(!function_exists('asset')) {
 if(!function_exists('Invoice_id')) {
     function Invoice_id($gateway_type,$last_id)
     {
+        $string='';
         if(strlen($last_id) == 1){
             $dynamic_id   = $string. '000' . $last_id;
         }else if(strlen($last_id) == 2){
@@ -127,6 +133,7 @@ if(!function_exists('Cr_Or_Dr_Amount')){
     function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$Details)
     {
         $AccountHistory = new AccountHistory();
+        $AccountHistory->cr_or_dr = $cr_or_dr;
         $AccountHistory->user_id = $user_id;
         $AccountHistory->amount = $amount;
         $AccountHistory->action_type = $paymtype;
@@ -135,6 +142,18 @@ if(!function_exists('Cr_Or_Dr_Amount')){
         $AccountHistory->created_at = curr_dt();
         $AccountHistory->payment_details = $Details;
         $AccountHistory->save();
-        $this->Updated_User_Amt($user_id);
+        Updated_User_Amt($user_id);
+    }
+}
+if(!function_exists('Generate_Transaction')){
+    function Generate_Transaction($paymtype)
+    {
+        $transaction_id = str_replace(".","",microtime(true)).rand(000,999);
+        $AccountHistory = AccountHistory::where('transaction_id','=',$transaction_id)->count();
+        if($AccountHistory==0){
+            return $transaction_id;
+        }else{
+            Generate_Transaction($paymtype);
+        }
     }
 }

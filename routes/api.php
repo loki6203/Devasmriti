@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/gateway', 'API\CmsController@gateway');
 Route::get('/contact_us', 'API\CmsController@contact_us');
 Route::get('/countries', 'API\CmsController@countries');
 Route::get('/states', 'API\CmsController@states');
@@ -20,6 +21,7 @@ Route::get('/cities', 'API\CmsController@cities');
 Route::get('/state_based_on_country/{country_id}', 'API\CmsController@state_based_on_country');
 Route::get('/city_based_on_country_and_state/{country_id}/{state_id}', 'API\CmsController@city_based_on_country_and_state');
 Route::middleware('json')->group(function(){
+    Route::post('/check_referal_code', 'JWTAuthController@check_referal_code');
     Route::post('/login',        'JWTAuthController@login');
     Route::post('/signup',       'JWTAuthController@signup');
     Route::post('/resend_otp', 'API\UserController@resend_otp')->middleware('json');
@@ -28,15 +30,18 @@ Route::middleware('json')->group(function(){
     Route::post('/forgot_password', 'API\UserController@forgot_password')->middleware('json');
 });
 Route::middleware('jwt')->group(function(){
+    Route::get('/payment_gateway_list','API\CmsController@payment_gateway_list');
     Route::post('/logout',       'JWTAuthController@logout');
     Route::post('/refresh',      'JWTAuthController@refresh');
     Route::get('/user_details',  'JWTAuthController@user_details');
+    Route::post('/upload_profile_pic', 'API\UserController@upload_profile_pic');
     Route::post('/user_change_password', 'API\UserController@user_change_password')->middleware('json');
     Route::post('/add_or_change_tpin', 'API\UserController@add_or_change_tpin')->middleware('json');
     Route::get('/check_tpin_generated_or_not', 'API\UserController@check_tpin_generated_or_not');
     Route::get('/check_pan_adhar_tpin_status', 'API\UserController@check_pan_adhar_tpin_status');
     Route::get('/check_tpin_valid_or_not/{tpin}', 'API\UserController@check_tpin_valid_or_not');
     Route::post('/update_contact_details', 'API\UserController@update_contact_details')->middleware('json');
+    Route::post('/kyc_update', 'API\UserController@kyc_update');
     Route::get('/verify_adhar_or_resend_otp/{adharnumber}', 'API\UserController@verify_adhar_or_resend_otp');
     Route::get('/verify_pan/{pannumber}', 'API\UserController@verify_pan');
     Route::post('/submit_adhar_with_otp', 'API\UserController@submit_adhar_with_otp')->middleware('json');
@@ -50,4 +55,3 @@ Route::middleware('jwt')->group(function(){
     Route::post('/recharge_payment', 'API\RechargeController@recharge_payment')->middleware('json');
     Route::get('/payment_history', 'API\RechargeController@payment_history');
 });
-Route::post('/upload_photo', 'API\UserController@upload_photo');
