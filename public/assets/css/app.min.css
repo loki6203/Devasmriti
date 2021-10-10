@@ -19,3 +19,7 @@
     margin-top: 15px;
     border-top: 1px solid #eaeaea;
 }
+.card_submit{
+    display: flex;
+    justify-content: center;
+}

@@ -53,4 +53,10 @@ class SuperadminController extends Controller
     public function payment_gateway_management(){
 		return view('admin/payment_gateway_management');
 	}
+    public function wallet_management(){
+		return view('admin/wallet_management');
+	}
+    public function referral_management(){
+		return view('admin/referral_management');
+	}
 }
