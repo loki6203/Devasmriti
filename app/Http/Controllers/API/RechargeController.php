@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\PaymentGateway;
 use App\Models\AccountDeposit;
+use App\Models\AccountHistory;
 use Razorpay\Api\Api as Razorpay;
 
 class RechargeController extends Controller 
@@ -32,7 +33,17 @@ class RechargeController extends Controller
             $gate_way_id    = $request->gate_way_id;
             $PaymentGateway = PaymentGateway::find($gate_way_id);
             if($PaymentGateway->name=='zaakpay'){
-
+                if($PaymentGateway->type=='test'){
+                    $PaymtDetails   = $PaymentGateway->test;
+                    $GateDetails    = json_decode($PaymtDetails,true);
+                    $key_id = $GateDetails['KEY_ID'];
+                    $key_secret =  $GateDetails['SECRET_KEY'];
+                }else{
+                    $PaymtDetails   = $PaymentGateway->live;
+                    $GateDetails    = json_decode($PaymtDetails,true);
+                    $key_id = $GateDetails['KEY_ID'];
+                    $key_secret =  $GateDetails['SECRET_KEY'];
+                }
             }else if($PaymentGateway->name=='razorpay'){
                 if($PaymentGateway->type=='test'){
                     $PaymtDetails   = $PaymentGateway->test;
@@ -45,7 +56,7 @@ class RechargeController extends Controller
                     $key_id = $GateDetails['KEY_ID'];
                     $key_secret =  $GateDetails['SECRET_KEY'];
                 }
-                $api = new Razorpay('rzp_live_SCCUPJYTWQvAVQ','jAUskVzf4hwRbFVCf0qFXPDe');
+                $api = new Razorpay($key_id,$key_secret);
                 $transaction_id = Generate_Transaction('deposit');
                 $order = $api->order->create(array(
                     'receipt' => $transaction_id,
@@ -112,7 +123,28 @@ class RechargeController extends Controller
             $AccountDeposit->created_at       = curr_dt();
             $AccountDeposit->save();
             if($AccountDeposit->payment_status=='Success'){
+                $PaymentGateway = PaymentGateway::find(2);
+                if($AccountDeposit->gate_way_id){
+                    if($PaymentGateway->type=='test'){
+                        $PaymtDetails   = $PaymentGateway->test;
+                        $GateDetails    = json_decode($PaymtDetails,true);
+                        $key_id = $GateDetails['KEY_ID'];
+                        $key_secret =  $GateDetails['SECRET_KEY'];
+                    }else{
+                        $PaymtDetails   = $PaymentGateway->live;
+                        $GateDetails    = json_decode($PaymtDetails,true);
+                        $key_id = $GateDetails['KEY_ID'];
+                        $key_secret =  $GateDetails['SECRET_KEY'];
+                    }
+                    $razorpay_signature     =   1;
+                    $razorpay_payment_id    =   1;
+                    $razorpay_order_id      =   1;
+                    //$api = new Razorpay($key_id,$key_secret);
+                    //$attributes  = array('razorpay_signature'  => $razorpay_signature,  'razorpay_payment_id'  => $razorpay_payment_id ,  'razorpay_order_id' => $razorpay_order_id);
+                    //$order  = $api->utility->verifyPaymentSignature($attributes);
+                }
                 $payment_status=1;         
+                $AccountDeposit->txn_id='DEPOSIT';
                 Cr_Or_Dr_Amount('deposit',$AccountDeposit->amount,'credit',$userid,$AccountDeposit);
             }
             $message='Status changed successfully';
@@ -151,6 +183,7 @@ class RechargeController extends Controller
             $Recharge_Status  = 0;
             $payment_response = '';
             if($Recharge_Status==1){
+                $RechargeHistory->txn_id = 'RECHARGE';
                 Cr_Or_Dr_Amount($request->recharge_type,$RechargeHistory->amount,'debit',$userid,$RechargeHistory);
             }
         }
@@ -162,6 +195,39 @@ class RechargeController extends Controller
         $data=array();
         $status = $this->err;
         $message='';
-        $success=1;
+        $success=0;
+        $type       = @$request->input('type');
+        $from_date  = @$request->input('from_date');
+        $to_date    = @$request->input('to_date');
+        $module     = @$request->input('module');
+        $txn        = @$request->input('txn_id');
+        if($from_date!=''){
+            if($to_date!=''){
+                if($from_date>$to_date){
+                    $message='From date must be lessthan or equal to date';
+                }
+            }else{
+                $message='Please enter to date';
+            }
+        }
+        $query = AccountHistory::query();
+        $query = $query->where('user_id', '=', $userid);
+        if($from_date!='' && $to_date!=''){
+            $fr_dt = YY_MM_DD($from_date);
+            $to_dt = YY_MM_DD($to_date);
+            $query->whereBetween('created_at', [$fr_dt, $to_dt]);
+        }
+        if($type!=''){
+            $query = $query->where('cr_or_dr', '=', $type);
+        }
+        if($module!=''){
+            $query = $query->where('action_type', '=', $module);
+        }
+        if($txn!=''){
+            $query = $query->where('txn_id', '=', $txn);
+        }
+        $query = $query->paginate(PAGINATE());
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$query);
+        return response()->json($resp, $status);
     }
 }

@@ -25,4 +25,3 @@ Route::get('/password_recovery', 'Admin\SuperadminController@password_recovery')
 Route::get('/user_tpin_change', 'Admin\SuperadminController@user_tpin_change');
 Route::get('/user_transactions', 'Admin\SuperadminController@user_transactions');
 Route::get('/payment_gateway_management', 'Admin\SuperadminController@payment_gateway_management');
-

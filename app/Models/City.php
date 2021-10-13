@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class City
@@ -29,6 +30,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class City extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'cities';
 
 	protected $casts = [

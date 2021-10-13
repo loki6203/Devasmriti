@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Notification
@@ -23,6 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Notification extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'notifications';
 
 	protected $casts = [

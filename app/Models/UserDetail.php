@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class UserDetail
@@ -52,6 +53,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserDetail extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'user_details';
 
 	protected $casts = [

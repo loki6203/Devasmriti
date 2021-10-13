@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class BillPay
@@ -32,6 +33,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BillPay extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'bill_pay';
 
 	protected $casts = [

@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class CommonGatewayCard
@@ -23,6 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CommonGatewayCard extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'common_gateway_cards';
 
 	protected $casts = [

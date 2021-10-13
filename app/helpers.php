@@ -132,15 +132,16 @@ if(!function_exists('Updated_User_Amt')){
 if(!function_exists('Cr_Or_Dr_Amount')){
     function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$Details)
     {
-        $AccountHistory = new AccountHistory();
-        $AccountHistory->cr_or_dr = $cr_or_dr;
-        $AccountHistory->user_id = $user_id;
-        $AccountHistory->amount = $amount;
-        $AccountHistory->action_type = $paymtype;
-        $AccountHistory->description = $Details->description;
-        $AccountHistory->transaction_id = $Details->id;
-        $AccountHistory->created_at = curr_dt();
-        $AccountHistory->payment_details = $Details;
+        $AccountHistory                     = new AccountHistory();
+        $AccountHistory->cr_or_dr           = $cr_or_dr;
+        $AccountHistory->user_id            = $user_id;
+        $AccountHistory->amount             = $amount;
+        $AccountHistory->action_type        = $paymtype;
+        $AccountHistory->description        = $Details->description;
+        $AccountHistory->transaction_id     = $Details->id;
+        $AccountHistory->created_at         = curr_dt();
+        $AccountHistory->payment_details    = $Details;
+        $AccountHistory->txn_id             = $Details->txn_id;
         $AccountHistory->save();
         Updated_User_Amt($user_id);
     }
@@ -155,5 +156,11 @@ if(!function_exists('Generate_Transaction')){
         }else{
             Generate_Transaction($paymtype);
         }
+    }
+}
+if(!function_exists('PAGINATE')){
+    function PAGINATE()
+    {
+        return 3;
     }
 }
