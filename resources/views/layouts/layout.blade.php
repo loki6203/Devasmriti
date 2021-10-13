@@ -235,7 +235,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="calendar.html" class=" waves-effect">
+                                <a href="wallet_management" class=" waves-effect">
                                     <i class="ti-wallet"></i>
                                     <span>Wallet</span>
                                 </a>
@@ -380,6 +380,8 @@
         <script src="{{ asset('assets/libs/admin-resources/bootstrap-filestyle/bootstrap-filestyle.min.js') }}"></script>
         <script src="{{ asset('assets/libs/bootstrap-maxlength/bootstrap-maxlength.min.js') }}"></script>
         <script src="{{ asset('assets/js/pages/form-advanced.init.js') }}"></script>
+        <script src="{{ asset('assets/libs/inputmask/min/jquery.inputmask.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/pages/form-mask.init.js') }}"></script>
 
         <script>
             $(document).ready( function () {
@@ -392,5 +394,17 @@
             } );
         </script>
           <script src="{{ asset('assets/js/app.js') }}"></script>
+          <script type="text/javascript">
+            $().ready(function() {
+                $('#cardno').inputmask("mask", {"mask": "9999-9999-9999-9999"});
+                $('#mmyyyy').inputmask("mask", {"mask": "99/9999"});
+            });
+        </script>
+        <script>
+           $("#datepicker").datepicker(
+        {viewMode: 'years',
+         format: 'mm-yyyy'
+    });
+            </script>
     </body>
 </html>

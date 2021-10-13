@@ -12,22 +12,21 @@
                 <div class="row align-items-center">
                     <div class="col-sm-6">
                         <div class="page-title-box">
-                            <h4 class="font-size-18">User transactions</h4>
+                            <h4 class="font-size-18">Wallet Management</h4>
                             <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="#">PayAgent</a></li>
-                                <li class="breadcrumb-item"><a href="user_management">User Management</a></li>
-                                <li class="breadcrumb-item active">User Transactions</li>
+                            <li class="breadcrumb-item"><a href="/">PayAgent</a></li>
+                                <li class="breadcrumb-item active">Wallet Management</li>
                             </ol>
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
+                    <!-- <div class="col-sm-6">
                         <div class="float-right">
-                            <a href="user_management" class="btn btn-primary waves-effect waves-light">
-                            <i class="mdi mdi-arrow-left mr-2"></i> Back
-                            </a>
+                        <a href="add_user" class="btn btn-primary waves-effect waves-light">
+                            <i class="mdi mdi-plus mr-2"></i> Add User
+                        </a>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <!-- end page title -->
                 <div class="row">
@@ -41,40 +40,38 @@
                                         <table id="user_table" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
                                             <tr>
-                                                <th>Date</th>
                                                 <th>Name</th>
                                                 <th>Transaction ID</th>
+                                                <th>Credits</th>
+                                                <th>Debits</th>
                                                 <th>Description</th>
-                                                <th>Status</th>
-                                                <th>Amount(Rs)</th>
+                                                <th class="all">Status</th>
                                             </tr>
                                             </thead>
-
-
                                             <tbody>
                                             <tr>
-                                                <td>27-09-2021</td>
-                                                <td>System Name</td>
-                                                <td>998877665544</td>
-                                                <td>Description here Description here Description here </td>
-                                                <td style="color:#f8b425;font-weight:500;">Pending</td>
-                                                <td>100000</td>
+                                                <td>Tiger Nixon</td>
+                                                <td>99887766550909</td>
+                                                <td>1000</td>
+                                                <td>1000</td>
+                                                <td>Description Here Description Here Description Here Description Here Description Here Description Here </td>
+                                                <td> <span style="color:#ec4561;font-weight:500">Failed</span></td>
                                             </tr>
                                             <tr>
-                                                <td>27-09-2021</td>
-                                                <td>System Name</td>
-                                                <td>998877665544</td>
-                                                <td>Description here Description here Description here </td>
-                                                <td>Failed</td>
-                                                <td>100000</td>
+                                                <td>Tiger Nixon</td>
+                                                <td>99887766550909</td>
+                                                <td>1000</td>
+                                                <td>1000</td>
+                                                <td>Description Here Description Here Description Here Description Here Description Here Description Here </td>
+                                                <td><span style="color:#02a499;font-weight:500">Success</span></td>
                                             </tr>
                                             <tr>
-                                                <td>27-09-2021</td>
-                                                <td>System Name</td>
-                                                <td>998877665544</td>
-                                                <td>Description here Description here Description here </td>
-                                                <td style="color:#02a499;font-weight:500">Success</td>
-                                                <td>100000</td>
+                                                <td>Tiger Nixon</td>
+                                                <td>99887766550909</td>
+                                                <td>1000</td>
+                                                <td>1000</td>
+                                                <td>Description Here Description Here Description Here Description Here Description Here Description Here </td>
+                                                <td><span  style="color:#f8b425;font-weight:500;">Pending</span></td>
                                             </tr>
                                             </tbody>
                                         </table>
