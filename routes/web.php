@@ -27,4 +27,3 @@ Route::get('/user_transactions', 'Admin\SuperadminController@user_transactions')
 Route::get('/payment_gateway_management', 'Admin\SuperadminController@payment_gateway_management');
 Route::get('/wallet_management', 'Admin\SuperadminController@wallet_management');
 Route::get('/referral_management', 'Admin\SuperadminController@referral_management');
-

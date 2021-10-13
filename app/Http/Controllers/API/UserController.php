@@ -98,6 +98,10 @@ class UserController extends Controller
                     $UserDetails->save();
                     User::where('id','=',$request->user_id)->update(array('is_active'=>'active'));
                     $data['user_id']=$request->user_id;
+                    $User = User::find($request->user_id);
+                    $token = auth('api')->attempt(['mobile_number'=>$User->mobile_number,'password'=>'root']);
+                    $data['token'] = $this->createNewToken($token);
+                    $data['userdetails'] = auth('api')->user();
                     $return = array("success" =>1, "message" => "Otp verified successfully",'data'=>$data);
                     $status = $this->succ;
             }else{
@@ -530,6 +534,7 @@ class UserController extends Controller
         ]);
         if($validator->fails()) {
             $message = 'Please enter all (*) fields';
+            $message = $validator->messages();
         }else{
             $User_Detail = UserDetail::where('user_id','=',$userid)->first();
             $User_Detail->address       = $request->address;
@@ -568,5 +573,13 @@ class UserController extends Controller
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
+    }
+    protected function createNewToken($token)
+    {
+        return [
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => auth('api')->factory()->getTTL() * 60
+        ];
     }
 }

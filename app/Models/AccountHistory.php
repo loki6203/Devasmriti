@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class AccountHistory
@@ -29,6 +30,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class AccountHistory extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'account_history';
 
 	protected $casts = [

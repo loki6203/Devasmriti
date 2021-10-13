@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class RechargeHistory
@@ -33,6 +34,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RechargeHistory extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'recharge_history';
 
 	protected $casts = [

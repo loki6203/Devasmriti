@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/modules', 'API\CmsController@modules');
 Route::get('/gateway', 'API\CmsController@gateway');
 Route::get('/contact_us', 'API\CmsController@contact_us');
 Route::get('/countries', 'API\CmsController@countries');
@@ -53,5 +54,13 @@ Route::middleware('jwt')->group(function(){
     Route::post('/deposit_money_to_account', 'API\RechargeController@deposit_money_to_account')->middleware('json');
     Route::post('/deposit_money_to_payment_status', 'API\RechargeController@deposit_money_to_payment_status')->middleware('json');
     Route::post('/recharge_payment', 'API\RechargeController@recharge_payment')->middleware('json');
+    Route::post('/add_builder', 'API\BillPayController@add_builder')->middleware('json');
+    Route::post('/update_builder/{biller_id}', 'API\BillPayController@update_builder')->middleware('json');
+    Route::get('/billers_list/{keyword}', 'API\BillPayController@billers_list');
+    Route::get('/billers_list', 'API\BillPayController@billers_list');
+    Route::get('/biller_individual_history/{biller_id}', 'API\BillPayController@biller_individual_history');
+    Route::post('/payment_to_builder', 'API\BillPayController@payment_to_builder')->middleware('json');
+
+    Route::post('/payment_history', 'API\RechargeController@payment_history');
     Route::get('/payment_history', 'API\RechargeController@payment_history');
 });

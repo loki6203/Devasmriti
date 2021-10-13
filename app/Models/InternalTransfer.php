@@ -8,6 +8,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class InternalTransfer
@@ -30,6 +31,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class InternalTransfer extends Model
 {
+	use SoftDeletes;
+	
 	protected $table = 'internal_transfers';
 
 	protected $casts = [

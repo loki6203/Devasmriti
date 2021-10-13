@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class PaymentGateway
@@ -28,6 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class PaymentGateway extends Model
 {
+	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'payment_gateways';
 
 	protected $casts = [
