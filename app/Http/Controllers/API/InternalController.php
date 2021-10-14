@@ -71,16 +71,8 @@ class InternalController extends Controller
                 $InternalTransfer->save();
                 $InternalTransfer->invoice_id           = Invoice_id('internal_transfer',$InternalTransfer->id);
                 $InternalTransfer->save();
-
-                $AccountHistory           =   new AccountHistory();
-                $AccountHistory->user_id  =   $from_user_id;
-                $AccountHistory->amount   =   $request->amount;
-                $AccountHistory->cr_or_dr =   'debit';
-                $AccountHistory->action_type =  'internal_transfer';
-                $AccountHistory->description =   '';
-                $AccountHistory->transaction_id =   $InternalTransfer->id;
-                $AccountHistory->save();
-                $Updated_User_Amt = Updated_User_Amt($from_user_id);
+                $InternalTransfer->txn_id = $InternalTransfer->transaction_id;
+                Cr_Or_Dr_Amount('internal_transfer',$request->amount,'debit',$from_user_id,$InternalTransfer);
                 $success=1;
                 $message='Payment compleated successfully';
                 $data = $InternalTransfer;

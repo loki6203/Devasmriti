@@ -132,25 +132,28 @@ if(!function_exists('Updated_User_Amt')){
 if(!function_exists('Cr_Or_Dr_Amount')){
     function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$Details)
     {
-        $AccountHistory                     = new AccountHistory();
-        $AccountHistory->cr_or_dr           = $cr_or_dr;
-        $AccountHistory->user_id            = $user_id;
-        $AccountHistory->amount             = $amount;
-        $AccountHistory->action_type        = $paymtype;
-        $AccountHistory->description        = $Details->description;
-        $AccountHistory->transaction_id     = $Details->id;
-        $AccountHistory->created_at         = curr_dt();
-        $AccountHistory->payment_details    = $Details;
-        $AccountHistory->txn_id             = $Details->txn_id;
-        $AccountHistory->save();
-        Updated_User_Amt($user_id);
+        $Check = AccountHistory::where('txn_id','=',$Details->txn_id)->count();
+        if($Check==0){
+            $AccountHistory                     = new AccountHistory();
+            $AccountHistory->cr_or_dr           = $cr_or_dr;
+            $AccountHistory->user_id            = $user_id;
+            $AccountHistory->amount             = $amount;
+            $AccountHistory->action_type        = $paymtype;
+            $AccountHistory->description        = $Details->description;
+            $AccountHistory->transaction_id     = $Details->id;
+            $AccountHistory->created_at         = curr_dt();
+            $AccountHistory->payment_details    = $Details;
+            $AccountHistory->txn_id             = $Details->txn_id;
+            $AccountHistory->save();
+            Updated_User_Amt($user_id);
+        }
     }
 }
 if(!function_exists('Generate_Transaction')){
     function Generate_Transaction($paymtype)
     {
         $transaction_id = str_replace(".","",microtime(true)).rand(000,999);
-        $AccountHistory = AccountHistory::where('transaction_id','=',$transaction_id)->count();
+        $AccountHistory = AccountHistory::where('txn_id','=',$transaction_id)->count();
         if($AccountHistory==0){
             return $transaction_id;
         }else{

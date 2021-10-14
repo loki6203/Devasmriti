@@ -60,7 +60,6 @@ Route::middleware('jwt')->group(function(){
     Route::get('/billers_list', 'API\BillPayController@billers_list');
     Route::get('/biller_individual_history/{biller_id}', 'API\BillPayController@biller_individual_history');
     Route::post('/payment_to_builder', 'API\BillPayController@payment_to_builder')->middleware('json');
-
     Route::post('/payment_history', 'API\RechargeController@payment_history');
     Route::get('/payment_history', 'API\RechargeController@payment_history');
 });

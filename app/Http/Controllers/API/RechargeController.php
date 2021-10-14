@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\PaymentGateway;
 use App\Models\AccountDeposit;
 use App\Models\AccountHistory;
+use App\Models\UserDetail;
+use App\Models\Setting;
 use Razorpay\Api\Api as Razorpay;
 
 class RechargeController extends Controller 
@@ -36,13 +38,17 @@ class RechargeController extends Controller
                 if($PaymentGateway->type=='test'){
                     $PaymtDetails   = $PaymentGateway->test;
                     $GateDetails    = json_decode($PaymtDetails,true);
-                    $key_id = $GateDetails['KEY_ID'];
-                    $key_secret =  $GateDetails['SECRET_KEY'];
+                    $Merchant_ID    = $GateDetails['Merchant_ID'];
+                    $SECRET_KEY     = $GateDetails['SECRET_KEY'];
+                    $API_KEY        =  $GateDetails['API_KEY'];
+                    $URL            =  $GateDetails['URL'];
                 }else{
                     $PaymtDetails   = $PaymentGateway->live;
                     $GateDetails    = json_decode($PaymtDetails,true);
-                    $key_id = $GateDetails['KEY_ID'];
-                    $key_secret =  $GateDetails['SECRET_KEY'];
+                    $Merchant_ID    = $GateDetails['Merchant_ID'];
+                    $SECRET_KEY     = $GateDetails['SECRET_KEY'];
+                    $API_KEY        =  $GateDetails['API_KEY'];
+                    $URL            =  $GateDetails['URL'];
                 }
             }else if($PaymentGateway->name=='razorpay'){
                 if($PaymentGateway->type=='test'){
@@ -81,10 +87,11 @@ class RechargeController extends Controller
                     $AccountDeposit->gate_way_id    = $gate_way_id;
                     $AccountDeposit->created_at     = curr_dt();
                     $AccountDeposit->save();
-                    $AccountDeposit->invoice_id     = Invoice_id('deposit',$AccountDeposit->id);
+                    $AccountDeposit->invoice_id     = $order['id'];
                     $AccountDeposit->save();
                     $data = array(
                         'payment_id' => $AccountDeposit->id,
+                        'key_id'=>$key_id,
                         'order_details'=>$dt
                     );
                     $message = "Order created successfully";
@@ -117,37 +124,118 @@ class RechargeController extends Controller
             $success=0;
         }else{
             $AccountDeposit = AccountDeposit::find($request->payment_id);
-            $AccountDeposit->payment_response = $request->payment_response;
-            $AccountDeposit->payment_status   = $request->payment_status;
-            $AccountDeposit->card_details     = '';
-            $AccountDeposit->created_at       = curr_dt();
-            $AccountDeposit->save();
-            if($AccountDeposit->payment_status=='Success'){
-                $PaymentGateway = PaymentGateway::find(2);
-                if($AccountDeposit->gate_way_id){
-                    if($PaymentGateway->type=='test'){
-                        $PaymtDetails   = $PaymentGateway->test;
-                        $GateDetails    = json_decode($PaymtDetails,true);
-                        $key_id = $GateDetails['KEY_ID'];
-                        $key_secret =  $GateDetails['SECRET_KEY'];
-                    }else{
-                        $PaymtDetails   = $PaymentGateway->live;
-                        $GateDetails    = json_decode($PaymtDetails,true);
-                        $key_id = $GateDetails['KEY_ID'];
-                        $key_secret =  $GateDetails['SECRET_KEY'];
+            $charges=0;
+            $cardname=0;
+            if($AccountDeposit && trim($AccountDeposit->payment_status)=='Pending'){
+                $AccountDeposit->payment_response   = $request->payment_response;
+                $AccountDeposit->payment_status     = $request->payment_status;
+                $AccountDeposit->acc_debited_status = $request->payment_status;
+                $AccountDeposit->created_at       = curr_dt();
+                $AccountDeposit->save();
+                if($AccountDeposit->payment_status=='Success'){
+                    $PaymentGateway = PaymentGateway::find($AccountDeposit->gate_way_id);
+                    if($AccountDeposit->gate_way_id==2){
+                        if($PaymentGateway->type=='test'){
+                            $PaymtDetails   = $PaymentGateway->test;
+                            $GateDetails    = json_decode($PaymtDetails,true);
+                            $key_id = $GateDetails['KEY_ID'];
+                            $key_secret =  $GateDetails['SECRET_KEY'];
+                        }else{
+                            $PaymtDetails   = $PaymentGateway->live;
+                            $GateDetails    = json_decode($PaymtDetails,true);
+                            $key_id = $GateDetails['KEY_ID'];
+                            $key_secret =  $GateDetails['SECRET_KEY'];
+                        }
+                        $razorpay_signature     =   1;
+                        $razorpay_payment_id    =   1;
+                        $razorpay_order_id      =   1;
+                        //$api = new Razorpay($key_id,$key_secret);
+                        //$attributes  = array('razorpay_signature'  => $razorpay_signature,  'razorpay_payment_id'  => $razorpay_payment_id ,  'razorpay_order_id' => $razorpay_order_id);
+                        //$order  = $api->utility->verifyPaymentSignature($attributes);
+                        $curl = curl_init();
+                        curl_setopt_array($curl, array(
+                        CURLOPT_URL => 'https://api.razorpay.com/v1/payments/'.$razorpay_payment_id.'/card',
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => '',
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => 'GET',
+                        CURLOPT_HTTPHEADER => array(
+                            "Authorization: Basic ".base64_encode($key_id.":".$key_secret)
+                        ),
+                        ));
+                        $response = curl_exec($curl);
+                        curl_close($curl);
+                        $AccountDeposit->card_details = $response;
+                        $AccountDeposit->save();
+                        $resp = json_decode($response,true);
+                        if(isset($resp['network'])){
+                            $cardname = strtolower($resp['network']);
+                            $charges = 1;
+                        }
+                    }else if($AccountDeposit->gate_way_id==1){
+                        if($PaymentGateway->type=='test'){
+                            $PaymtDetails   = $PaymentGateway->test;
+                            $GateDetails    = json_decode($PaymtDetails,true);
+                            $Merchant_ID    = $GateDetails['Merchant_ID'];
+                            $SECRET_KEY     = $GateDetails['SECRET_KEY'];
+                            $API_KEY        =  $GateDetails['API_KEY'];
+                            $URL            =  $GateDetails['URL'];
+                        }else{
+                            $PaymtDetails   = $PaymentGateway->live;
+                            $GateDetails    = json_decode($PaymtDetails,true);
+                            $Merchant_ID    = $GateDetails['Merchant_ID'];
+                            $SECRET_KEY     = $GateDetails['SECRET_KEY'];
+                            $API_KEY        =  $GateDetails['API_KEY'];
+                            $URL            =  $GateDetails['URL'];
+                        }
                     }
-                    $razorpay_signature     =   1;
-                    $razorpay_payment_id    =   1;
-                    $razorpay_order_id      =   1;
-                    //$api = new Razorpay($key_id,$key_secret);
-                    //$attributes  = array('razorpay_signature'  => $razorpay_signature,  'razorpay_payment_id'  => $razorpay_payment_id ,  'razorpay_order_id' => $razorpay_order_id);
-                    //$order  = $api->utility->verifyPaymentSignature($attributes);
+                    $payment_status=1;         
+                    $AccountDeposit->txn_id = $AccountDeposit->transaction_id;
+                    Cr_Or_Dr_Amount('deposit',$AccountDeposit->amount,'credit',$userid,$AccountDeposit);
+                    $User = User::find($userid);
+                    if($charges==1){
+                        $CardCharge_Det  = UserDetail::where('user_id','=',$userid->id)->first();
+                        if(is_null($CardCharge_Det->gateway_charge)){
+                            $CrdDetails = CommonGatewayCard::where('name','=',$cardname)->first();
+                            if(is_null($CrdDetails)){
+                                $cardcharge = ($AccountDeposit->amount*$PaymentGateway->gateway_charge)/100;
+                            }else{
+                                $cardcharge = ($AccountDeposit->amount*$CrdDetails->gateway_charge)/100;
+                            }
+                        }else{
+                            $cardcharge = ($AccountDeposit->amount*$CardCharge_Det->gateway_charge)/100;
+                        }
+                        Cr_Or_Dr_Amount('deposit',$cardcharge,'debit',$userid,$AccountDeposit);
+                    }
+                    if(!is_null($User->referel_code) && $User->about_me!=1){
+                        $Refereal_Check = User::where('mobile_number','=',$User->referel_code)->first();
+                        if(!is_null($Refereal_Check)){
+                            $RefUserDet         = UserDetail::where('user_id','=',$Refereal_Check->id)->first();
+                            if(is_null($RefUserDet->referal_code_percentage)){
+                                $Setting = Setting::find(1);
+                                $refamt = ($AccountDeposit->amount*$Setting->common_code_percentage)/100;
+                            }else{
+                                $refamt = ($AccountDeposit->amount*$RefUserDet->referal_code_percentage)/100;
+                            }
+                            $Order              = new Setting();
+                            $Order->txn_id      = Generate_Transaction('referel');
+                            $Order->description = 'Refer By '.$User->name;
+                            $Order->id          = 0;
+                            Cr_Or_Dr_Amount('referel',$refamt,'credit',$Refereal_Check->id,$Order);
+                            $Refereal_Check->about_me = 1;
+                            $Refereal_Check->save();
+                        }
+                    }
+                    $message='Amount added to your account successfully';
+                }else{
+                    $message='Amount added to your account failed';
                 }
-                $payment_status=1;         
-                $AccountDeposit->txn_id='DEPOSIT';
-                Cr_Or_Dr_Amount('deposit',$AccountDeposit->amount,'credit',$userid,$AccountDeposit);
+            }else{
+                $message='Already submitted';
             }
-            $message='Status changed successfully';
         }
         $resp = array('success'=>$success,'payment_status'=>$payment_status,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
