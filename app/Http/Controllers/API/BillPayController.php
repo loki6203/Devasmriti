@@ -105,6 +105,8 @@ class BillPayController extends Controller
                             if(isset($response['error']['description'])){
                                 $message=$response['error']['description'];
                             }
+                        }else if(curl_errno($curl)){
+                            $message = 'Something went wrong try again';
                         }else{
                             $Billres->cont_id = $response['id'];
                             $Billres->save();
@@ -145,6 +147,8 @@ class BillPayController extends Controller
                             if(isset($response['error']['description'])){
                                 $message=$response['error']['description'];
                             }
+                        }else if(curl_errno($curl)){
+                                $message = 'Something went wrong try again';
                         }else{
                             $Billres->fund_account_id = $response['id'];
                             $Billres->save();
@@ -247,27 +251,37 @@ class BillPayController extends Controller
         }else{
             $CheckBalance = UserDetail::where('acc_balance','>=',$request->amount)->where('user_id','=',$user_id)->first();
             if(!is_null($CheckBalance)){
+                $amount         = $request->amount;
+                $biller_id      = $request->biller_id;
+                $description    = $request->description;
+                $transaction_id = Generate_Transaction('bill_pay');
+                $BillPay                    = new BillPay();
+                $BillPay->user_id           = $user_id;
+                $BillPay->description       = $description;
+                $BillPay->biller_id         = $biller_id;
+                $BillPay->transaction_id    = $transaction_id;
+                $BillPay->created_at        = date('Y-m-d H:i:s');
+                $BillPay->save();
                 $PaymentGateway = PaymentGateway::find(2);
                 if($PaymentGateway->type=='test'){
                     $PaymtDetails   = $PaymentGateway->test;
                     $GateDetails    = json_decode($PaymtDetails,true);
                     $key_id = $GateDetails['KEY_ID'];
                     $key_secret =  $GateDetails['SECRET_KEY'];
+                    $account_number = $GateDetails['account_number'];
                 }else{
                     $PaymtDetails   = $PaymentGateway->live;
                     $GateDetails    = json_decode($PaymtDetails,true);
                     $key_id = $GateDetails['KEY_ID'];
                     $key_secret =  $GateDetails['SECRET_KEY'];
+                    $account_number = $GateDetails['account_number'];
                 }
                 $key_id='rzp_test_7ZGODqAEak9L9F';
                 $key_secret='H7Vzt0pi6cOeM6Hy7C9HFkWc';
-                $amount = $request->amount;
-                $biller_id = $request->biller_id;
-                $description = $request->description;
                 $Billres = Biller::find($biller_id);
                 $rzdata =http_build_query(
                 json_decode('{
-                    "account_number": "2323230022957804",
+                    "account_number": "'.$account_number.'",
                     "fund_account_id": "'.$Billres->fund_account_id.'",
                     "amount": '.$amount.',
                     "currency": "INR",
@@ -284,14 +298,30 @@ class BillPayController extends Controller
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                 $server_output = curl_exec($ch);
                 $result = curl_exec($ch);
+                $response = json_decode($result,TRUE);
                 if (curl_errno($ch)){
                     $message = 'Something went wrong try again';
+                }else if(!is_null($response['failure_reason'])){
+                    $message=$response['failure_reason'];
                 }else{
-                    $message = $result;
                     $status  =   $this->succ;
                     $success=1;
+                    $payment_status='Success';
+                    $message = 'Amount transfered successfully';
                 }
                 curl_close($ch);
+                if($payment_status=='Success'){
+                    $BillPay->invoice_id      =  $response['id'];
+                    $BillPay->payment_status  =  'Success';
+                    $BillPay->payment_status  =  'Success';
+                }else{
+                    $BillPay->payment_status  =  'Failed';
+                    $BillPay->payment_status  =  'Failed';
+                }
+                $BillPay->payment_response  =   $result;
+                $BillPay->save();
+                $BillPay->txn_id = $transaction_id;
+                Cr_Or_Dr_Amount('bill_pay',$amount,'debit',$user_id,$BillPay);
             }else{
                 $message = 'In sufficient amount in your wallet';
             }

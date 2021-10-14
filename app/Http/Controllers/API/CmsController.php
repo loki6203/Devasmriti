@@ -44,7 +44,7 @@ class CmsController extends Controller
         return response()->json($resp, $this->succ);
     }
     public function payment_gateway_list(Request $request){
-        $data = PaymentGateway::where('name','!=','payout')->get();
+        $data = PaymentGateway::where('name','!=','payout')->where('is_active','=','active')->get();
         $resp = array('success'=>1,'message'=>'','data'=>$data);
         return response()->json($resp, $this->succ);
     }
@@ -90,14 +90,16 @@ class CmsController extends Controller
             $dt=array(
                 'KEY_ID'=>'rzp_test_keeXcoyuO0njIB',
                 'SECRET_KEY'=>'pgXZhMznTB4XPVKeWWPnqu4L',
-                'URL'=>''
+                'URL'=>'',
+                'account_number'=>'2323230022957804'
             );
         echo $test =  json_encode($dt);
         echo'<hr>';echo 'LIVE';echo'<br><br>';
             $dt=array(
                 'KEY_ID'=>'rzp_live_SCCUPJYTWQvAVQ',
                 'SECRET_KEY'=>'jAUskVzf4hwRbFVCf0qFXPDe',
-                'URL'=>''
+                'URL'=>'',
+                'account_number'=>'2323230022957804'
             );
         echo $live = json_encode($dt);
         PaymentGateway::where('id',2)->update(['test'=>$test,'live'=>$live]);
