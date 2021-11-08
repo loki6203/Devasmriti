@@ -70,7 +70,7 @@ class RechargeController extends Controller
                     'payment_capture' => 1,
                     'currency' => 'INR'
                 ));
-                if(isset($order['id'])) {
+                if(isset($order['id']) && !empty($order)) {
                     $dt = array(
                         'id'=>$order['id'],
                         'entity'=>$order['entity'],
@@ -132,7 +132,7 @@ class RechargeController extends Controller
                 $AccountDeposit->acc_debited_status = $request->payment_status;
                 $AccountDeposit->created_at       = curr_dt();
                 $AccountDeposit->save();
-                if($AccountDeposit->payment_status=='Success'){
+                if($request->payment_status=='Success'){
                     $PaymentGateway = PaymentGateway::find($AccountDeposit->gate_way_id);
                     if($AccountDeposit->gate_way_id==2){
                         if($PaymentGateway->type=='test'){
@@ -147,8 +147,8 @@ class RechargeController extends Controller
                             $key_secret =  $GateDetails['SECRET_KEY'];
                         }
                         $razorpay_signature     =   1;
-                        $razorpay_payment_id    =   1;
                         $razorpay_order_id      =   1;
+                        $razorpay_payment_id    = $request->razorpay_payment_id;
                         //$api = new Razorpay($key_id,$key_secret);
                         //$attributes  = array('razorpay_signature'  => $razorpay_signature,  'razorpay_payment_id'  => $razorpay_payment_id ,  'razorpay_order_id' => $razorpay_order_id);
                         //$order  = $api->utility->verifyPaymentSignature($attributes);
@@ -168,6 +168,7 @@ class RechargeController extends Controller
                         ));
                         $response = curl_exec($curl);
                         curl_close($curl);
+                        //$AccountDeposit->card_details = $razorpay_payment_id;
                         $AccountDeposit->card_details = $response;
                         $AccountDeposit->save();
                         $resp = json_decode($response,true);
