@@ -21,7 +21,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $state_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
  * @property Country $country
  * @property State $state
@@ -32,6 +31,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class City extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'cities';
 
 	protected $casts = [

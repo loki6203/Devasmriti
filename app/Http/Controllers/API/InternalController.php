@@ -62,9 +62,8 @@ class InternalController extends Controller
                 $InternalTransfer->from_user_id = $from_user_id;
                 $InternalTransfer->to_user_id = $request->to_user_id;
                 if($request->has('message')){
-                    $InternalTransfer->message = $request->message;
+                    $InternalTransfer->description = $request->message;
                 }
-                $InternalTransfer->description          = '';
                 $InternalTransfer->transaction_id       = Generate_Transaction('internal_transfer');
                 $InternalTransfer->payment_status       = 'Success';
                 $InternalTransfer->acc_debited_status   = 'Success';
@@ -77,6 +76,14 @@ class InternalController extends Controller
                 $message='Payment compleated successfully';
                 $data = $InternalTransfer;
                 $status = $this->succ;
+                ####################### Internal Transfer Notification Start ##################
+                $ToUs = User::find($request->to_user_id);
+                $msg = 'You transfered ₹'. $refamt.' to '.$ToUs->name.'('.$ToUs->mobile_number.')';
+                Add_Notif('referel',$from_user_id,0,$msg);
+                $FrUs = User::find($request->to_user_id);
+                $msg = 'You received ₹'. $refamt.' form '.$FrUs->name.'('.$FrUs->mobile_number.')';
+                Add_Notif('referel',$from_user_id,0,$msg);
+                ####################### Internal Transfer  Notification End ##################
             }else{
                 $message = 'Insufficient amount please recharge and pay';
                 $success=0;

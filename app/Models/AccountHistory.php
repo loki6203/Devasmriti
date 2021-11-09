@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $payment_details
+ * @property string|null $deleted_at
+ * @property string|null $txn_id
  * 
  * @property User $user
  *
@@ -31,8 +33,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class AccountHistory extends Model
 {
 	use SoftDeletes;
-	protected $hidden  = ['deleted_at'];
-	
 	protected $table = 'account_history';
 
 	protected $casts = [
@@ -48,7 +48,8 @@ class AccountHistory extends Model
 		'action_type',
 		'description',
 		'transaction_id',
-		'payment_details'
+		'payment_details',
+		'txn_id'
 	];
 
 	public function user()

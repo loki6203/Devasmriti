@@ -24,13 +24,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $site_phone
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  *
  * @package App\Models
  */
 class Setting extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'settings';
 
 	protected $casts = [

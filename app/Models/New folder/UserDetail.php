@@ -43,22 +43,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int|null $country_id
  * @property int|null $state_id
  * @property int|null $city_id
- * @property string|null $adhar_file
- * @property string|null $pan_file
- * @property Carbon|null $dob
- * @property int|null $verified_by
- * @property string|null $deleted_at
  * 
  * @property City|null $city
  * @property Country|null $country
  * @property State|null $state
- * @property User|null $user
+ * @property User $user
  *
  * @package App\Models
  */
 class UserDetail extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'user_details';
 
 	protected $casts = [
@@ -74,16 +71,14 @@ class UserDetail extends Model
 		'pincode' => 'int',
 		'country_id' => 'int',
 		'state_id' => 'int',
-		'city_id' => 'int',
-		'verified_by' => 'int'
+		'city_id' => 'int'
 	];
 
 	protected $dates = [
 		'email_verified_at',
 		'mobile_verified_at',
 		'pan_verified_at',
-		'adhar_verified_at',
-		'dob'
+		'adhar_verified_at'
 	];
 
 	protected $fillable = [
@@ -113,11 +108,7 @@ class UserDetail extends Model
 		'pincode',
 		'country_id',
 		'state_id',
-		'city_id',
-		'adhar_file',
-		'pan_file',
-		'dob',
-		'verified_by'
+		'city_id'
 	];
 
 	public function city()
@@ -137,6 +128,6 @@ class UserDetail extends Model
 
 	public function user()
 	{
-		return $this->belongsTo(User::class, 'verified_by');
+		return $this->belongsTo(User::class);
 	}
 }

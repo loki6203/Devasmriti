@@ -24,9 +24,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property string|null $acc_number
  * @property string|null $bank_name
- * @property string|null $deleted_at
- * @property string|null $fund_account_id
- * @property string|null $cont_id
  * 
  * @property User $user
  * @property Collection|BillPay[] $bill_pays
@@ -37,6 +34,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Biller extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+
 	protected $table = 'billers';
 
 	protected $casts = [
@@ -50,9 +49,7 @@ class Biller extends Model
 		'api_response',
 		'is_active',
 		'acc_number',
-		'bank_name',
-		'fund_account_id',
-		'cont_id'
+		'bank_name'
 	];
 
 	public function user()

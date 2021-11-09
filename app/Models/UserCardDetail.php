@@ -8,39 +8,31 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Notification
+ * Class UserCardDetail
  * 
  * @property int $id
  * @property int $user_id
+ * @property string|null $card
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
- * @property string|null $action_type
- * @property bool $is_read
- * @property string $message
  * 
  * @property User $user
  *
  * @package App\Models
  */
-class Notification extends Model
+class UserCardDetail extends Model
 {
-	use SoftDeletes;
-	protected $table = 'notifications';
+	protected $table = 'user_card_details';
 
 	protected $casts = [
-		'user_id' => 'int',
-		'is_read' => 'bool'
+		'user_id' => 'int'
 	];
 
 	protected $fillable = [
 		'user_id',
-		'action_type',
-		'is_read',
-		'message'
+		'card'
 	];
 
 	public function user()

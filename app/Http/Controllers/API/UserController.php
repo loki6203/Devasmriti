@@ -32,11 +32,14 @@ class UserController extends Controller
         }else{
             $UserDetail_Check = UserDetail::where('user_id','=',$request->user_id)->first();
             if(!is_null($UserDetail_Check)){
+                $otp = Generate_Otp();
                 if($request->type=='email'){
-                    $UserDetail_Check->sms_otp                        = Generate_Otp();
+                    $UserDetail_Check->sms_otp                        = $otp;
                 }else{
-                    $UserDetail_Check->email_otp                      = Generate_Otp();
+                    $UserDetail_Check->email_otp                      = $otp;
                 }
+                $user = User::find($request->user_id);
+                SendMsg($user->mobile_number,$otp,3);
                 $UserDetail_Check->save();
                 $message = 'Otp sent successfully';
                 $status = $this->succ;
@@ -357,6 +360,10 @@ class UserController extends Controller
                         if($pan_name==$adhar_name){
                             UserDetail::where('user_id',$userid)->update(['adhar_number'=>$data['aadhaar_number'],'adhar_verified_at'=>$date('Y-m-d H:i:s'),'adhar_response'=>$response]);
                             $return = array("success" =>1, "message" =>"Adhar verified successfully","data"=>$data);
+                            ####################### Pan Notification Start ##################
+                            $msg = 'Your adharnumber '.$data['aadhaar_number'].' verified';
+                            Add_Notif(null,$userid,0,$msg);
+                            ####################### Pan Charge Notification End ##################
                         }else{
                             $return = array("success" =>0, "message" =>"Adhar name not matching with pan please verify proper pancard first","data"=>$data);
                         }
@@ -411,6 +418,10 @@ class UserController extends Controller
                     UserDetail::where('user_id',$userid)->update(['pan_number'=>$pan_number,'pan_verified_at'=>$date('Y-m-d H:i:s'),'pan_response'=>$response]);
                     $return = array("success" =>1, "message" =>'Pan verified successfully',"data"=>$data);
                     $status = $this->succ;
+                    ####################### Pan Notification Start ##################
+                    $msg = 'Your pannumber '.$pan_number.' verified';
+                    Add_Notif(null,$userid,0,$msg);
+                    ####################### Pan Charge Notification End ##################
                 }else{
                     $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
                     $status = $this->err;
@@ -441,20 +452,19 @@ class UserController extends Controller
             if(is_null($Check_Mobile)){
                 $message = 'Invalid mobile number';
             }else{
-                $otp = Generate_Otp();
+                $new_password = Generate_Otp();
+                $Check_Mobile->password = bcrypt($new_password);
+                $Check_Mobile->save();
                 $User_Detail = UserDetail::where('user_id','=',$Check_Mobile->id)->first();
                 if(is_null($User_Detail)){
                     $User_Detail = new UserDetail();
                     $User_Detail->user_id       = $Check_Mobile->id;
                     $User_Detail->first_name    = $Check_Mobile->name;
-                }else{
-                    $User_Detail->email_otp  = $otp;
-                    $User_Detail->mobile_otp = $otp;
                 }
                 $User_Detail->save();
                 $success = 1;
                 $status = $this->succ;
-                $message = 'Your new password sent to registered mobilenumber successfully';
+                $message = 'Your new password sent to registered mail check once';
             }
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);

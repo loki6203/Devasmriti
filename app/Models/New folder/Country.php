@@ -12,48 +12,40 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class City
+ * Class Country
  * 
  * @property int $id
  * @property string|null $name
  * @property string $is_active
- * @property int $country_id
- * @property int $state_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
- * @property Country $country
- * @property State $state
+ * @property Collection|City[] $cities
+ * @property Collection|State[] $states
  * @property Collection|UserDetail[] $user_details
  *
  * @package App\Models
  */
-class City extends Model
+class Country extends Model
 {
 	use SoftDeletes;
-	protected $table = 'cities';
-
-	protected $casts = [
-		'country_id' => 'int',
-		'state_id' => 'int'
-	];
+	protected $hidden  = ['deleted_at'];
+	
+	protected $table = 'countries';
 
 	protected $fillable = [
 		'name',
-		'is_active',
-		'country_id',
-		'state_id'
+		'is_active'
 	];
 
-	public function country()
+	public function cities()
 	{
-		return $this->belongsTo(Country::class);
+		return $this->hasMany(City::class);
 	}
 
-	public function state()
+	public function states()
 	{
-		return $this->belongsTo(State::class);
+		return $this->hasMany(State::class);
 	}
 
 	public function user_details()

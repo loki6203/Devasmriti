@@ -10,6 +10,7 @@ use App\Models\AccountDeposit;
 use App\Models\AccountHistory;
 use App\Models\UserDetail;
 use App\Models\Setting;
+use App\Models\UserCardDetail;
 use Razorpay\Api\Api as Razorpay;
 
 class RechargeController extends Controller 
@@ -108,6 +109,7 @@ class RechargeController extends Controller
         return response()->json($resp, $status);
     }
     public function deposit_money_to_payment_status(Request $request){
+        $card_det='';
         $userid = login_User_ID();
         $data=array();
         $status = $this->err;
@@ -172,6 +174,7 @@ class RechargeController extends Controller
                         $AccountDeposit->card_details = $response;
                         $AccountDeposit->save();
                         $resp = json_decode($response,true);
+                        $card_det = $resp;
                         if(isset($resp['network'])){
                             $cardname = strtolower($resp['network']);
                             $charges = 1;
@@ -197,8 +200,12 @@ class RechargeController extends Controller
                     $AccountDeposit->txn_id = $AccountDeposit->transaction_id;
                     Cr_Or_Dr_Amount('deposit',$AccountDeposit->amount,'credit',$userid,$AccountDeposit);
                     $User = User::find($userid);
+                    ####################### Add Money Notification Start ##################
+                    $msg = '₹'. $AccountDeposit->amount.' Credited to your account';
+                    Add_Notif('deposit',$userid,0,$msg);
+                    ####################### Add Money Notification End ##################
                     if($charges==1){
-                        $CardCharge_Det  = UserDetail::where('user_id','=',$userid->id)->first();
+                        $CardCharge_Det  = UserCardDetail::where('user_id','=',$userid->id)->where('card','=',$cardname)->first();
                         if(is_null($CardCharge_Det->gateway_charge)){
                             $CrdDetails = CommonGatewayCard::where('name','=',$cardname)->first();
                             if(is_null($CrdDetails)){
@@ -210,6 +217,10 @@ class RechargeController extends Controller
                             $cardcharge = ($AccountDeposit->amount*$CardCharge_Det->gateway_charge)/100;
                         }
                         Cr_Or_Dr_Amount('deposit',$cardcharge,'debit',$userid,$AccountDeposit);
+                        ####################### Card Charge Notification Start ##################
+                        $msg = '₹'. $cardcharge.' Card charge debited form your account';
+                        Add_Notif('deposit',$userid,0,$msg);
+                        ####################### Card Charge Notification End ##################
                     }
                     if(!is_null($User->referel_code) && $User->about_me!=1){
                         $Refereal_Check = User::where('mobile_number','=',$User->referel_code)->first();
@@ -228,6 +239,10 @@ class RechargeController extends Controller
                             Cr_Or_Dr_Amount('referel',$refamt,'credit',$Refereal_Check->id,$Order);
                             $Refereal_Check->about_me = 1;
                             $Refereal_Check->save();
+                            ####################### Card Charge Notification Start ##################
+                            $msg = '₹'. $refamt.' referral amount credited';
+                            Add_Notif('referel',$userid,0,$msg);
+                            ####################### Card Charge Notification End ##################
                         }
                     }
                     $message='Amount added to your account successfully';
@@ -238,7 +253,7 @@ class RechargeController extends Controller
                 $message='Already submitted';
             }
         }
-        $resp = array('success'=>$success,'payment_status'=>$payment_status,'message'=>$message,'data'=>$data);
+        $resp = array('success'=>$success,'payment_status'=>$payment_status,'message'=>$message,'data'=>$data,'card_det'=>$card_det);
         return response()->json($resp, $status);
     }
     public function recharge_payment(Request $request){

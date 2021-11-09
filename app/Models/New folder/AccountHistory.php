@@ -11,50 +11,44 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class RechargeHistory
+ * Class AccountHistory
  * 
  * @property int $id
  * @property int $user_id
- * @property string|null $recharge_type
- * @property string|null $operator
- * @property string $mobile_number
  * @property float|null $amount
+ * @property string|null $cr_or_dr
+ * @property string|null $action_type
  * @property string|null $description
- * @property string $payment_status
- * @property string $acc_debited_status
- * @property string|null $transaction_id
- * @property string|null $invoice_id
- * @property string|null $payment_response
+ * @property int $transaction_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property string|null $payment_details
  * 
  * @property User $user
  *
  * @package App\Models
  */
-class RechargeHistory extends Model
+class AccountHistory extends Model
 {
 	use SoftDeletes;
-	protected $table = 'recharge_history';
+	protected $hidden  = ['deleted_at'];
+	
+	protected $table = 'account_history';
 
 	protected $casts = [
 		'user_id' => 'int',
-		'amount' => 'float'
+		'amount' => 'float',
+		'transaction_id' => 'int'
 	];
 
 	protected $fillable = [
 		'user_id',
-		'recharge_type',
-		'operator',
-		'mobile_number',
 		'amount',
+		'cr_or_dr',
+		'action_type',
 		'description',
-		'payment_status',
-		'acc_debited_status',
 		'transaction_id',
-		'invoice_id',
-		'payment_response'
+		'payment_details'
 	];
 
 	public function user()

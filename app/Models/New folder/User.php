@@ -28,7 +28,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
  * @property Collection|AccountDeposit[] $account_deposits
  * @property Collection|AccountHistory[] $account_histories
@@ -38,7 +37,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Collection|Notification[] $notifications
  * @property Collection|RechargeHistory[] $recharge_histories
  * @property Collection|RentPay[] $rent_pays
- * @property Collection|UserCardDetail[] $user_card_details
  * @property Collection|UserDetail[] $user_details
  *
  * @package App\Models
@@ -46,11 +44,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Model
 {
 	use SoftDeletes;
+	
 	protected $table = 'users';
 
 	protected $hidden = [
 		'password',
-		'remember_token'
+		'remember_token',
+		'deleted_at',
 	];
 
 	protected $fillable = [
@@ -107,13 +107,8 @@ class User extends Model
 		return $this->hasMany(RentPay::class);
 	}
 
-	public function user_card_details()
-	{
-		return $this->hasMany(UserCardDetail::class);
-	}
-
 	public function user_details()
 	{
-		return $this->hasMany(UserDetail::class, 'verified_by');
+		return $this->hasMany(UserDetail::class);
 	}
 }

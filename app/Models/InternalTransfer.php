@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $payment_response
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property float $amount
+ * @property string|null $deleted_at
  * 
  * @property User $user
  *
@@ -32,12 +34,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class InternalTransfer extends Model
 {
 	use SoftDeletes;
-	
 	protected $table = 'internal_transfers';
 
 	protected $casts = [
 		'from_user_id' => 'int',
-		'to_user_id' => 'int'
+		'to_user_id' => 'int',
+		'amount' => 'float'
 	];
 
 	protected $fillable = [
@@ -48,7 +50,8 @@ class InternalTransfer extends Model
 		'acc_debited_status',
 		'transaction_id',
 		'invoice_id',
-		'payment_response'
+		'payment_response',
+		'amount'
 	];
 
 	public function user()

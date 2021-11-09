@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $gate_way_id
+ * @property float $amount
+ * @property string|null $deleted_at
  * 
  * @property PaymentGateway $payment_gateway
  * @property User $user
@@ -34,13 +36,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class AccountDeposit extends Model
 {
 	use SoftDeletes;
-	protected $hidden  = ['deleted_at'];
-	
 	protected $table = 'account_deposits';
 
 	protected $casts = [
 		'user_id' => 'int',
-		'gate_way_id' => 'int'
+		'gate_way_id' => 'int',
+		'amount' => 'float'
 	];
 
 	protected $fillable = [
@@ -52,7 +53,8 @@ class AccountDeposit extends Model
 		'invoice_id',
 		'payment_response',
 		'card_details',
-		'gate_way_id'
+		'gate_way_id',
+		'amount'
 	];
 
 	public function payment_gateway()

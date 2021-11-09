@@ -11,14 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class RechargeHistory
+ * Class InternalTransfer
  * 
  * @property int $id
- * @property int $user_id
- * @property string|null $recharge_type
- * @property string|null $operator
- * @property string $mobile_number
- * @property float|null $amount
+ * @property int $from_user_id
+ * @property int $to_user_id
  * @property string|null $description
  * @property string $payment_status
  * @property string $acc_debited_status
@@ -27,28 +24,25 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $payment_response
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
  * @property User $user
  *
  * @package App\Models
  */
-class RechargeHistory extends Model
+class InternalTransfer extends Model
 {
 	use SoftDeletes;
-	protected $table = 'recharge_history';
+	
+	protected $table = 'internal_transfers';
 
 	protected $casts = [
-		'user_id' => 'int',
-		'amount' => 'float'
+		'from_user_id' => 'int',
+		'to_user_id' => 'int'
 	];
 
 	protected $fillable = [
-		'user_id',
-		'recharge_type',
-		'operator',
-		'mobile_number',
-		'amount',
+		'from_user_id',
+		'to_user_id',
 		'description',
 		'payment_status',
 		'acc_debited_status',
@@ -59,6 +53,6 @@ class RechargeHistory extends Model
 
 	public function user()
 	{
-		return $this->belongsTo(User::class);
+		return $this->belongsTo(User::class, 'to_user_id');
 	}
 }
