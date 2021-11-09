@@ -52,8 +52,8 @@ class JWTAuthController extends Controller
                     if($request->user_type=='user'){
                         $NewUser->name          = $request->name;
                     }else{
-                        $NewUser->name          = $request->company_name;
-                        $NewUser->company_name  = $request->company_name;
+                        $NewUser->name          = $request->name;
+                        $NewUser->company_name  = $request->name;
                     }
                     $NewUser->user_type     = $request->user_type;
                     $NewUser->email         = $request->email;
