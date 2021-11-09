@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('/sample', 'API\CmsController@sample');
 Route::get('/modules', 'API\CmsController@modules');
 Route::get('/gateway', 'API\CmsController@gateway');
 Route::get('/contact_us', 'API\CmsController@contact_us');

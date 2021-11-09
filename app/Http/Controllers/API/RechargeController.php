@@ -203,6 +203,14 @@ class RechargeController extends Controller
                     ####################### Add Money Notification Start ##################
                     $msg = '₹'. $AccountDeposit->amount.' Credited to your account';
                     Add_Notif('deposit',$userid,0,$msg);
+                    $Email_Arr = array(
+                        'subject'=>'Money added to account',
+                        'type'=>'addmoney',
+                        'status'=>1,
+                        'user_id'=>$userid,
+                        'amount'=>$AccountDeposit->amount
+                    );
+                    SendEmail($Email_Arr);
                     ####################### Add Money Notification End ##################
                     if($charges==1){
                         $CardCharge_Det  = UserCardDetail::where('user_id','=',$userid->id)->where('card','=',$cardname)->first();
@@ -242,12 +250,27 @@ class RechargeController extends Controller
                             ####################### Card Charge Notification Start ##################
                             $msg = '₹'. $refamt.' referral amount credited';
                             Add_Notif('referel',$userid,0,$msg);
+                            $Email_Arr = array(
+                                'subject'=>'Referral amount added to account',
+                                'type'=>'referral',
+                                'user_id'=>$userid,
+                                'amount'=>$refamt
+                            );
+                            SendEmail($Email_Arr);
                             ####################### Card Charge Notification End ##################
                         }
                     }
                     $message='Amount added to your account successfully';
                 }else{
                     $message='Amount added to your account failed';
+                    $Email_Arr = array(
+                        'subject'=>'Money added to account',
+                        'type'=>'addmoney',
+                        'user_id'=>$userid,
+                        'status'=>0,
+                        'amount'=>$AccountDeposit->amount
+                    );
+                    SendEmail($Email_Arr);
                 }
             }else{
                 $message='Already submitted';
