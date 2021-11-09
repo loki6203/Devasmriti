@@ -8,12 +8,12 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class FailedJob
  * 
  * @property int $id
- * @property string $uuid
  * @property string $connection
  * @property string $queue
  * @property string $payload
@@ -32,7 +32,6 @@ class FailedJob extends Model
 	];
 
 	protected $fillable = [
-		'uuid',
 		'connection',
 		'queue',
 		'payload',

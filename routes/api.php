@@ -24,6 +24,7 @@ Route::get('/city_based_on_country_and_state/{country_id}/{state_id}', 'API\CmsC
 Route::middleware('json')->group(function(){
     Route::post('/check_referal_code', 'JWTAuthController@check_referal_code');
     Route::post('/login',        'JWTAuthController@login');
+    Route::post('/login_with_otp','JWTAuthController@login_with_otp');
     Route::post('/signup',       'JWTAuthController@signup');
     Route::post('/resend_otp', 'API\UserController@resend_otp')->middleware('json');
     Route::post('/Check_Otp', 'API\UserController@Check_Otp')->middleware('json');

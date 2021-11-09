@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserDetail;
 use App\Models\AccountHistory;
+use App\Models\Notification;
 
 if(!function_exists('curr_dt')){
     function curr_dt(){
@@ -165,5 +166,34 @@ if(!function_exists('PAGINATE')){
     function PAGINATE()
     {
         return 3;
+    }
+}
+if(!function_exists('SendMsg')){
+    function SendMsg($mobile,$otp,$type)
+    {
+        if($type==1){
+            $msg = "Greetings from PayAgent Your one time password OTP is ".$otp." for your account Registration process. Please complete this process within 10 minutes.";
+        }else if($type==2){
+            $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to login into your account . Please complete this process within 10 minutes.";
+        }else{
+            $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
+        }
+        /*
+        $senderid = 'PayAgt';
+        $url = "https://smslogin.co/v3/api.php?username=Brainum&apikey=ceda2751f67d7f96b2e5&senderid=$senderid&mobile=$mobile&message=".urlencode($msg);
+        $ret = file($url);
+        */
+    }
+}
+
+if(!function_exists('Add_Notif')){
+    function Add_Notif($action_type,$user_id,$is_read,$message)
+    {
+        $Notification               = new Notification();
+        $Notification->action_type  = $action_type;
+        $Notification->user_id      = $user_id;
+        $Notification->is_read      = $is_read;
+        $Notification->message      = $message;
+        $Notification->save();
     }
 }

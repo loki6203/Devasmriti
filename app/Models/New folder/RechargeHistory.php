@@ -27,7 +27,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $payment_response
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
  * @property User $user
  *
@@ -36,6 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class RechargeHistory extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'recharge_history';
 
 	protected $casts = [

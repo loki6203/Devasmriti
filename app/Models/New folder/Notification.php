@@ -11,30 +11,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class CommonGatewayCard
+ * Class Notification
  * 
  * @property int $id
- * @property string|null $name
- * @property string $is_active
- * @property float|null $gateway_charge
+ * @property int $user_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
+ * 
+ * @property User $user
  *
  * @package App\Models
  */
-class CommonGatewayCard extends Model
+class Notification extends Model
 {
 	use SoftDeletes;
-	protected $table = 'common_gateway_cards';
+	protected $hidden  = ['deleted_at'];
+	
+	protected $table = 'notifications';
 
 	protected $casts = [
-		'gateway_charge' => 'float'
+		'user_id' => 'int'
 	];
 
 	protected $fillable = [
-		'name',
-		'is_active',
-		'gateway_charge'
+		'user_id'
 	];
+
+	public function user()
+	{
+		return $this->belongsTo(User::class);
+	}
 }

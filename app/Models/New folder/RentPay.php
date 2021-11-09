@@ -11,13 +11,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class RechargeHistory
+ * Class RentPay
  * 
  * @property int $id
  * @property int $user_id
- * @property string|null $recharge_type
- * @property string|null $operator
- * @property string $mobile_number
+ * @property int $biller_id
  * @property float|null $amount
  * @property string|null $description
  * @property string $payment_status
@@ -27,27 +25,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $payment_response
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
+ * @property Biller $biller
  * @property User $user
  *
  * @package App\Models
  */
-class RechargeHistory extends Model
+class RentPay extends Model
 {
 	use SoftDeletes;
-	protected $table = 'recharge_history';
+	
+	protected $table = 'rent_pay';
 
 	protected $casts = [
 		'user_id' => 'int',
+		'biller_id' => 'int',
 		'amount' => 'float'
 	];
 
 	protected $fillable = [
 		'user_id',
-		'recharge_type',
-		'operator',
-		'mobile_number',
+		'biller_id',
 		'amount',
 		'description',
 		'payment_status',
@@ -56,6 +54,11 @@ class RechargeHistory extends Model
 		'invoice_id',
 		'payment_response'
 	];
+
+	public function biller()
+	{
+		return $this->belongsTo(Biller::class);
+	}
 
 	public function user()
 	{

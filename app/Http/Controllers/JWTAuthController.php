@@ -19,7 +19,7 @@ class JWTAuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['login', 'signup','check_referal_code']]);
+        $this->middleware('jwt', ['except' => ['login', 'signup','check_referal_code','login_with_otp']]);
     }
     public $succ = 200;
     public $err  = 202;
@@ -87,6 +87,7 @@ class JWTAuthController extends Controller
                         $UserDetail_Check->tpin         = Generate_Tpin();
                         $UserDetail_Check->save();
                     }
+                    SendMsg($request->mobile_number,$otp,1);
                     $message='Please enter otp';
                     $data = array('otp'=>$otp,'user_id'=>$user_id);
                     $status = $this->succ;
@@ -125,13 +126,52 @@ class JWTAuthController extends Controller
         }else{
             $token = auth('api')->attempt($validator->validated());
             if($token!=false){
-                $message = 'Logined successfully';
-                $data['token'] = $this->createNewToken($token);
-                $data['userdetails'] = auth('api')->user();
+                $otp = Generate_Otp();
+                $message = 'Please enter otp';
+                $userdetails = auth('api')->user();
+                $data['user_id'] = $userdetails->id;
+                $data['otp'] = $otp;
+                SendMsg($request->mobile_number,$otp,1);
                 $status = $this->succ;
                 $success=1;
             }else{
                 $message = 'Invalid credentials';
+                $status = $this->err;
+            }
+        }
+        $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
+        return response()->json($result, $status);
+    }
+    public function login_with_otp(Request $request)
+    {
+    	$validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'otp' => 'required',
+            'password'=>'required'
+        ]);
+        $data=array();
+        $message='';
+        $success=0;
+        if($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+            $status = $this->err;
+        }else{
+            $User = User::find($request->user_id);
+            $UserDetail = UserDetail::where('mobile_otp','=',$request->otp)->where('user_id','=',$request->user_id)->first();
+            if(!is_null($UserDetail)){
+                $token = auth('api')->attempt(['id'=>$User->id,'password'=>$request->password]);
+                if($token!=false){
+                    $message = 'Logined successfully';
+                    $data['token'] = $this->createNewToken($token);
+                    $data['userdetails'] = auth('api')->user();
+                    $status = $this->succ;
+                    $success=1;
+                }else{
+                    $message = 'Invalid credentials';
+                    $status = $this->err;
+                }
+            }else{
+                $message = 'Invalid otp';
                 $status = $this->err;
             }
         }

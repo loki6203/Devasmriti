@@ -165,6 +165,10 @@ class BillPayController extends Controller
                         $Order->txn_id = 'BILLER'.$Billres->id;;
                         $Order->description = 'Amount Debited For Biller Adding';
                         Cr_Or_Dr_Amount('bill_pay',$Amount,'debit',$userid,$Order);
+                        ####################### Pan Notification Start ##################
+                        $msg = '₹ '.$Amount.' debited from your account for '.$name.' builder adding';
+                        Add_Notif('bill_pay',$userid,0,$msg);
+                        ####################### Pan Charge Notification End ##################
                     }else{
                         if($message==''){
                             $message='Something went wrong try again';
@@ -206,6 +210,10 @@ class BillPayController extends Controller
             $Billres->updated_at = date('Y-m-d H:i:s');
             $Billres->save();
             $message='Updated successfully';
+            ####################### Pan Notification Start ##################
+            $msg = 'You update '.$name.' builder';
+            Add_Notif('bill_pay',$userid,0,$msg);
+            ####################### Pan Charge Notification End ##################
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$Billres);
         return response()->json($resp, $status);
@@ -322,6 +330,10 @@ class BillPayController extends Controller
                 $BillPay->save();
                 $BillPay->txn_id = $transaction_id;
                 Cr_Or_Dr_Amount('bill_pay',$amount,'debit',$user_id,$BillPay);
+                ####################### Pan Notification Start ##################
+                $msg = 'You sent ₹ '.$amount.' to '.$Billres->name.' builder';
+                Add_Notif('bill_pay',$userid,0,$msg);
+                ####################### Pan Charge Notification End ##################
             }else{
                 $message = 'In sufficient amount in your wallet';
             }

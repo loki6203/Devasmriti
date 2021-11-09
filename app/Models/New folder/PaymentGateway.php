@@ -7,11 +7,12 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class CommonGatewayCard
+ * Class PaymentGateway
  * 
  * @property int $id
  * @property string|null $name
@@ -19,14 +20,19 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $gateway_charge
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property string|null $type
+ * @property string|null $keys
+ * 
+ * @property Collection|AccountDeposit[] $account_deposits
  *
  * @package App\Models
  */
-class CommonGatewayCard extends Model
+class PaymentGateway extends Model
 {
 	use SoftDeletes;
-	protected $table = 'common_gateway_cards';
+	protected $hidden  = ['deleted_at'];
+	
+	protected $table = 'payment_gateways';
 
 	protected $casts = [
 		'gateway_charge' => 'float'
@@ -35,6 +41,13 @@ class CommonGatewayCard extends Model
 	protected $fillable = [
 		'name',
 		'is_active',
-		'gateway_charge'
+		'gateway_charge',
+		'type',
+		'keys'
 	];
+
+	public function account_deposits()
+	{
+		return $this->hasMany(AccountDeposit::class, 'gate_way_id');
+	}
 }

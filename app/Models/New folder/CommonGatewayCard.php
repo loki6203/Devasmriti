@@ -19,13 +19,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float|null $gateway_charge
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  *
  * @package App\Models
  */
 class CommonGatewayCard extends Model
 {
 	use SoftDeletes;
+	protected $hidden  = ['deleted_at'];
+	
 	protected $table = 'common_gateway_cards';
 
 	protected $casts = [
