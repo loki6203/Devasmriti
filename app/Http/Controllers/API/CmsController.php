@@ -8,6 +8,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\PaymentGateway;
+use App\Models\Notification;
 
 class CmsController extends Controller 
 {
@@ -123,6 +124,12 @@ class CmsController extends Controller
             );
         echo $live = json_encode($dt);
         PaymentGateway::where('id',3)->update(['test'=>$test,'live'=>$live]);
+    }
+    public function notif(){
+        $all_count          = Notification::orderBy('id', 'desc')->get();
+        foreach($all_count as $v){
+            echo '<br><hr>'.$v['message'];
+        }
     }
     public function sample(){
         $type='signup';

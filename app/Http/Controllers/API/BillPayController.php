@@ -74,8 +74,8 @@ class BillPayController extends Controller
                         $key_id = $GateDetails['KEY_ID'];
                         $key_secret =  $GateDetails['SECRET_KEY'];
                     }
-                    $key_id='rzp_test_7ZGODqAEak9L9F';
-                    $key_secret='H7Vzt0pi6cOeM6Hy7C9HFkWc';
+                    //$key_id='rzp_test_7ZGODqAEak9L9F';
+                    //$key_secret='H7Vzt0pi6cOeM6Hy7C9HFkWc';
                     if(is_null($cont_id)){
                         $posetd = array(
                             'name'=>$name,
@@ -173,7 +173,7 @@ class BillPayController extends Controller
                             'subject'   =>'Amount transfered',
                             'type'      =>'builder',
                             'user_id'   =>$userid,
-                            'benfname'  =>$bname
+                            'benfname'  =>$name
                         );
                         SendEmail($Email_Arr);
                     }else{
@@ -291,8 +291,8 @@ class BillPayController extends Controller
                     $key_secret =  $GateDetails['SECRET_KEY'];
                     $account_number = $GateDetails['account_number'];
                 }
-                $key_id='rzp_test_7ZGODqAEak9L9F';
-                $key_secret='H7Vzt0pi6cOeM6Hy7C9HFkWc';
+                //$key_id='rzp_test_7ZGODqAEak9L9F';
+                //$key_secret='H7Vzt0pi6cOeM6Hy7C9HFkWc';
                 $Billres = Biller::find($biller_id);
                 $rzdata =http_build_query(
                 json_decode('{

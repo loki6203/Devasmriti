@@ -43,7 +43,7 @@ class JWTAuthController extends Controller
             $message = 'Please enter all (*) fields';
             $status = $this->err;
         }else{
-            $password=Generate_Password();
+            $password='root@$123';
             $Em_check = User::where('email', '=', $request->email)->count();
             if($Em_check==0){
                 $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->count();
@@ -88,15 +88,6 @@ class JWTAuthController extends Controller
                         $UserDetail_Check->save();
                     }
                     SendMsg($request->mobile_number,$otp,1);
-                    $Email_Arr = array(
-                        'subject'=>'Registered successfully',
-                        'type'=>'signup',
-                        'user_id'=>$user_id,
-                        'mobile'=>$request->mobile_number,
-                        'pwd'=>$password
-                    );
-                    SendEmail($Email_Arr);
-                    $message='Please enter otp';
                     $data = array('otp'=>$otp,'user_id'=>$user_id);
                     $status = $this->succ;
                 }else{
@@ -138,6 +129,9 @@ class JWTAuthController extends Controller
                 $message = 'Please enter otp';
                 $userdetails = auth('api')->user();
                 $data['user_id'] = $userdetails->id;
+                $UserDetail_Check = UserDetail::where('user_id','=',$userdetails->id)->first();
+                $UserDetail_Check->mobile_otp = $otp;
+                $UserDetail_Check->save();
                 $data['otp'] = $otp;
                 SendMsg($request->mobile_number,$otp,1);
                 $status = $this->succ;
@@ -175,14 +169,15 @@ class JWTAuthController extends Controller
                     $status = $this->succ;
                     $success=1;
                     $Email_Arr = array(
-                        'subject'=>'Registered successfully',
+                        'subject'=>'Login successfully',
                         'type'=>'login',
                         'mobile'=>$User->mobile_number,
+                        'user_id'=>$data['userdetails']->id,
                         'pwd'=>$request->password
                     );
-                    //SendEmail($Email_Arr);
+                    SendEmail($Email_Arr);
                 }else{
-                    $message = 'Invalid credentials';
+                    $message = 'Invalid password';
                     $status = $this->err;
                 }
             }else{

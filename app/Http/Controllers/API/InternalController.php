@@ -78,10 +78,11 @@ class InternalController extends Controller
                 $status = $this->succ;
                 ####################### Internal Transfer Notification Start ##################
                 $ToUs = User::find($request->to_user_id);
+                $refamt = $request->amount;
                 $msg = 'You transfered ₹'. $refamt.' to '.$ToUs->name.'('.$ToUs->mobile_number.')';
                 Add_Notif('referel',$from_user_id,0,$msg);
-                $FrUs = User::find($request->to_user_id);
-                $msg = 'You received ₹'. $refamt.' form '.$FrUs->name.'('.$FrUs->mobile_number.')';
+                $FrUs = User::find($from_user_id);
+                $msg = 'You received ₹'. $refamt.' from '.$FrUs->name.'('.$FrUs->mobile_number.')';
                 Add_Notif('referel',$request->to_user_id,0,$msg);
                 $Email_Arr = array(
                     'subject'   =>'Amount transfered',

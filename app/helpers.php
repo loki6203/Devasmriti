@@ -29,19 +29,17 @@ if(!function_exists('login_User_ID')){
 }
 if(!function_exists('Generate_Otp')){
     function Generate_Otp(){
-        return 12345;
-        //return substr(str_shuffle("0123456789"), 0, 5);
+        return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Generate_Password')){
     function Generate_Password(){
-        return 'root';
+        return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Generate_Tpin')){
     function Generate_Tpin(){
-        return 12345;
-        //return substr(str_shuffle("0123456789"), 0, 5);
+        return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('PAN_ADHAR_TOKEN')){
@@ -128,6 +126,7 @@ if(!function_exists('Updated_User_Amt')){
        $UserDetail = UserDetail::where('user_id','=',$user_id)->first();
        $UserDetail->acc_balance = $Tot_Amt;
        $UserDetail->save();
+       return $Tot_Amt;
     }
 }
 if(!function_exists('Cr_Or_Dr_Amount')){
@@ -146,7 +145,9 @@ if(!function_exists('Cr_Or_Dr_Amount')){
             $AccountHistory->payment_details    = $Details;
             $AccountHistory->txn_id             = $Details->txn_id;
             $AccountHistory->save();
-            Updated_User_Amt($user_id);
+            $closing = Updated_User_Amt($user_id);
+            $AccountHistory->closing_balance = $closing;
+            $AccountHistory->save();
         }
     }
 }
@@ -178,6 +179,11 @@ if(!function_exists('SendMsg')){
         }else{
             $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
         }
+        $Notification               = new Notification();
+        $Notification->user_id      = 1;
+        $Notification->is_read      = 0;
+        $Notification->message      = $msg;
+        $Notification->save();
         /*
         $senderid = 'PayAgt';
         $url = "https://smslogin.co/v3/api.php?username=Brainum&apikey=ceda2751f67d7f96b2e5&senderid=$senderid&mobile=$mobile&message=".urlencode($msg);
@@ -195,5 +201,21 @@ if(!function_exists('Add_Notif')){
         $Notification->is_read      = $is_read;
         $Notification->message      = $message;
         $Notification->save();
+    }
+}
+if(!function_exists('SendEmail')){
+    function SendEmail($ArrayData)
+    {
+        $User = User::find($ArrayData['user_id']);
+        $ArrayData['name'] = @($User->name)?$User->name:'';
+        $message = View::make('template', $ArrayData)->render();
+        $Notification               = new Notification();
+        $Notification->user_id      = $ArrayData['user_id'];
+        $Notification->is_read      = 1;
+        $Notification->message      = $message;
+        $Notification->save();
+        // return Mail::send('template', $ArrayData, function ($message) use ($to , $subject) {
+		// 	$message->to($to,config('global.SITE_NAME'))->from(config('global.FROM_MAIL'))->subject($subject);
+		// });
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/sample', 'API\CmsController@sample');
+Route::get('/notif', 'API\CmsController@notif');
 Route::get('/modules', 'API\CmsController@modules');
 Route::get('/gateway', 'API\CmsController@gateway');
 Route::get('/contact_us', 'API\CmsController@contact_us');
@@ -64,4 +65,7 @@ Route::middleware('jwt')->group(function(){
     Route::post('/payment_to_builder', 'API\BillPayController@payment_to_builder')->middleware('json');
     Route::post('/payment_history', 'API\RechargeController@payment_history');
     Route::get('/payment_history', 'API\RechargeController@payment_history');
+    Route::get('/Allnotifications', 'API\UserController@Allnotifications');
+    Route::get('/Singlenotification/{notifications_id}', 'API\UserController@Singlenotification');
+    Route::get('/SetNotificationasread/{notifications_id}', 'API\UserController@SetNotificationasread');
 });

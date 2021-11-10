@@ -21,8 +21,18 @@
 	<?php
 	}else if($type=='login'){
 	?>
-		<p style="float:left;width:100%;text-align:left;padding:5px 0;margin:0;font-size:13px;line-height:20px;color:#333"></p>
-		<div style="float: left; width: 100%; justify-content: center; display: flex"></div>
+		<p style="float:left;width:100%;text-align:left;padding:5px 0;margin:0;font-size:13px;line-height:20px;color:#333">
+		Congratulations! You are login in {{ config('global.SITE_NAME') }}! ! Be sure and save the following credentials in safe location:
+		</p>
+		<p style="float:left;width:100%;text-align:left;;padding:0px 0;margin:0;font-size:13px;line-height:20px;color:#333">Mobilenumnber: 
+		<span style="font-weight:bold;"><?php echo @($mobile)?$mobile:'';?></span>
+		</p>
+		<p style="float:left;width:100%;text-align:left;;padding:0px 0;margin:0;font-size:13px;line-height:20px;color:#333">Password: 
+		<span style="font-weight:bold;"><?php echo @($pwd)?$pwd:'';?> </span>
+		</p>
+		<div style="float: left; width: 100%; justify-content: center; display: flex">
+		<a href="<?php echo url('/');?>" style="float:left;margin: 20px 0 0 0;padding:10px 20px;background:#fec627;color:#fff;font-size:14px;text-decoration:none;border-radius:3px;">Click here to Login</a>
+		</div>
 	<?php
 	}else if($type=='chpwd'){
 	?>

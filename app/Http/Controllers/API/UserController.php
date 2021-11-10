@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UserDetail;
+use App\Models\Notification;
 
 class UserController extends Controller 
 {
@@ -86,29 +87,44 @@ class UserController extends Controller
         $data = array();
         $validator = Validator::make($request->all(), [
 			'user_id' => 'required',
-			'mobile_otp' => 'required',
+			'mobile_otp' => 'required'
 		]);
         if ($validator->fails()) {
             $return = array("success" => 0, "message" => "fields marked * were mandatory");
             $status = $this->err;
 		}else{
+            $password='root@$123';
             $Mb_Check = UserDetail::where('user_id','=',$request->user_id)->where('mobile_otp','=',$request->mobile_otp)->count();
             if($Mb_Check>0){
-                    $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
-                    $curr_dt = curr_dt();
-                    $UserDetails->mobile_verified_at = $curr_dt;
-                    $UserDetails->acc_number       = Acc_No_Generate();
-                    $UserDetails->save();
-                    User::where('id','=',$request->user_id)->update(array('is_active'=>'active'));
-                    $data['user_id']=$request->user_id;
                     $User = User::find($request->user_id);
-                    $token = auth('api')->attempt(['mobile_number'=>$User->mobile_number,'password'=>'root']);
-                    $data['token'] = $this->createNewToken($token);
-                    $data['userdetails'] = auth('api')->user();
-                    $return = array("success" =>1, "message" => "Otp verified successfully",'data'=>$data);
-                    $status = $this->succ;
+                    $token = auth('api')->attempt(['mobile_number'=>$User->mobile_number,'password'=>$password]);
+                    if($token!=false){
+                        $newpassword=Generate_Password();
+                        $UserDetails = UserDetail::where('user_id','=',$request->user_id)->first();
+                        $curr_dt = curr_dt();
+                        $UserDetails->mobile_verified_at = $curr_dt;
+                        $UserDetails->acc_number       = Acc_No_Generate();
+                        $UserDetails->password      = Hash::make($newpassword);
+                        User::where('id','=',$request->user_id)->update(array('is_active'=>'active','password'=>Hash::make($newpassword)));
+                        $data['user_id']=$request->user_id;
+                        $data['token'] = $this->createNewToken($token);
+                        $data['userdetails'] = auth('api')->user();
+                        $return = array("success" =>1, "message" => "Otp verified successfully",'data'=>$data);
+                        $status = $this->succ;
+                        $Email_Arr = array(
+                            'subject'=>'Registered successfully',
+                            'type'=>'signup',
+                            'user_id'=>$request->user_id,
+                            'mobile'=>$User->mobile_number,
+                            'pwd'=>$newpassword
+                        );
+                        SendEmail($Email_Arr);
+                    }else{
+                        $return = array("success" => 0, "message" => "Invalid password", 'data'=>$data);
+                        $status = $this->err;
+                    }
             }else{
-                $return = array("success" => 0, "message" => "Invalid mobile number otp", 'data'=>$data);
+                $return = array("success" => 0, "message" => "Invalid otp", 'data'=>$data);
                 $status = $this->err;
             }
         }
@@ -382,7 +398,7 @@ class UserController extends Controller
                                 'subject'=>'Adharnumber verification',
                                 'type'=>'adhar',
                                 'user_id'=>$userid,
-                                'adhar'=>$adhar
+                                'adhar'=>$data['aadhaar_number']
                             );
                             SendEmail($Email_Arr);
                         }else{
@@ -440,14 +456,14 @@ class UserController extends Controller
                     $return = array("success" =>1, "message" =>'Pan verified successfully',"data"=>$data);
                     $status = $this->succ;
                     ####################### Pan Notification Start ##################
-                    $msg = 'Your pannumber '.$pan_number.' verified';
+                    $msg = 'Your pannumber '.$pannumber.' verified';
                     Add_Notif(null,$userid,0,$msg);
                     ####################### Pan Charge Notification End ##################
                     $Email_Arr = array(
                         'subject'=>'Pannumber verification',
                         'type'=>'pan',
                         'user_id'=>$userid,
-                        'pan'=>$pan_number
+                        'pan'=>$pannumber
                     );
                     SendEmail($Email_Arr);
                 }else{
@@ -497,10 +513,10 @@ class UserController extends Controller
                     'subject'=>'Forgot password',
                     'type'=>'fgpwd',
                     'mobile'=>$request->mobile,
-                    'user_id'=>$userid,
+                    'user_id'=>$Check_Mobile->id,
                     'pwd'=>$new_password
                 );
-                SendEmail($Email_Arr);
+                $em = SendEmail($Email_Arr);
             }
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
@@ -627,5 +643,52 @@ class UserController extends Controller
             'token_type' => 'Bearer',
             'expires_in' => auth('api')->factory()->getTTL() * 60
         ];
+    }
+    public function Allnotifications(Request $request){
+        $user_id            = login_User_ID();
+        $all_count          = Notification::where('user_id','=',$user_id)->count();
+        $read_count         = Notification::where('user_id','=',$user_id)->where('is_read','=',1)->count();
+        $unread_count       = Notification::where('user_id','=',$user_id)->where('is_read','=',0)->count();
+        $notifcation_all    = Notification::where('user_id','=',$user_id)->orderBy('id', 'DESC')->get();
+        $notifcation_latest_ten    = Notification::where('user_id','=',$user_id)->orderBy('id', 'DESC')->offset(0)->limit(10)->get();
+        $arr = array(
+            'all_count'=>$all_count,
+            'read_count'=>$read_count,
+            'unread_count'=>$unread_count,
+            'notifcation_all'=>$notifcation_all,
+            'notifcation_latest_ten'=>$notifcation_latest_ten
+        );
+        $resp = array('success'=>1,'message'=>null,'data'=>$arr);
+        return response()->json($resp, $this->succ);
+    }
+    public function Singlenotification(Request $request,$notifications_id){
+        $userid = login_User_ID();
+        $message=null;
+        $arr=array();
+        if($notifications_id!=''){
+            $arr = Notification::find($notifications_id);
+            $success=1;
+        }else{
+            $success=0;
+            $message='Please send notifications_id';
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$arr);
+        return response()->json($resp, $this->succ);
+    }
+    public function SetNotificationasread(Request $request,$notifications_id){
+        $userid = login_User_ID();
+        $arr = array();
+        $message=null;
+        $success=0;
+        if($notifications_id!=''){
+            $success=1;
+            $arr = Notification::find($notifications_id);
+            $arr->is_read=1;
+            $arr->save();
+        }else{
+            $message='Please send notifications_id';
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$arr);
+        return response()->json($resp, $this->succ);
     }
 }
