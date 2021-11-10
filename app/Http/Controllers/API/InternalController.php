@@ -82,7 +82,27 @@ class InternalController extends Controller
                 Add_Notif('referel',$from_user_id,0,$msg);
                 $FrUs = User::find($request->to_user_id);
                 $msg = 'You received ₹'. $refamt.' form '.$FrUs->name.'('.$FrUs->mobile_number.')';
-                Add_Notif('referel',$from_user_id,0,$msg);
+                Add_Notif('referel',$request->to_user_id,0,$msg);
+                $Email_Arr = array(
+                    'subject'   =>'Amount transfered',
+                    'subtype'   =>1,
+                    'type'      =>'internal',
+                    'status'   =>1,
+                    'user_id'=>$from_user_id,
+                    'benfname'  =>$ToUs->name,
+                    'amount'    =>$refamt
+                );
+                SendEmail($Email_Arr);
+                $Email_Arr = array(
+                    'subject'   =>'Amount received',
+                    'subtype'   =>0,
+                    'status'   =>1,
+                    'user_id'   =>$request->to_user_id,
+                    'type'      =>'internal',
+                    'benfname'  =>$FrUs->name,
+                    'amount'    =>$refamt
+                );
+                SendEmail($Email_Arr);
                 ####################### Internal Transfer  Notification End ##################
             }else{
                 $message = 'Insufficient amount please recharge and pay';

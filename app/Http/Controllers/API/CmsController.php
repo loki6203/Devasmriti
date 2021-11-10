@@ -124,4 +124,45 @@ class CmsController extends Controller
         echo $live = json_encode($dt);
         PaymentGateway::where('id',3)->update(['test'=>$test,'live'=>$live]);
     }
+    public function sample(){
+        $type='signup';
+        $type='login';
+        // $type='chpwd';
+        // $type='fgpwd';
+        // $type='tpin';
+        // $type='adhar';
+        // $type='pan';
+        // $type='addmoney';
+        // $type='internal';
+        // $type='bill';
+        // $type='builder';
+        $dt=array(
+            'type'=>$type,
+            'name'=>'venkat'
+        );
+        echo view('template',$dt);exit;
+        echo "SIGNUP<hr>";
+        echo view('signup');
+        echo "LOGIN<hr>";
+        echo view('signup');
+        echo "CHANGEPWD<hr>";
+        echo view('signup');
+        echo "FORGOT<hr>";
+        echo view('signup');
+        echo "TPIN<hr>";
+        echo view('signup');
+        echo "ADHAR<hr>";
+        echo view('signup');
+        echo "PAN<hr>";
+        echo view('signup');
+        echo "ADDMONEY<hr>";
+        echo view('signup');
+        echo "INTERNAL<hr>";
+        echo view('signup');
+        echo "BUILDER<hr>";
+        echo view('signup');
+        echo "BILL<hr>";
+        echo view('signup');
+
+    }
 }

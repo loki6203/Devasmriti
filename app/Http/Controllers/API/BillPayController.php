@@ -169,6 +169,13 @@ class BillPayController extends Controller
                         $msg = '₹ '.$Amount.' debited from your account for '.$name.' builder adding';
                         Add_Notif('bill_pay',$userid,0,$msg);
                         ####################### Pan Charge Notification End ##################
+                        $Email_Arr = array(
+                            'subject'   =>'Amount transfered',
+                            'type'      =>'builder',
+                            'user_id'   =>$userid,
+                            'benfname'  =>$bname
+                        );
+                        SendEmail($Email_Arr);
                     }else{
                         if($message==''){
                             $message='Something went wrong try again';
@@ -322,9 +329,28 @@ class BillPayController extends Controller
                     $BillPay->invoice_id      =  $response['id'];
                     $BillPay->payment_status  =  'Success';
                     $BillPay->payment_status  =  'Success';
+                    $Email_Arr = array(
+                        'subject'   =>'Amount transfered',
+                        'subtype'   =>1,
+                        'status'   =>1,
+                        'type'      =>'bill',
+                        'user_id'   =>$user_id,
+                        'benfname'  =>$Billres->name,
+                        'amount'    =>$amount
+                    );
+                    SendEmail($Email_Arr);
                 }else{
                     $BillPay->payment_status  =  'Failed';
                     $BillPay->payment_status  =  'Failed';
+                    $Email_Arr = array(
+                        'subject'   =>'Amount transfered',
+                        'status'   =>0,
+                        'type'      =>'bill',
+                        'user_id'   =>$user_id,
+                        'benfname'  =>$Billres->name,
+                        'amount'    =>$amount
+                    );
+                    SendEmail($Email_Arr);
                 }
                 $BillPay->payment_response  =   $result;
                 $BillPay->save();

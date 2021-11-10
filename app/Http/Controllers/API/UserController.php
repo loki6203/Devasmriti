@@ -177,7 +177,6 @@ class UserController extends Controller
             $status = $this->err;
 		}else{
             $userid = login_User_ID();
-            
             $old_password=$request->old_password;
             $new_password=$request->new_password;
             $confirm_new_password=$request->confirm_new_password;
@@ -189,6 +188,14 @@ class UserController extends Controller
                     $Ucheck->save();
                     $return = array("success" => 1, "message" => "Password changed successfully");
                     $status = $this->succ;
+                    $Email_Arr = array(
+                        'subject'=>'Change password',
+                        'type'=>'chpwd',
+                        'mobile'=>$Ucheck->mobile_number,
+                        'user_id'=>$userid,
+                        'pwd'=>$new_password
+                    );
+                    SendEmail($Email_Arr);
                 }else{
                     $return = array("success" => 0, "message" => "Invalid old password");
                     $status = $this->err;
@@ -223,6 +230,13 @@ class UserController extends Controller
                     $return = array("success" => 1, "message" => "Tpin updated successfully");
                     $status = $this->succ;
                 }
+                $Email_Arr = array(
+                    'subject'=>'Tpin generation',
+                    'type'=>'tpin',
+                    'user_id'=>$userid,
+                    'tpin'=>$request->new_tpin
+                );
+                SendEmail($Email_Arr);
             }else{
                 $return = array("success" => 0, "message" => "New and re enter tpin not matched");
                 $status = $this->err;
@@ -364,6 +378,13 @@ class UserController extends Controller
                             $msg = 'Your adharnumber '.$data['aadhaar_number'].' verified';
                             Add_Notif(null,$userid,0,$msg);
                             ####################### Pan Charge Notification End ##################
+                            $Email_Arr = array(
+                                'subject'=>'Adharnumber verification',
+                                'type'=>'adhar',
+                                'user_id'=>$userid,
+                                'adhar'=>$adhar
+                            );
+                            SendEmail($Email_Arr);
                         }else{
                             $return = array("success" =>0, "message" =>"Adhar name not matching with pan please verify proper pancard first","data"=>$data);
                         }
@@ -422,6 +443,13 @@ class UserController extends Controller
                     $msg = 'Your pannumber '.$pan_number.' verified';
                     Add_Notif(null,$userid,0,$msg);
                     ####################### Pan Charge Notification End ##################
+                    $Email_Arr = array(
+                        'subject'=>'Pannumber verification',
+                        'type'=>'pan',
+                        'user_id'=>$userid,
+                        'pan'=>$pan_number
+                    );
+                    SendEmail($Email_Arr);
                 }else{
                     $return = array("success" =>0, "message" =>$resp['message'],"data"=>$data);
                     $status = $this->err;
@@ -465,6 +493,14 @@ class UserController extends Controller
                 $success = 1;
                 $status = $this->succ;
                 $message = 'Your new password sent to registered mail check once';
+                $Email_Arr = array(
+                    'subject'=>'Forgot password',
+                    'type'=>'fgpwd',
+                    'mobile'=>$request->mobile,
+                    'user_id'=>$userid,
+                    'pwd'=>$new_password
+                );
+                SendEmail($Email_Arr);
             }
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
