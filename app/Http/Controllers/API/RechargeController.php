@@ -11,6 +11,7 @@ use App\Models\AccountHistory;
 use App\Models\UserDetail;
 use App\Models\Setting;
 use App\Models\UserCardDetail;
+use App\Models\CommonGatewayCard;
 use Razorpay\Api\Api as Razorpay;
 
 class RechargeController extends Controller 
@@ -65,6 +66,7 @@ class RechargeController extends Controller
                 }
                 $api = new Razorpay($key_id,$key_secret);
                 $transaction_id = Generate_Transaction('deposit');
+                $amount = $amount/100;
                 $order = $api->order->create(array(
                     'receipt' => $transaction_id,
                     'amount' => $amount,
@@ -213,8 +215,8 @@ class RechargeController extends Controller
                     SendEmail($Email_Arr);
                     ####################### Add Money Notification End ##################
                     if($charges==1){
-                        $CardCharge_Det  = UserCardDetail::where('user_id','=',$userid->id)->where('card','=',$cardname)->first();
-                        if(is_null($CardCharge_Det->gateway_charge)){
+                        $CardCharge_Det  = UserCardDetail::where('user_id','=',$userid)->where('card','=',$cardname)->first();
+                        if(is_null($CardCharge_Det) || is_null($CardCharge_Det->gateway_charge)){
                             $CrdDetails = CommonGatewayCard::where('name','=',$cardname)->first();
                             if(is_null($CrdDetails)){
                                 $cardcharge = ($AccountDeposit->amount*$PaymentGateway->gateway_charge)/100;
@@ -224,9 +226,10 @@ class RechargeController extends Controller
                         }else{
                             $cardcharge = ($AccountDeposit->amount*$CardCharge_Det->gateway_charge)/100;
                         }
+                        $AccountDeposit->txn_id      = Generate_Transaction('deposit');
                         Cr_Or_Dr_Amount('deposit',$cardcharge,'debit',$userid,$AccountDeposit);
                         ####################### Card Charge Notification Start ##################
-                        $msg = '₹'. $cardcharge.' Card charge debited form your account';
+                        $msg = '₹'. $cardcharge.' Card charge debited from your account';
                         Add_Notif('deposit',$userid,0,$msg);
                         ####################### Card Charge Notification End ##################
                     }
@@ -234,7 +237,7 @@ class RechargeController extends Controller
                         $Refereal_Check = User::where('mobile_number','=',$User->referel_code)->first();
                         if(!is_null($Refereal_Check)){
                             $RefUserDet         = UserDetail::where('user_id','=',$Refereal_Check->id)->first();
-                            if(is_null($RefUserDet->referal_code_percentage)){
+                            if(is_null($RefUserDet) || is_null($RefUserDet->referal_code_percentage)){
                                 $Setting = Setting::find(1);
                                 $refamt = ($AccountDeposit->amount*$Setting->common_code_percentage)/100;
                             }else{

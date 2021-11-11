@@ -82,6 +82,7 @@ class JWTAuthController extends Controller
                         $otp                            = Generate_Otp();
                         $UserDetail_Check->sms_otp      = $otp;
                         $UserDetail_Check->email_otp    = $otp;
+                        $NewUser_Detail->mobile_otp     = $otp;
                         $UserDetail_Check->first_name   = $NewUser->name;
                         $UserDetail_Check->pan_attempts = 0;
                         $UserDetail_Check->tpin         = Generate_Tpin();

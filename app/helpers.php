@@ -29,12 +29,14 @@ if(!function_exists('login_User_ID')){
 }
 if(!function_exists('Generate_Otp')){
     function Generate_Otp(){
+        //return 1234;
         return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Generate_Password')){
     function Generate_Password(){
-        return substr(str_shuffle("0123456789"), 0, 5);
+        return 'root123';
+        //return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Generate_Tpin')){
@@ -179,16 +181,14 @@ if(!function_exists('SendMsg')){
         }else{
             $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
         }
-        $Notification               = new Notification();
-        $Notification->user_id      = 1;
-        $Notification->is_read      = 0;
-        $Notification->message      = $msg;
-        $Notification->save();
-        /*
+        // $Notification               = new Notification();
+        // $Notification->user_id      = 1;
+        // $Notification->is_read      = 0;
+        // $Notification->message      = $msg;
+        // $Notification->save();
         $senderid = 'PayAgt';
         $url = "https://smslogin.co/v3/api.php?username=Brainum&apikey=ceda2751f67d7f96b2e5&senderid=$senderid&mobile=$mobile&message=".urlencode($msg);
         $ret = file($url);
-        */
     }
 }
 
@@ -206,14 +206,14 @@ if(!function_exists('Add_Notif')){
 if(!function_exists('SendEmail')){
     function SendEmail($ArrayData)
     {
-        $User = User::find($ArrayData['user_id']);
-        $ArrayData['name'] = @($User->name)?$User->name:'';
-        $message = View::make('template', $ArrayData)->render();
-        $Notification               = new Notification();
-        $Notification->user_id      = $ArrayData['user_id'];
-        $Notification->is_read      = 1;
-        $Notification->message      = $message;
-        $Notification->save();
+        // $User = User::find($ArrayData['user_id']);
+        // $ArrayData['name'] = @($User->name)?$User->name:'';
+        // $message = View::make('template', $ArrayData)->render();
+        // $Notification               = new Notification();
+        // $Notification->user_id      = $ArrayData['user_id'];
+        // $Notification->is_read      = 1;
+        // $Notification->message      = $message;
+        // $Notification->save();
         // return Mail::send('template', $ArrayData, function ($message) use ($to , $subject) {
 		// 	$message->to($to,config('global.SITE_NAME'))->from(config('global.FROM_MAIL'))->subject($subject);
 		// });
