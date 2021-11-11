@@ -41,25 +41,43 @@
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
+                                        <th>Sno</th>
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Phone</th>
+                                        <th>Status</th>
                                         <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
+                                    <?php $i=1; ?>
                                     @foreach ($user as $res)
                                     <tr>
+                                        <td>{{ $i }}</td>
                                         <td>{{ $res->name }}</td>
                                         <td>{{ $res->email }}</td>
                                         <td>{{ $res->mobile_number }}</td>
+                                        <td>@if($res->is_active=='active')
+                                            <button class="btn btn-success  waves-effect waves-light"
+                                                onclick="change_status({{ $res->id }},'inactive');">
+                                                Active</button>
+                                            @elseif($res->is_active=='not_verified')
+                                            <button class="btn btn-success  waves-effect waves-light"
+                                                onclick="change_status({{ $res->id }},'{{ $res->is_active }}');">
+                                                Not Verified</button>
+                                            @else
+                                            <button class="btn btn-danger  waves-effect waves-light"
+                                                onclick="change_status({{ $res->id }},'active');">
+                                                Inactive</button>
+                                            @endif
+
+                                        </td>
                                         <td align="center"><a href="edit_user/{{ $res->id }}"
                                                 class="btn btn-primary  waves-effect waves-light" href="#"><i
-                                                    class="ti-pencil mr-2"></i>Edit</a> <button
-                                                class="btn btn-danger  waves-effect waves-light" id="sa-warning"><i
-                                                    class="ti-trash mr-2"></i> Delete</button></td>
+                                                    class="ti-pencil mr-2"></i>Edit</a></td>
                                     </tr>
+                                    <?php $i++ ?>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -71,5 +89,22 @@
         </div> <!-- container-fluid -->
     </div>
     <!-- End Page-content -->
-
+    <script>
+    function change_status(id, status) {
+        var Type = 'User';
+        Swal.fire({
+            text: "Are you sure want to change the status?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location = "{{ url('/change_admin_status')}}" + '/' +
+                    id + '/' + status + '/' + Type + '/';
+            }
+        });
+    }
+    </script>
     @endsection

@@ -41,6 +41,7 @@
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
+                                        <th>Sno</th>
                                         <th>Name</th>
                                         <th>Transaction ID</th>
                                         <th>Payment Status</th>
@@ -50,19 +51,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php $i=1; ?>
                                     @foreach ($wallet as $res)
                                     <tr>
-                                        <td>{{ $res->name }}</td>
+                                        <td>{{ $i }}</td>
+                                        <td>{{ $res->user->name }}</td>
                                         <td>{{ $res->transaction_id }}</td>
                                         <td>{{ $res->payment_status }}</td>
                                         <td>{{ $res->acc_debited_status }}</td>
                                         <td>{{ $res->amount }} </td>
                                         <td>{{ $res->description }} </td>
                                     </tr>
+                                    <?php $i++ ?>
                                     @endforeach
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div> <!-- end col -->
