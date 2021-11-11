@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class AccountDeposit
- *
+ * 
  * @property int $id
  * @property int $user_id
  * @property string|null $description
@@ -27,7 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $gate_way_id
  * @property float $amount
  * @property string|null $deleted_at
-
+ * 
  * @property PaymentGateway $payment_gateway
  * @property User $user
  *
@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class AccountDeposit extends Model
 {
 	use SoftDeletes;
-	protected $hidden  = ['deleted_at'];
 	protected $table = 'account_deposits';
 
 	protected $casts = [

@@ -35,6 +35,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Collection|BillPay[] $bill_pays
  * @property Collection|Biller[] $billers
  * @property Collection|InternalTransfer[] $internal_transfers
+ * @property Collection|Loginhistory[] $loginhistories
+ * @property Collection|News[] $news
  * @property Collection|Notification[] $notifications
  * @property Collection|RechargeHistory[] $recharge_histories
  * @property Collection|RentPay[] $rent_pays
@@ -90,6 +92,16 @@ class User extends Model
 	public function internal_transfers()
 	{
 		return $this->hasMany(InternalTransfer::class, 'to_user_id');
+	}
+
+	public function loginhistories()
+	{
+		return $this->hasMany(Loginhistory::class);
+	}
+
+	public function news()
+	{
+		return $this->hasMany(News::class);
 	}
 
 	public function notifications()

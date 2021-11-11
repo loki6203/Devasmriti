@@ -10,32 +10,36 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserCardDetail
+ * Class News
  * 
  * @property int $id
  * @property int $user_id
- * @property string|null $card
+ * @property string|null $action_type
+ * @property int $action_type_id
+ * @property string $message
+ * @property string|null $documents
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property float|null $gateway_charge
  * 
  * @property User $user
  *
  * @package App\Models
  */
-class UserCardDetail extends Model
+class News extends Model
 {
-	protected $table = 'user_card_details';
+	protected $table = 'news';
 
 	protected $casts = [
 		'user_id' => 'int',
-		'gateway_charge' => 'float'
+		'action_type_id' => 'int'
 	];
 
 	protected $fillable = [
 		'user_id',
-		'card',
-		'gateway_charge'
+		'action_type',
+		'action_type_id',
+		'message',
+		'documents'
 	];
 
 	public function user()

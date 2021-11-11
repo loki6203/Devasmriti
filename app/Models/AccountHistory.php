@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $payment_details
  * @property string|null $deleted_at
  * @property string|null $txn_id
+ * @property float $closing_balance
  * 
  * @property User $user
  *
@@ -38,7 +39,8 @@ class AccountHistory extends Model
 	protected $casts = [
 		'user_id' => 'int',
 		'amount' => 'float',
-		'transaction_id' => 'int'
+		'transaction_id' => 'int',
+		'closing_balance' => 'float'
 	];
 
 	protected $fillable = [
@@ -49,7 +51,8 @@ class AccountHistory extends Model
 		'description',
 		'transaction_id',
 		'payment_details',
-		'txn_id'
+		'txn_id',
+		'closing_balance'
 	];
 
 	public function user()
