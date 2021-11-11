@@ -194,14 +194,10 @@
                             <!-- item-->
                             <a class="dropdown-item" href="#"><i
                                     class="mdi mdi-account-circle font-size-17 align-middle mr-1"></i> Profile</a>
-                            <a class="dropdown-item" href="#"><i
-                                    class="mdi mdi-wallet font-size-17 align-middle mr-1"></i> My Wallet</a>
-                            <a class="dropdown-item d-block" href="#"><span
-                                    class="badge badge-success float-right">11</span><i
-                                    class="mdi mdi-settings font-size-17 align-middle mr-1"></i> Settings</a>
-
+                            <a class="dropdown-item" href="{{ url('change_password') }}"><i
+                                    class="mdi mdi-wallet font-size-17 align-middle mr-1"></i> Change Password</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="#"><i
+                            <a class="dropdown-item text-danger" href="{{ url('logout') }}"><i
                                     class="bx bx-power-off font-size-17 align-middle mr-1 text-danger"></i> Logout</a>
                         </div>
                     </div>
@@ -398,10 +394,10 @@
     <script src="{{ asset('assets/js/pages/form-repeater.int.js') }}"></script>
 
     <!-- Sweet Alerts js -->
-    <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/pages/sweet-alerts.init.js') }}"></script>
-
-    <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+    <!-- <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/sweet-alerts.init.js') }}"></script> -->
+    <script src="{{ asset('assets/libs/sweetalert.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/sweetalert2@10.js') }}"></script>
     <script src="{{ asset('assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
     <script src="{{ asset('assets/libs/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js') }}"></script>
     <script src="{{ asset('assets/libs/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js') }}"></script>
