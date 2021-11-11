@@ -35,9 +35,9 @@
                             <!-- <h4 class="card-title">Example</h4> -->
                             <form action="/update_user/{{ $user['id'] }}" class=" repeater"
                                 enctype="multipart/form-data">
-                                <input name="_token" type="text" value="{{ csrf_token() }}" />
+                                <input name="_token" type="hidden" value="{{ csrf_token() }}" />
 
-                                <div data-repeater-list="group-a">
+                                <div>
                                     <div data-repeater-item class="row">
                                         <div class="form-group col-lg-4">
                                             <label for="name">Name</label>
@@ -47,7 +47,7 @@
 
                                         <div class="form-group col-lg-4">
                                             <label for="email">Email</label>
-                                            <input type="email" id="email" class="form-control"
+                                            <input type="email" name="email" id="email" class="form-control"
                                                 value="{{ $user['email'] }}" />
                                         </div>
 

@@ -21,7 +21,7 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="float-right">
-                        <a href="admin_management" class="btn btn-primary waves-effect waves-light">
+                        <a href="{{ url('admin_management') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="mdi mdi-arrow-left mr-2"></i> Back
                         </a>
                     </div>
@@ -35,10 +35,10 @@
                             <!-- <h4 class="card-title">Example</h4> -->
                             <form action="/update_admin/{{ $user['id'] }}" class=" repeater"
                                 enctype="multipart/form-data">
-                                <input name="_token" type="text" value="{{ csrf_token() }}" />
+                                <input name="_token" type="hidden" value="{{ csrf_token() }}" />
 
-                                <div data-repeater-list="group-a">
-                                    <div data-repeater-item class="row">
+                                <div>
+                                    <div class="row">
                                         <div class="form-group col-lg-4">
                                             <label for="name">Name</label>
                                             <input type="text" id="name" name="name" class="form-control"
@@ -47,7 +47,7 @@
 
                                         <div class="form-group col-lg-4">
                                             <label for="email">Email</label>
-                                            <input type="email" id="email" class="form-control"
+                                            <input type="email" id="email" name="email" class="form-control"
                                                 value="{{ $user['email'] }}" />
                                         </div>
 

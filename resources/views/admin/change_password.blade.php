@@ -35,32 +35,27 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- <h4 class="card-title">Example</h4> -->
-                            <form action="/save_user" enctype="multipart/form-data">
+                            <form action="/update_password" enctype="multipart/form-data">
+                                <input name="_token" type="hidden" value="{{ csrf_token() }}" />
                                 <div>
                                     <div class="row">
                                         <div class="form-group col-lg-3">
-                                            <label for="name">Name</label>
-                                            <input type="text" id="name" name="name" class="form-control"
-                                                placeholder="Enter Name" />
+                                            <label for="old_pass">Old Password</label>
+                                            <input type="password" id="old_pass" name="old_pass" class="form-control"
+                                                placeholder="Enter Old Password" required />
                                         </div>
-
                                         <div class="form-group col-lg-3">
-                                            <label for="email">Email</label>
-                                            <input type="email" id="email" class="form-control" name="email"
-                                                placeholder="Enter Email" />
+                                            <label for="new_pass">New Password</label>
+                                            <input type="password" id="new_pass" class="form-control" name="new_pass"
+                                                placeholder="Enter New Password" required />
                                         </div>
-
                                         <div class="form-group col-lg-3">
-                                            <label for="subject">Phone</label>
-                                            <input type="text" name="mobile_number" id="mobile_number"
-                                                class="form-control" placeholder="Enter Mobile No" />
+                                            <label for="c_pass">Confirm Password</label>
+                                            <input type="password" name="c_pass" id="c_pass" class="form-control"
+                                                placeholder="Enter Confirm Password" required />
                                         </div>
-
                                     </div>
-
                                 </div>
-
-
                                 <div class="submit_cnt">
                                     <button class="btn btn-primary waves-effect waves-light"
                                         type="submit">Submit</button>

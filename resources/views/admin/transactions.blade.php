@@ -12,19 +12,11 @@
             <div class="row align-items-center">
                 <div class="col-sm-6">
                     <div class="page-title-box">
-                        <h4 class="font-size-18">Admin Management</h4>
+                        <h4 class="font-size-18">Transactions</h4>
                         <ol class="breadcrumb mb-0">
                             <li class="breadcrumb-item"><a href="#">PayAgent</a></li>
-                            <li class="breadcrumb-item active">Admin Management</li>
+                            <li class="breadcrumb-item active">Transactions</li>
                         </ol>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    <div class="float-right">
-                        <a href="add_admin" class="btn btn-primary waves-effect waves-light">
-                            <i class="mdi mdi-plus mr-2"></i> Add Admin
-                        </a>
                     </div>
                 </div>
             </div>
@@ -37,6 +29,7 @@
                                 style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                 <thead>
                                     <tr>
+                                        <th>Sno</th>
                                         <th>Name</th>
                                         <th>Transaction Id</th>
                                         <th>Amount</th>
@@ -46,15 +39,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <?php $i=1; ?>
                                     @foreach ($transactions as $res)
                                     <tr>
-                                        <td>{{ $res->user_id }}</td>
+                                        <td>{{ $i }}</td>
+                                        <td>{{ $res->user->name }}</td>
                                         <td>{{ $res->transaction_id }}</td>
                                         <td>{{ $res->amount }}</td>
                                         <td>{{ $res->cr_or_dr }}</td>
                                         <td>{{ $res->action_type }}</td>
                                         <td>{{ $res->description }}</td>
                                     </tr>
+                                    <?php $i++ ?>
                                     @endforeach
                                 </tbody>
                             </table>
