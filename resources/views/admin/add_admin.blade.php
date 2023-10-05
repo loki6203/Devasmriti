@@ -14,7 +14,7 @@
                     <div class="page-title-box">
                         <h4 class="font-size-18">Add Admin</h4>
                         <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="/">PayAgent</a></li>
+                            <li class="breadcrumb-item"><a href="/">DevaSmriti</a></li>
                             <li class="breadcrumb-item"><a href="admin_management">Admin Management</a></li>
                             <li class="breadcrumb-item active">Add Admin</li>
                         </ol>

@@ -14,7 +14,7 @@
                     <div class="page-title-box">
                         <h4 class="font-size-18">Add City</h4>
                         <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="/">PayAgent</a></li>
+                            <li class="breadcrumb-item"><a href="/">DevaSmriti</a></li>
                             <li class="breadcrumb-item"><a href="user_management">City</a></li>
                             <li class="breadcrumb-item active">Add City</li>
                         </ol>

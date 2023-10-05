@@ -9,55 +9,49 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class City
  * 
  * @property int $id
- * @property string|null $name
- * @property string $is_active
- * @property int $country_id
- * @property int $state_id
+ * @property string $name
+ * @property int $state
+ * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
- * @property Country $country
- * @property State $state
- * @property Collection|UserDetail[] $user_details
+ * @property Collection|Temple[] $temples
+ * @property Collection|UserAddress[] $user_addresses
  *
  * @package App\Models
  */
 class City extends Model
 {
-	use SoftDeletes;
 	protected $table = 'cities';
 
 	protected $casts = [
-		'country_id' => 'int',
-		'state_id' => 'int'
+		'state' => 'int',
+		'is_active' => 'bool'
 	];
 
 	protected $fillable = [
 		'name',
-		'is_active',
-		'country_id',
-		'state_id'
+		'state',
+		'is_active'
 	];
-
-	public function country()
-	{
-		return $this->belongsTo(Country::class);
-	}
 
 	public function state()
 	{
-		return $this->belongsTo(State::class);
+		return $this->belongsTo(State::class, 'state');
 	}
 
-	public function user_details()
+	public function temples()
 	{
-		return $this->hasMany(UserDetail::class);
+		return $this->hasMany(Temple::class, 'city');
+	}
+
+	public function user_addresses()
+	{
+		return $this->hasMany(UserAddress::class, 'city');
 	}
 }

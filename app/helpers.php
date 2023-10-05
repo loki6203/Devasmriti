@@ -2,9 +2,12 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Models\UserDetail;
-use App\Models\AccountHistory;
-use App\Models\Notification;
+
+if(!function_exists('curr_dt')){
+    function curr_dt(){
+        return date('Y-m-d H:i:s');
+    }
+}
 
 if(!function_exists('curr_dt')){
     function curr_dt(){
@@ -175,11 +178,11 @@ if(!function_exists('SendMsg')){
     function SendMsg($mobile,$otp,$type)
     {
         if($type==1){
-            $msg = "Greetings from PayAgent Your one time password OTP is ".$otp." for your account Registration process. Please complete this process within 10 minutes.";
+            $msg = "Greetings from DevaSmriti Your one time password OTP is ".$otp." for your account Registration process. Please complete this process within 10 minutes.";
         }else if($type==2){
-            $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to login into your account . Please complete this process within 10 minutes.";
+            $msg="Greetings from DevaSmriti Your one time password OTP is ".$otp." to login into your account . Please complete this process within 10 minutes.";
         }else{
-            $msg="Greetings from PayAgent Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
+            $msg="Greetings from DevaSmriti Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
         }
         // $Notification               = new Notification();
         // $Notification->user_id      = 1;

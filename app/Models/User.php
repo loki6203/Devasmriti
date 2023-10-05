@@ -9,46 +9,48 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class User
  * 
  * @property int $id
- * @property string $name
- * @property string $email
+ * @property string|null $fname
+ * @property string|null $lname
+ * @property string|null $email
  * @property string $mobile_number
- * @property string $password
- * @property string|null $company_name
- * @property string $user_type
- * @property string|null $referel_code
- * @property string|null $profile_pic
- * @property string $is_active
+ * @property string|null $password
+ * @property int|null $profile_pic
+ * @property Carbon|null $dob
  * @property string|null $about_me
+ * @property int|null $otp
+ * @property string $user_type
+ * @property bool $is_active
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  * 
- * @property Collection|AccountDeposit[] $account_deposits
- * @property Collection|AccountHistory[] $account_histories
- * @property Collection|BillPay[] $bill_pays
- * @property Collection|Biller[] $billers
- * @property Collection|InternalTransfer[] $internal_transfers
- * @property Collection|Loginhistory[] $loginhistories
- * @property Collection|News[] $news
- * @property Collection|Notification[] $notifications
- * @property Collection|RechargeHistory[] $recharge_histories
- * @property Collection|RentPay[] $rent_pays
- * @property Collection|UserCardDetail[] $user_card_details
- * @property Collection|UserDetail[] $user_details
+ * @property Image|null $image
+ * @property Collection|Order[] $orders
+ * @property Collection|UserAddress[] $user_addresses
+ * @property Collection|UserCart[] $user_carts
+ * @property Collection|UserFamilyDetail[] $user_family_details
+ * @property Collection|UserReward[] $user_rewards
  *
  * @package App\Models
  */
 class User extends Model
 {
-	use SoftDeletes;
 	protected $table = 'users';
+
+	protected $casts = [
+		'profile_pic' => 'int',
+		'otp' => 'int',
+		'is_active' => 'bool'
+	];
+
+	protected $dates = [
+		'dob'
+	];
 
 	protected $hidden = [
 		'password',
@@ -56,76 +58,47 @@ class User extends Model
 	];
 
 	protected $fillable = [
-		'name',
+		'fname',
+		'lname',
 		'email',
 		'mobile_number',
 		'password',
-		'company_name',
-		'user_type',
-		'referel_code',
 		'profile_pic',
-		'is_active',
+		'dob',
 		'about_me',
+		'otp',
+		'user_type',
+		'is_active',
 		'remember_token'
 	];
 
-	public function account_deposits()
+	public function image()
 	{
-		return $this->hasMany(AccountDeposit::class);
+		return $this->belongsTo(Image::class, 'profile_pic');
 	}
 
-	public function account_histories()
+	public function orders()
 	{
-		return $this->hasMany(AccountHistory::class);
+		return $this->hasMany(Order::class, 'user');
 	}
 
-	public function bill_pays()
+	public function user_addresses()
 	{
-		return $this->hasMany(BillPay::class);
+		return $this->hasMany(UserAddress::class, 'user');
 	}
 
-	public function billers()
+	public function user_carts()
 	{
-		return $this->hasMany(Biller::class);
+		return $this->hasMany(UserCart::class, 'user');
 	}
 
-	public function internal_transfers()
+	public function user_family_details()
 	{
-		return $this->hasMany(InternalTransfer::class, 'to_user_id');
+		return $this->hasMany(UserFamilyDetail::class, 'user');
 	}
 
-	public function loginhistories()
+	public function user_rewards()
 	{
-		return $this->hasMany(Loginhistory::class);
-	}
-
-	public function news()
-	{
-		return $this->hasMany(News::class);
-	}
-
-	public function notifications()
-	{
-		return $this->hasMany(Notification::class);
-	}
-
-	public function recharge_histories()
-	{
-		return $this->hasMany(RechargeHistory::class);
-	}
-
-	public function rent_pays()
-	{
-		return $this->hasMany(RentPay::class);
-	}
-
-	public function user_card_details()
-	{
-		return $this->hasMany(UserCardDetail::class);
-	}
-
-	public function user_details()
-	{
-		return $this->hasMany(UserDetail::class, 'verified_by');
+		return $this->hasMany(UserReward::class, 'user');
 	}
 }

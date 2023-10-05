@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Validator;
-use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\UserDetail;
+// use App\Http\Resources\Commonreturn as CommonreturnResource;
 
 class JWTAuthController extends Controller
 {
@@ -19,7 +17,7 @@ class JWTAuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['login', 'signup','check_referal_code','login_with_otp']]);
+        $this->middleware('jwt', ['except' => ['login', 'login_with_otp','check_referal_code','login_with_otp']]);
     }
     public $succ = 200;
     public $err  = 202;
@@ -28,82 +26,36 @@ class JWTAuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function signup(Request $request) 
+    public function login(Request $request) 
     {
         $data=array();
         $message='';
         $success=1;
-        $validator = Validator::make($request->all(), [ 
-            'name' => 'required', 
-            'email' => 'required', 
-            'mobile_number' => 'required', 
-            'user_type' => 'required',
+        $validator = Validator::make($request->all(), [
+            'mobile_number' => 'required'
         ]);
         if ($validator->fails()) {
             $message = 'Please enter all (*) fields';
             $status = $this->err;
         }else{
             $password='root@$123';
-            $Em_check = User::where('email', '=', $request->email)->count();
-            if($Em_check==0){
-                $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->count();
-                if($Ph_check==0){
-                    $NewUser                = new User();
-                    if($request->user_type=='user'){
-                        $NewUser->name          = $request->name;
-                    }else{
-                        $NewUser->name          = $request->name;
-                        $NewUser->company_name  = $request->name;
-                    }
-                    $NewUser->user_type     = $request->user_type;
-                    $NewUser->email         = $request->email;
-                    $NewUser->mobile_number = $request->mobile_number;
-                    $NewUser->password      = Hash::make($password);
-                    if($request->has('referel_code')){
-                        $Check = User::where('mobile_number','=',$request->referel_code)->count();
-                        if($Check){
-                            $NewUser->referel_code  = $request->referel_code;
-                        }
-                    }
-                    $NewUser->save();
-                    $user_id = $NewUser->id;
-                    $UserDetail_Check = UserDetail::where('user_id','=',$user_id)->first();
-                    if(is_null($UserDetail_Check)){
-                        $otp                            = Generate_Otp();
-                        $NewUser_Detail                 = new UserDetail();
-                        $NewUser_Detail->user_id        = $user_id;
-                        $NewUser_Detail->mobile_otp     = $otp;
-                        $NewUser_Detail->email_otp      = $otp;
-                        $NewUser_Detail->first_name     = $NewUser->name;
-                        $NewUser_Detail->pan_attempts   = 0;
-                        $NewUser_Detail->tpin           = Generate_Tpin();
-                        $NewUser_Detail->save();
-                    }else{
-                        $otp                            = Generate_Otp();
-                        $UserDetail_Check->sms_otp      = $otp;
-                        $UserDetail_Check->email_otp    = $otp;
-                        $NewUser_Detail->mobile_otp     = $otp;
-                        $UserDetail_Check->first_name   = $NewUser->name;
-                        $UserDetail_Check->pan_attempts = 0;
-                        $UserDetail_Check->tpin         = Generate_Tpin();
-                        $UserDetail_Check->save();
-                    }
-                    SendMsg($request->mobile_number,$otp,1);
-                    $data = array('otp'=>$otp,'user_id'=>$user_id);
-                    $status = $this->succ;
-                }else{
-                    $success=0;
-                    $message='Mobile number already existed';
-                    $status = $this->err;
-                }
+            $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->count();
+            if($Ph_check==0){
+                $NewUser->user_type     = 'user';
+                $NewUser->mobile_number = $request->mobile_number;
+                $NewUser->password      = Hash::make($password);
+                $NewUser->save();
+                $user_id = $NewUser->id;
             }else{
-                $success=0;
-                $message='Email is already existed';
-                $status = $this->err;
+                $user_id = $Ph_check->id;
             }
+            // SendMsg($request->mobile_number,$otp,1);
+            $data = array('otp'=>$otp,'user_id'=>$user_id);
+            $status = $this->succ;
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return response()->json($resp, $status);
+        // return new CommonreturnResource($resp);
     }
 
     /**
@@ -111,40 +63,40 @@ class JWTAuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
-    {
-    	$validator = Validator::make($request->all(), [
-            'mobile_number' => 'required',
-            'password' => 'required'
-        ]);
-        $data=array();
-        $message='';
-        $success=0;
-        if($validator->fails()) {
-            $message = 'Please enter all (*) fields';
-            $status = $this->err;
-        }else{
-            $token = auth('api')->attempt($validator->validated());
-            if($token!=false){
-                $otp = Generate_Otp();
-                $message = 'Please enter otp';
-                $userdetails = auth('api')->user();
-                $data['user_id'] = $userdetails->id;
-                $UserDetail_Check = UserDetail::where('user_id','=',$userdetails->id)->first();
-                $UserDetail_Check->mobile_otp = $otp;
-                $UserDetail_Check->save();
-                $data['otp'] = $otp;
-                SendMsg($request->mobile_number,$otp,1);
-                $status = $this->succ;
-                $success=1;
-            }else{
-                $message = 'Invalid credentials';
-                $status = $this->err;
-            }
-        }
-        $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
-        return response()->json($result, $status);
-    }
+    // public function login(Request $request)
+    // {
+    // 	$validator = Validator::make($request->all(), [
+    //         'mobile_number' => 'required',
+    //         'password' => 'required'
+    //     ]);
+    //     $data=array();
+    //     $message='';
+    //     $success=0;
+    //     if($validator->fails()) {
+    //         $message = 'Please enter all (*) fields';
+    //         $status = $this->err;
+    //     }else{
+    //         $token = auth('api')->attempt($validator->validated());
+    //         if($token!=false){
+    //             $otp = Generate_Otp();
+    //             $message = 'Please enter otp';
+    //             $userdetails = auth('api')->user();
+    //             $data['user_id'] = $userdetails->id;
+    //             $UserDetail_Check = UserDetail::where('user_id','=',$userdetails->id)->first();
+    //             $UserDetail_Check->mobile_otp = $otp;
+    //             $UserDetail_Check->save();
+    //             $data['otp'] = $otp;
+    //             SendMsg($request->mobile_number,$otp,1);
+    //             $status = $this->succ;
+    //             $success=1;
+    //         }else{
+    //             $message = 'Invalid credentials';
+    //             $status = $this->err;
+    //         }
+    //     }
+    //     $result = array('success'=>$success, 'data'=>$data , 'message'=>$message);
+    //     return response()->json($result, $status);
+    // }
     public function login_with_otp(Request $request)
     {
     	$validator = Validator::make($request->all(), [

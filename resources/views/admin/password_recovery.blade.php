@@ -41,7 +41,7 @@
                         </div>
                         <div class="mt-5 text-center">
                             <p>Remember It ? <a href="/" class="font-weight-medium text-primary"> Sign In here </a> </p>
-                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> PayAgent. Crafted with <i class="mdi mdi-heart text-danger"></i> by Headrun</p>
+                            <p class="mb-0">© <script>document.write(new Date().getFullYear())</script> DevaSmriti. Crafted with <i class="mdi mdi-heart text-danger"></i> by Headrun</p>
                         </div>
 
                     </div>

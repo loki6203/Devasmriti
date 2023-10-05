@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard | PayAgent</title>
+    <title>Dashboard | DevaSmriti</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="PayAgent" name="description" />
-    <meta content="PayAgent" name="PayAgent" />
+    <meta content="DevaSmriti" name="description" />
+    <meta content="DevaSmriti" name="DevaSmriti" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
@@ -296,7 +296,7 @@
                     <div class="col-12">
                         © <script>
                         document.write(new Date().getFullYear())
-                        </script> PayAgent<span class="d-none d-sm-inline-block"> - Crafted with <i
+                        </script> DevaSmriti<span class="d-none d-sm-inline-block"> - Crafted with <i
                                 class="mdi mdi-heart text-danger"></i> by Headrun.</span>
                     </div>
                 </div>
