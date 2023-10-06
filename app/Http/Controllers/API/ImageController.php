@@ -1,120 +1,49 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\Image;
-use Illuminate\Http\Request;
 
 class ImageController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $Images = Image::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $Images
-        ];
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
+	public function upload(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $validator = Validator::make($request->all(), [
+            'image_type' => 'required'
         ]);
-
-        $Image = Image::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $Image
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Image  $Image
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Image $Image)
-    {
-        return [
-            "status" => 1,
-            "data" =>$Image
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Image  $Image
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Image $Image)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Image  $Image
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Image $Image)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Image->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $Image,
-            "msg" => "Image updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Image  $Image
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Image $Image)
-    {
-        $Image->delete();
-        return [
-            "status" => 1,
-            "data" => $Image,
-            "msg" => "Image deleted successfully"
-        ];
+        if ($validator->fails()) {
+            $message = 'Please enter all (*) fields';
+            $success=0;
+        }else{
+            try{
+                $file = @$request->file('file');
+                if ($file != '' && $file != null && $file != 'undefined') {
+                    $destinationPath = public_path('profile_pics');
+                    $url = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+                    $file->move($destinationPath,$url);
+                    $orgname = $file->getClientOriginalName();
+                    $data = new Image();
+                    $data->url          = $url;
+                    $data->domain       = url('/');
+                    $data->image_type   = $request->input('image_type');
+                    $data->name         = $orgname;
+                    $data->save();
+                }else{
+                    $success=0;
+                    $message = "Uploading failed try again";
+                }
+            } catch (\Exception $ex) {
+                $message =  ERRORMESSAGE($ex->getMessage());
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

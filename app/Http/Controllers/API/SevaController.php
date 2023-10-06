@@ -1,121 +1,45 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\Seva;
-use Illuminate\Http\Request;
 
 class SevaController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $Sevas = Seva::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $Sevas
-        ];
+    public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Seva = Seva::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $Seva
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Seva  $Seva
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Seva $Seva)
-    {
-        return [
-            "status" => 1,
-            "data" =>$Seva
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Seva  $Seva
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Seva $Seva)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Seva  $Seva
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Seva $Seva)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Seva->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $Seva,
-            "msg" => "Seva updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Seva  $Seva
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Seva $Seva)
-    {
-        $Seva->delete();
-        return [
-            "status" => 1,
-            "data" => $Seva,
-            "msg" => "Seva deleted successfully"
-        ];
+    public function index(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $data = Seva::query();
+        $data = $data
+        ->with('temple')
+        ->with('seva_type')
+        ->with('anouncements')
+        ->with('seva_faqs')
+        ->with('seva_prices')
+        ->with('background_image_id')
+        ->with('feature_image_id')
+        ->with('banner_image_id')
+        ->with('seva_updates');
+        // if($request->has('state_id')){
+        //     $data = $data->where('state_id',$request->get('state_id'));
+        // }
+        if($id==0){
+            $PAGINATELIMIT = PAGINATELIMIT($request);
+            $data = $data->paginate($PAGINATELIMIT);
+        }else{
+            $data = $data->find($id);
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

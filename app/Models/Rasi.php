@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Rasi
@@ -18,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * 
  * @property Collection|UserFamilyDetail[] $user_family_details
  *
@@ -25,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Rasi extends Model
 {
+	use SoftDeletes;
 	protected $table = 'rasi';
 
 	protected $casts = [
@@ -38,6 +41,6 @@ class Rasi extends Model
 
 	public function user_family_details()
 	{
-		return $this->hasMany(UserFamilyDetail::class, 'rasi');
+		return $this->hasMany(UserFamilyDetail::class);
 	}
 }

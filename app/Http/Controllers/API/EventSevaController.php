@@ -1,121 +1,51 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\EventSeva;
-use Illuminate\Http\Request;
 
-class EventSevaController extends Controller
+class RasiController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $EventSevas = EventSeva::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $EventSevas
-        ];
+    public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $EventSeva = EventSeva::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $EventSeva
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\EventSeva  $EventSeva
-     * @return \Illuminate\Http\Response
-     */
-    public function show(EventSeva $EventSeva)
-    {
-        return [
-            "status" => 1,
-            "data" =>$EventSeva
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\EventSeva  $EventSeva
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(EventSeva $EventSeva)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\EventSeva  $EventSeva
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, EventSeva $EventSeva)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $EventSeva->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $EventSeva,
-            "msg" => "EventSeva updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\EventSeva  $EventSeva
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(EventSeva $EventSeva)
-    {
-        $EventSeva->delete();
-        return [
-            "status" => 1,
-            "data" => $EventSeva,
-            "msg" => "EventSeva deleted successfully"
-        ];
+    public function index(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $data = EventSeva::query();
+        $data = $data
+        ->with('banner_image_id')
+        ->with('background_image_id')
+        ->with('feature_image_id')
+        ->with('event_faqs')
+        ->with('event_updates')
+        ->with('sevas')
+        ->with('sevas.temple')
+        ->with('sevas.seva_type')
+        ->with('sevas.anouncements')
+        ->with('sevas.seva_faqs')
+        ->with('sevas.seva_prices')
+        ->with('sevas.background_image_id')
+        ->with('sevas.feature_image_id')
+        ->with('sevas.banner_image_id')
+        ->with('sevas.seva_updates');
+        // if($request->has('state_id')){
+        //     $data = $data->where('state_id',$request->get('state_id'));
+        // }
+        if($id==0){
+            $PAGINATELIMIT = PAGINATELIMIT($request);
+            $data = $data->paginate($PAGINATELIMIT);
+        }else{
+            $data = $data->find($id);
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

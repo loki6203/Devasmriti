@@ -1,121 +1,80 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\UserAddress;
-use Illuminate\Http\Request;
 
 class UserAddressController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $UserAddresss = UserAddress::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $UserAddresss
-        ];
+	public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $UserAddress = UserAddress::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $UserAddress
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\UserAddress  $UserAddress
-     * @return \Illuminate\Http\Response
-     */
-    public function show(UserAddress $UserAddress)
-    {
-        return [
-            "status" => 1,
-            "data" =>$UserAddress
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\UserAddress  $UserAddress
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(UserAddress $UserAddress)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\UserAddress  $UserAddress
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, UserAddress $UserAddress)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $UserAddress->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $UserAddress,
-            "msg" => "UserAddress updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\UserAddress  $UserAddress
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(UserAddress $UserAddress)
-    {
-        $UserAddress->delete();
-        return [
-            "status" => 1,
-            "data" => $UserAddress,
-            "msg" => "UserAddress deleted successfully"
-        ];
+    public function address(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $userid = login_User_ID();
+        if($request->method()=="POST" || $request->method()=="PUT"){
+            $required = [
+                'fname' => 'required',
+                'lname' => 'required',
+                'email' => 'required',
+                'phone_no' => 'required',
+                'whatsup_no' => 'required',
+                'country' => 'required',
+                'state' => 'required',
+                'city' => 'required',
+                'address_1' => 'required',
+                'address_2' => 'nullable',
+                'pincode'=>'required'
+            ];
+            if($request->method()=="PUT"){
+                $required = [];
+            }
+            $validator = Validator::make($request->all(),$required);
+            if($validator->fails()){
+                $message = $validator->errors()->first();
+                $status  = $this->err;
+                $success = 0;
+            }else{
+                if(!empty($request->all())){
+                    try {
+                        if($request->method()=="POST"){
+                            $request['user_id']=$userid;
+                            $data = UserAddress::create($request->all());
+                            $message = "Added successfully";
+                        }else{
+                            $data = UserAddress::where('id',$id)->update($request->all());
+                            $message = "Updated successfully";
+                        }
+                    } catch (\Exception $ex) {
+                        $message =  ERRORMESSAGE($ex->getMessage());
+                    }
+                }else{
+                    $message = "Please send atleast one column";
+                }
+            }
+        }else{
+            $data = UserAddress::query();
+            $data = $data->with('city')->with('country')->with('state');
+            if($id==0){
+                $PAGINATELIMIT = PAGINATELIMIT($request);
+                $data = $data->paginate($PAGINATELIMIT);
+            }else{
+                $data = $data->find($id);
+                if($request->method()=="DELETE"){
+                    $data->delete();
+                    $message = "Deleted successfully";
+                }
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

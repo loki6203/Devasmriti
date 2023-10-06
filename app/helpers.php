@@ -3,12 +3,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
-if(!function_exists('curr_dt')){
-    function curr_dt(){
-        return date('Y-m-d H:i:s');
+if(!function_exists('PAGINATELIMIT')){
+    function PAGINATELIMIT($request){
+        $headers = $request->header();
+        if(isset($headers['paginate'][0]) && $headers['paginate'][0]>=0){
+            return $headers['paginate'][0];
+        }else{
+            return 15;
+        }
     }
 }
-
+if(!function_exists('ERRORMESSAGE')){
+    function ERRORMESSAGE($msg){
+        return $msg;
+    }
+}
 if(!function_exists('curr_dt')){
     function curr_dt(){
         return date('Y-m-d H:i:s');
@@ -166,12 +175,6 @@ if(!function_exists('Generate_Transaction')){
         }else{
             Generate_Transaction($paymtype);
         }
-    }
-}
-if(!function_exists('PAGINATE')){
-    function PAGINATE()
-    {
-        return 3;
     }
 }
 if(!function_exists('SendMsg')){

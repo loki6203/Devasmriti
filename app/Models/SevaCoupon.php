@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class SevaCoupon
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $title
  * @property string $code
  * @property string $coupon_type
- * @property int $coupon_image
+ * @property int $coupon_image_id
  * @property bool $is_for_new_user_only
  * @property int $per_user_limit_count
  * @property int $max_users_count
@@ -29,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * 
  * @property Image $image
  * @property Collection|Order[] $orders
@@ -37,10 +39,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SevaCoupon extends Model
 {
+	use SoftDeletes;
 	protected $table = 'seva_coupons';
 
 	protected $casts = [
-		'coupon_image' => 'int',
+		'coupon_image_id' => 'int',
 		'is_for_new_user_only' => 'bool',
 		'per_user_limit_count' => 'int',
 		'max_users_count' => 'int',
@@ -56,7 +59,7 @@ class SevaCoupon extends Model
 		'title',
 		'code',
 		'coupon_type',
-		'coupon_image',
+		'coupon_image_id',
 		'is_for_new_user_only',
 		'per_user_limit_count',
 		'max_users_count',
@@ -70,11 +73,11 @@ class SevaCoupon extends Model
 
 	public function image()
 	{
-		return $this->belongsTo(Image::class, 'coupon_image');
+		return $this->belongsTo(Image::class, 'coupon_image_id');
 	}
 
 	public function orders()
 	{
-		return $this->hasMany(Order::class, 'seva_coupon');
+		return $this->hasMany(Order::class);
 	}
 }

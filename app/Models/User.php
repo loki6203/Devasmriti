@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class User
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $email
  * @property string $mobile_number
  * @property string|null $password
- * @property int|null $profile_pic
+ * @property int|null $profile_pic_id
  * @property Carbon|null $dob
  * @property string|null $about_me
  * @property int|null $otp
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * 
  * @property Image|null $image
  * @property Collection|Order[] $orders
@@ -40,10 +42,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class User extends Model
 {
+	use SoftDeletes;
 	protected $table = 'users';
 
 	protected $casts = [
-		'profile_pic' => 'int',
+		'profile_pic_id' => 'int',
 		'otp' => 'int',
 		'is_active' => 'bool'
 	];
@@ -63,7 +66,7 @@ class User extends Model
 		'email',
 		'mobile_number',
 		'password',
-		'profile_pic',
+		'profile_pic_id',
 		'dob',
 		'about_me',
 		'otp',
@@ -74,31 +77,31 @@ class User extends Model
 
 	public function image()
 	{
-		return $this->belongsTo(Image::class, 'profile_pic');
+		return $this->belongsTo(Image::class, 'profile_pic_id');
 	}
 
 	public function orders()
 	{
-		return $this->hasMany(Order::class, 'user');
+		return $this->hasMany(Order::class);
 	}
 
 	public function user_addresses()
 	{
-		return $this->hasMany(UserAddress::class, 'user');
+		return $this->hasMany(UserAddress::class);
 	}
 
 	public function user_carts()
 	{
-		return $this->hasMany(UserCart::class, 'user');
+		return $this->hasMany(UserCart::class);
 	}
 
 	public function user_family_details()
 	{
-		return $this->hasMany(UserFamilyDetail::class, 'user');
+		return $this->hasMany(UserFamilyDetail::class);
 	}
 
 	public function user_rewards()
 	{
-		return $this->hasMany(UserReward::class, 'user');
+		return $this->hasMany(UserReward::class);
 	}
 }

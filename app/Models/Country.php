@@ -40,16 +40,16 @@ class Country extends Model
 
 	public function states()
 	{
-		return $this->hasMany(State::class, 'country');
+		return $this->hasMany(State::class);
 	}
 
 	public function temples()
 	{
-		return $this->hasMany(Temple::class, 'country');
+		return $this->hasMany(Temple::class);
 	}
 
 	public function user_addresses()
 	{
-		return $this->hasMany(UserAddress::class, 'country');
+		return $this->hasMany(UserAddress::class);
 	}
 }

@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Seva
@@ -18,11 +19,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $sku_code
  * @property string $event
  * @property string $location
- * @property int $banner_image
- * @property int|null $background_image
- * @property int $feature_image
- * @property int $temple
- * @property int $seva_type
+ * @property int $banner_image_id
+ * @property int|null $background_image_id
+ * @property int $feature_image_id
+ * @property int $temple_id
+ * @property int $seva_type_id
  * @property Carbon $start_date
  * @property Carbon $expairy_date
  * @property bool $is_expaired
@@ -33,8 +34,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * 
  * @property Image $image
+ * @property SevaType $seva_type
+ * @property Temple $temple
  * @property Collection|Anouncement[] $anouncements
  * @property Collection|Event[] $events
  * @property Collection|SevaFaq[] $seva_faqs
@@ -46,14 +50,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Seva extends Model
 {
+	use SoftDeletes;
 	protected $table = 'sevas';
 
 	protected $casts = [
-		'banner_image' => 'int',
-		'background_image' => 'int',
-		'feature_image' => 'int',
-		'temple' => 'int',
-		'seva_type' => 'int',
+		'banner_image_id' => 'int',
+		'background_image_id' => 'int',
+		'feature_image_id' => 'int',
+		'temple_id' => 'int',
+		'seva_type_id' => 'int',
 		'is_expaired' => 'bool',
 		'reward_points' => 'int',
 		'is_active' => 'bool'
@@ -69,11 +74,11 @@ class Seva extends Model
 		'sku_code',
 		'event',
 		'location',
-		'banner_image',
-		'background_image',
-		'feature_image',
-		'temple',
-		'seva_type',
+		'banner_image_id',
+		'background_image_id',
+		'feature_image_id',
+		'temple_id',
+		'seva_type_id',
 		'start_date',
 		'expairy_date',
 		'is_expaired',
@@ -86,48 +91,63 @@ class Seva extends Model
 
 	public function image()
 	{
-		return $this->belongsTo(Image::class, 'feature_image');
+		return $this->belongsTo(Image::class, 'feature_image_id');
+	}
+
+	public function feature_image_id()
+	{
+		return $this->belongsTo(Image::class, 'feature_image_id');
+	}
+
+	public function banner_image_id()
+	{
+		return $this->belongsTo(Image::class, 'banner_image_id ');
+	}
+
+	public function background_image_id()
+	{
+		return $this->belongsTo(Image::class, 'background_image_id');
 	}
 
 	public function seva_type()
 	{
-		return $this->belongsTo(SevaType::class, 'seva_type');
+		return $this->belongsTo(SevaType::class);
 	}
 
 	public function temple()
 	{
-		return $this->belongsTo(Temple::class, 'temple');
+		return $this->belongsTo(Temple::class);
 	}
 
 	public function anouncements()
 	{
-		return $this->hasMany(Anouncement::class, 'seva');
+		return $this->hasMany(Anouncement::class);
 	}
 
 	public function events()
 	{
-		return $this->belongsToMany(Event::class, 'event_sevas', 'seva', 'event')
-					->withPivot('id', 'is_active')
+		return $this->belongsToMany(Event::class, 'event_sevas')
+					->withPivot('id', 'is_active', 'deleted_at')
 					->withTimestamps();
 	}
 
 	public function seva_faqs()
 	{
-		return $this->hasMany(SevaFaq::class, 'seva');
+		return $this->hasMany(SevaFaq::class);
 	}
 
 	public function seva_prices()
 	{
-		return $this->hasMany(SevaPrice::class, 'seva');
+		return $this->hasMany(SevaPrice::class);
 	}
 
 	public function seva_updates()
 	{
-		return $this->hasMany(SevaUpdate::class, 'seva');
+		return $this->hasMany(SevaUpdate::class);
 	}
 
 	public function user_carts()
 	{
-		return $this->hasMany(UserCart::class, 'seva');
+		return $this->hasMany(UserCart::class);
 	}
 }

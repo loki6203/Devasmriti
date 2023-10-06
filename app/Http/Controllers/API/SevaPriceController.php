@@ -1,121 +1,36 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\SevaPrice;
-use Illuminate\Http\Request;
 
 class SevaPriceController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $SevaPrices = SevaPrice::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $SevaPrices
-        ];
+    public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $SevaPrice = SevaPrice::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $SevaPrice
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SevaPrice  $SevaPrice
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SevaPrice $SevaPrice)
-    {
-        return [
-            "status" => 1,
-            "data" =>$SevaPrice
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\SevaPrice  $SevaPrice
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SevaPrice $SevaPrice)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SevaPrice  $SevaPrice
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SevaPrice $SevaPrice)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $SevaPrice->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $SevaPrice,
-            "msg" => "SevaPrice updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SevaPrice  $SevaPrice
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SevaPrice $SevaPrice)
-    {
-        $SevaPrice->delete();
-        return [
-            "status" => 1,
-            "data" => $SevaPrice,
-            "msg" => "SevaPrice deleted successfully"
-        ];
+    public function index(Request $request,$seva_id=0,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $data = SevaPrice::query();
+        // $data = $data->with('state.country');
+        if($seva_id>0){
+            $data = $data->where('seva_id',$seva_id);
+        }
+        if($id==0){
+            $PAGINATELIMIT = PAGINATELIMIT($request);
+            $data = $data->paginate($PAGINATELIMIT);
+        }else{
+            $data = $data->find($id);
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

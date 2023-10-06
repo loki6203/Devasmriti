@@ -9,15 +9,16 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Order
  * 
  * @property int $id
- * @property int $user
- * @property int $shipping_user_address
+ * @property int $user_id
+ * @property int $shipping_user_address_id
  * @property string|null $shipping_address
- * @property int $billing_user_address
+ * @property int $billing_user_address_id
  * @property string|null $billing_address
  * @property string $booking_type
  * @property string $payment_status
@@ -26,15 +27,18 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $transaction_id
  * @property float $org_price
  * @property float $reward_points
- * @property int|null $seva_coupon
+ * @property int|null $seva_coupon_id
  * @property float $coupon_amount
  * @property string|null $coupon_information
  * @property float $final_paid_amount
  * @property string|null $transaction_response
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * 
  * @property UserAddress $user_address
+ * @property SevaCoupon|null $seva_coupon
+ * @property User $user
  * @property Collection|OrderSeva[] $order_sevas
  * @property Collection|UserReward[] $user_rewards
  *
@@ -42,24 +46,25 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Order extends Model
 {
+	use SoftDeletes;
 	protected $table = 'orders';
 
 	protected $casts = [
-		'user' => 'int',
-		'shipping_user_address' => 'int',
-		'billing_user_address' => 'int',
+		'user_id' => 'int',
+		'shipping_user_address_id' => 'int',
+		'billing_user_address_id' => 'int',
 		'org_price' => 'float',
 		'reward_points' => 'float',
-		'seva_coupon' => 'int',
+		'seva_coupon_id' => 'int',
 		'coupon_amount' => 'float',
 		'final_paid_amount' => 'float'
 	];
 
 	protected $fillable = [
-		'user',
-		'shipping_user_address',
+		'user_id',
+		'shipping_user_address_id',
 		'shipping_address',
-		'billing_user_address',
+		'billing_user_address_id',
 		'billing_address',
 		'booking_type',
 		'payment_status',
@@ -68,7 +73,7 @@ class Order extends Model
 		'transaction_id',
 		'org_price',
 		'reward_points',
-		'seva_coupon',
+		'seva_coupon_id',
 		'coupon_amount',
 		'coupon_information',
 		'final_paid_amount',
@@ -77,26 +82,26 @@ class Order extends Model
 
 	public function user_address()
 	{
-		return $this->belongsTo(UserAddress::class, 'shipping_user_address');
+		return $this->belongsTo(UserAddress::class, 'shipping_user_address_id');
 	}
 
 	public function seva_coupon()
 	{
-		return $this->belongsTo(SevaCoupon::class, 'seva_coupon');
+		return $this->belongsTo(SevaCoupon::class);
 	}
 
 	public function user()
 	{
-		return $this->belongsTo(User::class, 'user');
+		return $this->belongsTo(User::class);
 	}
 
 	public function order_sevas()
 	{
-		return $this->hasMany(OrderSeva::class, 'order');
+		return $this->hasMany(OrderSeva::class);
 	}
 
 	public function user_rewards()
 	{
-		return $this->hasMany(UserReward::class, 'order');
+		return $this->hasMany(UserReward::class);
 	}
 }
