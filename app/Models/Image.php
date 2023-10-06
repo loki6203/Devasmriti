@@ -15,9 +15,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Image
  * 
  * @property int $id
+ * @property string $name
  * @property string $domain
  * @property string $url
- * @property string $Seva_Banner
+ * @property string $image_type
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -40,9 +41,10 @@ class Image extends Model
 	protected $table = 'images';
 
 	protected $fillable = [
+		'name',
 		'domain',
 		'url',
-		'Seva_Banner'
+		'image_type'
 	];
 
 	public function event_updates()

@@ -94,21 +94,6 @@ class Seva extends Model
 		return $this->belongsTo(Image::class, 'feature_image_id');
 	}
 
-	public function feature_image_id()
-	{
-		return $this->belongsTo(Image::class, 'feature_image_id');
-	}
-
-	public function banner_image_id()
-	{
-		return $this->belongsTo(Image::class, 'banner_image_id ');
-	}
-
-	public function background_image_id()
-	{
-		return $this->belongsTo(Image::class, 'background_image_id');
-	}
-
 	public function seva_type()
 	{
 		return $this->belongsTo(SevaType::class);
@@ -149,5 +134,19 @@ class Seva extends Model
 	public function user_carts()
 	{
 		return $this->hasMany(UserCart::class);
+	}
+	public function banner_image_id()
+	{
+		return $this->belongsTo(Image::class, 'banner_image_id');
+	}
+
+	public function background_image_id()
+	{
+		return $this->belongsTo(Image::class, 'background_image_id');
+	}
+
+	public function feature_image_id()
+	{
+		return $this->belongsTo(Image::class, 'feature_image_id');
 	}
 }
