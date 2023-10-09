@@ -197,6 +197,7 @@ class CreateUsersTable extends Migration
         if(!Schema::hasTable('seva_prices')){
             Schema::create('seva_prices', function (Blueprint $table){
                 $table->id();
+                $table->boolean('is_default')->default(0);
                 $table->foreignId('seva_id');
                 $table->foreign('seva_id')->references('id')->on('sevas')->onDelete('cascade');
                 $table->longText('title');
