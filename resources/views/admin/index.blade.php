@@ -64,7 +64,7 @@
                 <div class="mt-5 text-center">
                     <p class="mb-0">© <script>
                         document.write(new Date().getFullYear())
-                        </script> DevaSmriti. Crafted with <i class="mdi mdi-heart text-danger"></i> by Headrun</p>
+                        </script> DevaSmriti. Crafted with <i class="mdi mdi-heart text-danger"></i> by Vibho</p>
                 </div>
 
 

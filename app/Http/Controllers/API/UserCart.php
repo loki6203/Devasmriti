@@ -1,121 +1,78 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 
 use App\Models\UserCart;
-use Illuminate\Http\Request;
 
 class UserCartController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $UserCarts = UserCart::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $UserCarts
-        ];
+	public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $UserCart = UserCart::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $UserCart
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\UserCart  $UserCart
-     * @return \Illuminate\Http\Response
-     */
-    public function show(UserCart $UserCart)
-    {
-        return [
-            "status" => 1,
-            "data" =>$UserCart
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\UserCart  $UserCart
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(UserCart $UserCart)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\UserCart  $UserCart
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, UserCart $UserCart)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $UserCart->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $UserCart,
-            "msg" => "UserCart updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\UserCart  $UserCart
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(UserCart $UserCart)
-    {
-        $UserCart->delete();
-        return [
-            "status" => 1,
-            "data" => $UserCart,
-            "msg" => "UserCart deleted successfully"
-        ];
+    public function index(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $userid = login_User_ID();
+        if($request->method()=="POST" || $request->method()=="PUT"){
+            $required = [
+                "user_id"    => ['required|numeric','array'],
+                "seva_id"    => ['required|numeric','array'],
+                "seva_price_id"    => ['required|numeric','array'],
+                "qty"    => ['required|numeric','array']
+            ];
+            if($request->method()=="PUT"){
+                $required = [];
+            }
+            $validator = Validator::make($request->all(),$required);
+            if($validator->fails()){
+                $message = $validator->errors()->first();
+                $status  = $this->err;
+                $success = 0;
+            }else{
+                if(!empty($request->all())){
+                    try {
+                        if($request->method()=="POST"){
+                            // $request['user_id']=$userid;
+                            $data = UserCart::create($request->all());
+                            $message = "Added successfully";
+                        }else{
+                            $data = UserCart::where('id',$id)->update($request->all());
+                            $message = "Updated successfully";
+                        }
+                    } catch (\Exception $ex) {
+                        $message =  ERRORMESSAGE($ex->getMessage());
+                    }
+                }else{
+                    $message = "Please send atleast one column";
+                }
+            }
+        }else{
+            $data = UserCart::query();
+            $data = $data->with('seva')->with('seva_price');
+            if($id==0){
+                if($request->method()=="DELETE"){
+                    $data = $data->where('user_id',$userid)->forceDelete();
+                }else{
+                    $PAGINATELIMIT = PAGINATELIMIT($request);
+                    $data = $data->paginate($PAGINATELIMIT);
+                }
+            }else{
+                $data = $data->find($id);
+                if($request->method()=="DELETE"){
+                    $data->delete();
+                    $message = "Deleted successfully";
+                }
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

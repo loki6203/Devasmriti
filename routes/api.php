@@ -21,29 +21,29 @@ Route::middleware('jwt')->group(function(){
     Route::post('/user/post', 'API\UserController@profile_update');
 
 
-    Route::post('/states', 'API\StateController@states')->middleware('json')->withoutMiddleware('jwt');
-    Route::get('/states', 'API\StateController@states')->withoutMiddleware('jwt');
-    Route::get('/states/{id}', 'API\StateController@states')->withoutMiddleware('jwt');
-    Route::put('/states/{id}', 'API\StateController@states')->middleware('json')->withoutMiddleware('jwt');
-    Route::delete('/states/{id}', 'API\StateController@states')->withoutMiddleware('jwt');
+    Route::post('/states', 'API\StateController@index')->middleware('json')->withoutMiddleware('jwt');
+    Route::get('/states', 'API\StateController@index')->withoutMiddleware('jwt');
+    Route::get('/states/{id}', 'API\StateController@index')->withoutMiddleware('jwt');
+    Route::put('/states/{id}', 'API\StateController@index')->middleware('json')->withoutMiddleware('jwt');
+    Route::delete('/states/{id}', 'API\StateController@index')->withoutMiddleware('jwt');
     
-    Route::post('/city', 'API\CityController@cities')->middleware('json');
-    Route::get('/city', 'API\CityController@cities')->withoutMiddleware('jwt');
-    Route::get('/city/{id}', 'API\CityController@cities');
-    Route::put('/city/{id}', 'API\CityController@cities')->middleware('json');
-    Route::delete('/city/{id}', 'API\CityController@cities');
+    Route::post('/city', 'API\CityController@index')->middleware('json');
+    Route::get('/city', 'API\CityController@index')->withoutMiddleware('jwt');
+    Route::get('/city/{id}', 'API\CityController@index');
+    Route::put('/city/{id}', 'API\CityController@index')->middleware('json');
+    Route::delete('/city/{id}', 'API\CityController@index');
     
-    Route::post('/address', 'API\UserAddress@address')->middleware('json');
-    Route::get('/address', 'API\UserAddress@address');
-    Route::get('/address/{id}', 'API\UserAddress@address');
-    Route::put('/address/{id}', 'API\UserAddress@address')->middleware('json');
-    Route::delete('/address/{id}', 'API\UserAddress@address');
+    Route::post('/address', 'API\UserAddress@index')->middleware('json');
+    Route::get('/address', 'API\UserAddress@index');
+    Route::get('/address/{id}', 'API\UserAddress@index');
+    Route::put('/address/{id}', 'API\UserAddress@index')->middleware('json');
+    Route::delete('/address/{id}', 'API\UserAddress@index');
     
-    Route::post('/myfamily', 'API\UserFamilyDetailController@myfamily')->middleware('json');
-    Route::get('/myfamily', 'API\UserFamilyDetailController@myfamily');
-    Route::get('/myfamily/{id}', 'API\UserFamilyDetailController@myfamily');
-    Route::put('/myfamily/{id}', 'API\UserFamilyDetailController@myfamily')->middleware('json');
-    Route::delete('/myfamily/{id}', 'API\UserFamilyDetailController@myfamily');
+    Route::post('/myfamily', 'API\UserFamilyDetailController@index')->middleware('json');
+    Route::get('/myfamily', 'API\UserFamilyDetailController@index');
+    Route::get('/myfamily/{id}', 'API\UserFamilyDetailController@index');
+    Route::put('/myfamily/{id}', 'API\UserFamilyDetailController@index')->middleware('json');
+    Route::delete('/myfamily/{id}', 'API\UserFamilyDetailController@index');
 
     Route::get('/rasi', 'API\RasiController@index')->withoutMiddleware('jwt');
     Route::get('/rasi/{id}', 'API\RasiController@index')->withoutMiddleware('jwt');
@@ -72,4 +72,24 @@ Route::middleware('jwt')->group(function(){
     Route::get('/events', 'API\EventSevaController@index')->withoutMiddleware('jwt');
     Route::get('/events/{id}', 'API\EventSevaController@index')->withoutMiddleware('jwt');
     
+    Route::get('/seva/faqs/{sev_d}', 'API\SevaFaqController@index')->withoutMiddleware('jwt');
+    Route::get('/sevas/faqs/{sev_d}/{id}', 'API\SevaFaqController@index')->withoutMiddleware('jwt');
+
+    Route::get('/event/faqs/{sev_d}', 'API\EventFaqController@index')->withoutMiddleware('jwt');
+    Route::get('/event/faqs/{sev_d}/{id}', 'API\EventFaqController@index')->withoutMiddleware('jwt');
+
+    Route::post('/cart', 'API\UserCartController@index')->middleware('json');
+    Route::get('/cart', 'API\UserCartController@index');
+    Route::get('/cart/{id}', 'API\UserCartController@index');
+    Route::put('/cart/{id}', 'API\UserCartController@index')->middleware('json');
+    Route::delete('/cart/{id}', 'API\UserCartController@index');
+
+    Route::get('/coupons', 'API\SevaFaqController@index')->withoutMiddleware('jwt');
+    Route::get('/coupons/{id}', 'API\SevaFaqController@index')->withoutMiddleware('jwt');
+    Route::get('/coupon/checkCoupon/{code}', 'API\SevaFaqController@index');
+
+    Route::post('/bookings', 'API\OrderController@index')->middleware('json');
+    Route::get('/bookings', 'API\OrderController@index');
+    Route::get('/bookings/{id}', 'API\OrderController@index');
+    Route::put('/bookings/{id}', 'API\OrderController@index')->middleware('json');
 });

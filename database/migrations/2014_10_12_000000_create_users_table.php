@@ -39,6 +39,7 @@ class CreateUsersTable extends Migration
                 $table->integer('otp')->nullable();
                 $table->enum('user_type', ['user','superadmin'])->default('user');
                 $table->boolean('is_active')->default(1);
+                // $table->float('wallet',10,2)->default(0.00);
                 $table->rememberToken();
                 $table->timestamps();
                 $table->softDeletes();

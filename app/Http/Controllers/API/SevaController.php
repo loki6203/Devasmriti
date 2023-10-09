@@ -20,6 +20,17 @@ class SevaController extends Controller
         $message='';
         $success=1;
         $data = Seva::query();
+        if($request->has('is_suggested') && $request->get('is_suggested')==1){
+            if($id>0){
+
+            }else{
+                if($request->has('event_id')){
+                    
+                }else{
+
+                }
+            }
+        }
         $data = $data
         ->with('temple')
         ->with('seva_type')
@@ -30,9 +41,9 @@ class SevaController extends Controller
         ->with('feature_image_id')
         ->with('banner_image_id')
         ->with('seva_updates');
-        // if($request->has('state_id')){
-        //     $data = $data->where('state_id',$request->get('state_id'));
-        // }
+        if($request->has('seva_type_id')){
+            $data = $data->where('seva_type_id',$request->get('seva_type_id'));
+        }
         if($id==0){
             $PAGINATELIMIT = PAGINATELIMIT($request);
             $data = $data->paginate($PAGINATELIMIT);

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\User;
 use App\Models\Image;
+use App\Models\UserReward;
 
 class UserController extends Controller
 {
@@ -145,7 +146,12 @@ class UserController extends Controller
                     $message = "Uploading failed try again";
                 }
             }else{
-                $data = User::where('id',$userid)->with('image')->first();
+                $data           = User::where('id',$userid)->with('image')->first();
+                $credited       = UserReward::where('user_id',$userid)->where('is_credited',1)->sum('points');
+                $debited        = UserReward::where('user_id',$userid)->where('is_credited',0)->sum('points');
+                $rewars         = $credited-$debited;
+                $data['user']   = $data;
+                $data['wallet'] = ($rewars>0)?$rewars:0;
             }
         } catch (\Exception $ex) {
             $message =  ERRORMESSAGE($ex->getMessage());

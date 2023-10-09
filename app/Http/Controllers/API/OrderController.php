@@ -1,121 +1,89 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
+use App\Models\UserReward;
 use App\Models\Order;
-use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $Orders = Order::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $Orders
-        ];
+	public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Order = Order::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $Order
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Order  $Order
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Order $Order)
-    {
-        return [
-            "status" => 1,
-            "data" =>$Order
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Order  $Order
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Order $Order)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $Order
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Order $Order)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Order->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $Order,
-            "msg" => "Order updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Order  $Order
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Order $Order)
-    {
-        $Order->delete();
-        return [
-            "status" => 1,
-            "data" => $Order,
-            "msg" => "Order deleted successfully"
-        ];
+    public function address(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $userid = login_User_ID();
+        if($request->method()=="POST" || $request->method()=="PUT"){
+            $required = [
+                "seva_price_id"         => ['required|numeric','array'],
+                "extra_charges"         => 'required',
+                "coupon_code"           => 'nullable',
+                "final_paid_amount"     => 'required', 
+                'reward_points'         => 'nullable'
+            ];
+            if($request->method()=="PUT"){
+                $required = [];
+            }
+            $validator = Validator::make($request->all(),$required);
+            if($validator->fails()){
+                $message = $validator->errors()->first();
+                $status  = $this->err;
+                $success = 0;
+            }else{
+                if(!empty($request->all())){
+                    try {
+                        if($request->method()=="POST"){
+                            $request['user_id']=$userid;
+                            $data = Order::create($request->all());
+                            $message = "Please continue with payment if your order was pending. ";
+                        }else{
+                            $data = Order::where('id',$id)->update($request->all());
+                            if($data->reward_points>0){
+                                UserReward::create(array('user_id'=>$userid,'is_credited'=>0,'points'=>$data->reward_points,'order_id'=>$id));
+                            }
+                            $GetAllSevaPrices =[];
+                            $totalRewards = [];
+                            foreach($GetAllSevaPrices as $SevaPrice){
+                                if($SevaPrice->is_rewards_available>0){
+                                    $totalRewards[]=1;
+                                }
+                            }
+                            $totalRewards = array_sum($totalRewards);
+                            if($totalRewards>0){
+                                UserReward::create(array('user_id'=>$userid,'is_credited'=>1,'points'=>$totalRewards,'order_id'=>$id));
+                            }
+                            $message = "Updated successfully";
+                        }
+                    } catch (\Exception $ex) {
+                        $message =  ERRORMESSAGE($ex->getMessage());
+                    }
+                }else{
+                    $message = "Please send atleast one column";
+                }
+            }
+        }else{
+            $data = Order::query();
+            $data = $data->with('city')->with('country')->with('state');
+            if($id==0){
+                $PAGINATELIMIT = PAGINATELIMIT($request);
+                $data = $data->paginate($PAGINATELIMIT);
+            }else{
+                $data = $data->find($id);
+                if($request->method()=="DELETE"){
+                    $data->delete();
+                    $message = "Deleted successfully";
+                }
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

@@ -15,7 +15,7 @@ class UserFamilyDetailController extends Controller
     public function __construct(){
         // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-    public function address(Request $request,$id=0){
+    public function index(Request $request,$id=0){
         $data=array();
         $message='';
         $success=1;

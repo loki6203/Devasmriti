@@ -1,121 +1,36 @@
 <?php
 
-/**
- * Created by Reliese Controller.
- */
-
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\Commonreturn as CommonreturnResource;
 
 use App\Models\SevaFaq;
-use Illuminate\Http\Request;
 
 class SevaFaqController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $SevaFaqs = SevaFaq::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $SevaFaqs
-        ];
+	public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $SevaFaq = SevaFaq::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $SevaFaq
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\SevaFaq  $SevaFaq
-     * @return \Illuminate\Http\Response
-     */
-    public function show(SevaFaq $SevaFaq)
-    {
-        return [
-            "status" => 1,
-            "data" =>$SevaFaq
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\SevaFaq  $SevaFaq
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(SevaFaq $SevaFaq)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\SevaFaq  $SevaFaq
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, SevaFaq $SevaFaq)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $SevaFaq->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $SevaFaq,
-            "msg" => "SevaFaq updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\SevaFaq  $SevaFaq
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SevaFaq $SevaFaq)
-    {
-        $SevaFaq->delete();
-        return [
-            "status" => 1,
-            "data" => $SevaFaq,
-            "msg" => "SevaFaq deleted successfully"
-        ];
+    public function index(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $data = SevaFaq::query();
+        if($request->has('seva_id')){
+            $data = $data->where('seva_id',$request->get('seva_id'));
+        }
+        if($id==0){
+            $PAGINATELIMIT = PAGINATELIMIT($request);
+            $data = $data->paginate($PAGINATELIMIT);
+        }else{
+            $data = $data->find($id);
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }
