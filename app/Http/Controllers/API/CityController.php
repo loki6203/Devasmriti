@@ -38,7 +38,12 @@ class CityController extends Controller
                             $message = "Added successfully";
                         }else{
                             $data = City::where('id',$id)->update($request->all());
-                            $message = "Updated successfully";
+                            if($data>0){
+                                $message = "Updated successfully";
+                            }else{
+                                $message = "Updating failed";
+                            }
+                            $data = City::find($id);
                         }
                     } catch (\Exception $ex) {
                         $message =  ERRORMESSAGE($ex->getMessage());

@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
-use App\Models\UserAddress;
 
-class UserAddressController extends Controller
+use App\Models\UserCart;
+
+class UserCartController extends Controller
 {
 	public $succ = 200;
     public $err  = 202;
@@ -21,21 +22,18 @@ class UserAddressController extends Controller
         $success=1;
         $userid = login_User_ID();
         if($request->method()=="POST" || $request->method()=="PUT"){
-            $required = [
-                'fname' => 'required',
-                'lname' => 'required',
-                'email' => 'required',
-                'phone_no' => 'required',
-                'whatsup_no' => 'required',
-                'country' => 'required',
-                'state' => 'required',
-                'city' => 'required',
-                'address_1' => 'required',
-                'address_2' => 'nullable',
-                'pincode'=>'required'
-            ];
-            if($request->method()=="PUT"){
-                $required = [];
+            if($request->method()=="POST"){
+                $required = [
+                    'cart'                          => 'present|array',
+                    'cart.*.is_prasadam_available'  => 'nullable|boolean',
+                    'cart.*.user_id'                => 'required|integer',
+                    'cart.*.seva_id'                => 'required|integer',
+                    'cart.*.seva_price_id'          => 'required|integer',
+                    // 'cart.*.qty'                 => 'required|integer'
+                ];
+            }else{
+                $required = ['is_prasadam_available' => 'required|boolean'];
+                // $required = ['qty' => 'required|integer'];
             }
             $validator = Validator::make($request->all(),$required);
             if($validator->fails()){
@@ -45,12 +43,15 @@ class UserAddressController extends Controller
             }else{
                 if(!empty($request->all())){
                     try {
+                        $PostedData = $request->all();
                         if($request->method()=="POST"){
-                            $request['user_id']=$userid;
-                            $data = UserAddress::create($request->all());
+                            $data = [];
+                            foreach($PostedData['cart'] as $cart){
+                                $data[] =   UserCart::create($cart);
+                            }
                             $message = "Added successfully";
                         }else{
-                            $data = UserAddress::where('id',$id)->update($request->all());
+                            $data = UserCart::where('id',$id)->update($request->all());
                             $message = "Updated successfully";
                         }
                     } catch (\Exception $ex) {
@@ -61,11 +62,15 @@ class UserAddressController extends Controller
                 }
             }
         }else{
-            $data = UserAddress::query();
-            $data = $data->with('city')->with('country')->with('state');
+            $data = UserCart::query();
+            $data = $data->where('user_id',$userid)->with('seva')->with('seva_price');
             if($id==0){
-                $PAGINATELIMIT = PAGINATELIMIT($request);
-                $data = $data->paginate($PAGINATELIMIT);
+                if($request->method()=="DELETE"){
+                    $data = $data->forceDelete();
+                }else{
+                    $PAGINATELIMIT = PAGINATELIMIT($request);
+                    $data = $data->paginate($PAGINATELIMIT);
+                }
             }else{
                 $data = $data->find($id);
                 if($request->method()=="DELETE"){

@@ -44,11 +44,11 @@ class SevaCouponController extends Controller
         $userid = login_User_ID();
         if($code!=""){
             $message='Coupon applied successfully';
-            $coUpValid = 0;
+            $coUpValid = 1;
             if($coUpValid){
-                $data['coupon_amount'] = UserCart::where('user_id',$userid)->sum('seva_price.selling_price');
+                $data['coupon_amount'] = SevaCoupon::where('code',$code);
             }else{
-                $message='Invali coupon';
+                $message='Invalid coupon';
             }
         }else{
             $success=0;

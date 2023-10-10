@@ -16,19 +16,22 @@ class EventFaqController extends Controller
     public function __construct(){
         // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-    public function index(Request $request,$id=0){
+    public function index(Request $request,$event_id,$id=0){
         $data=array();
         $message='';
         $success=1;
         $data = EventFaq::query();
-        if($request->has('seva_id')){
-            $data = $data->where('seva_id',$request->get('seva_id'));
-        }
-        if($id==0){
-            $PAGINATELIMIT = PAGINATELIMIT($request);
-            $data = $data->paginate($PAGINATELIMIT);
+        if($event_id>0){
+            $data = $data->where('event_id',$event_id);
+            if($id==0){
+                $PAGINATELIMIT = PAGINATELIMIT($request);
+                $data = $data->paginate($PAGINATELIMIT);
+            }else{
+                $data = $data->find($id);
+            }
         }else{
-            $data = $data->find($id);
+            $message = "event_id is required";
+            $success = 0;
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return new CommonreturnResource($resp);

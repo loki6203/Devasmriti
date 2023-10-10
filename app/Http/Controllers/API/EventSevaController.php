@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
-use App\Models\EventSeva;
+use App\Models\Event;
 
-class RasiController extends Controller
+class EventSevaController extends Controller
 {
     public $succ = 200;
     public $err  = 202;
@@ -19,7 +19,7 @@ class RasiController extends Controller
         $data=array();
         $message='';
         $success=1;
-        $data = EventSeva::query();
+        $data = Event::query();
         $data = $data
         ->with('banner_image_id')
         ->with('background_image_id')

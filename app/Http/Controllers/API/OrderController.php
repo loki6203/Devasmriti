@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\UserReward;
 use App\Models\Order;
+use App\Models\OrderSeva;
+use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
@@ -22,15 +24,35 @@ class OrderController extends Controller
         $success=1;
         $userid = login_User_ID();
         if($request->method()=="POST" || $request->method()=="PUT"){
-            $required = [
-                "seva_price_id"         => ['required|numeric','array'],
-                "extra_charges"         => 'required',
-                "coupon_code"           => 'nullable',
-                "final_paid_amount"     => 'required', 
-                'reward_points'         => 'nullable'
-            ];
-            if($request->method()=="PUT"){
-                $required = [];
+            // $required = [
+            //     "seva_price_id"         => ['required|numeric','array'],
+            //     "extra_charges"         => 'required',
+            //     "coupon_code"           => 'nullable',
+            //     "final_paid_amount"     => 'required', 
+            //     'reward_points'         => 'nullable'
+            // ];
+            if($request->method()=="POST"){
+                $required = [
+                    'cart'                          => 'present|array',
+                    'cart.*.is_prasadam_available'  => 'nullable|boolean',
+                    'cart.*.seva_id'                => 'required|integer',
+                    'cart.*.seva_price_id'          => 'required|integer',
+                    "shipping_user_address_id"      => 'required', 
+                    "billing_user_address_id "      => 'required', 
+                    "coupon_code"                   => 'nullable',
+                    "original_price"                => 'required',
+                    "reward_points"                 => 'nullable', 
+                    "extra_charges"                 => 'nullable', 
+                    "coupon_amount"                 => 'nullable', 
+                    "final_paid_amount"             => 'required', 
+                    'is_from_cart'                  => 'required|boolean',
+                ];
+            }else{
+                $required = [
+                    'payment_status'        => ['required',Rule::in(['Processing','Failed','Success'])],
+                    "transaction_id"        => 'required',
+                    "transaction_response"  => 'required|json'
+                ];
             }
             $validator = Validator::make($request->all(),$required);
             if($validator->fails()){
@@ -39,26 +61,49 @@ class OrderController extends Controller
                 $success = 0;
             }else{
                 if(!empty($request->all())){
+                    $ProdData = $request->all();
                     try {
                         if($request->method()=="POST"){
-                            $request['user_id']=$userid;
-                            $data = Order::create($request->all());
-                            $message = "Please continue with payment if your order was pending. ";
+                            $ProdData['user_id']=$userid;
+                            $Cart     = $ProdData['cart'];
+                            unset($ProdData['cart']);
+                            unset($ProdData['is_from_cart']);
+                            $ProdData['reference_id'] = Reff_No_Generate();
+                            $orderData = Order::create($ProdData);
+                            if($orderData){
+                                foreach($Cart as $ord){
+                                    OrderSeva::create($ord);
+                                }
+                                $message = "Please continue with payment if your order was pending. ";
+                                $data = Order::with('order_sevas')->find($orderData->id);
+                            }else{
+                                $success = 0;
+                                $message = "Ordering failed try again...";
+                                $data = null;
+                            }
                         }else{
                             $data = Order::where('id',$id)->update($request->all());
-                            if($data->reward_points>0){
-                                UserReward::create(array('user_id'=>$userid,'is_credited'=>0,'points'=>$data->reward_points,'order_id'=>$id));
-                            }
-                            $GetAllSevaPrices =[];
-                            $totalRewards = [];
-                            foreach($GetAllSevaPrices as $SevaPrice){
-                                if($SevaPrice->is_rewards_available>0){
-                                    $totalRewards[]=1;
+                            if($ProdData['payment_status']=='Success'){
+                                if($data->reward_points>0){
+                                    $WhereDr = array('user_id'=>$userid,'is_credited'=>0,'points'=>$data->reward_points,'order_id'=>$id);
+                                    if(UserReward::where($WhereDr)->count()==0){
+                                        UserReward::create($WhereDr);
+                                    }
                                 }
-                            }
-                            $totalRewards = array_sum($totalRewards);
-                            if($totalRewards>0){
-                                UserReward::create(array('user_id'=>$userid,'is_credited'=>1,'points'=>$totalRewards,'order_id'=>$id));
+                                $GetAllSevaPrices =[];
+                                $totalRewards = [];
+                                foreach($GetAllSevaPrices as $SevaPrice){
+                                    if($SevaPrice->is_rewards_available>0){
+                                        $totalRewards[]=1;
+                                    }
+                                }
+                                $totalRewards = array_sum($totalRewards);
+                                if($totalRewards>0){
+                                    $WhereCr = array('user_id'=>$userid,'is_credited'=>1,'points'=>$totalRewards,'order_id'=>$id);
+                                    if(UserReward::where($WhereCr)->count()==0){
+                                        UserReward::create($WhereCr);
+                                    }
+                                }
                             }
                             $message = "Updated successfully";
                         }
@@ -71,7 +116,7 @@ class OrderController extends Controller
             }
         }else{
             $data = Order::query();
-            $data = $data->with('city')->with('country')->with('state');
+            $data = $data->with('order_sevas');
             if($id==0){
                 $PAGINATELIMIT = PAGINATELIMIT($request);
                 $data = $data->paginate($PAGINATELIMIT);

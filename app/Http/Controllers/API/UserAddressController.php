@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
+use App\Models\UserAddress;
 
-use App\Models\UserCart;
-
-class UserCartController extends Controller
+class UserAddressController extends Controller
 {
 	public $succ = 200;
     public $err  = 202;
@@ -23,10 +22,17 @@ class UserCartController extends Controller
         $userid = login_User_ID();
         if($request->method()=="POST" || $request->method()=="PUT"){
             $required = [
-                "user_id"    => ['required|numeric','array'],
-                "seva_id"    => ['required|numeric','array'],
-                "seva_price_id"    => ['required|numeric','array'],
-                "qty"    => ['required|numeric','array']
+                'fname' => 'required',
+                'lname' => 'required',
+                'email' => 'required',
+                'phone_no' => 'required',
+                'whatsup_no' => 'required',
+                'country_id' => 'required',
+                'state_id' => 'required',
+                'city_id' => 'required',
+                'address_1' => 'required',
+                'address_2' => 'nullable',
+                'pincode'=>'required'
             ];
             if($request->method()=="PUT"){
                 $required = [];
@@ -40,12 +46,17 @@ class UserCartController extends Controller
                 if(!empty($request->all())){
                     try {
                         if($request->method()=="POST"){
-                            // $request['user_id']=$userid;
-                            $data = UserCart::create($request->all());
+                            $request['user_id']=$userid;
+                            $data = UserAddress::create($request->all());
                             $message = "Added successfully";
                         }else{
-                            $data = UserCart::where('id',$id)->update($request->all());
-                            $message = "Updated successfully";
+                            $data = UserAddress::where('id',$id)->update($request->all());
+                            if($data>0){
+                                $message = "Updated successfully";
+                            }else{
+                                $message = "Updating failed";
+                            }
+                            $data = UserAddress::find($id);
                         }
                     } catch (\Exception $ex) {
                         $message =  ERRORMESSAGE($ex->getMessage());
@@ -55,15 +66,11 @@ class UserCartController extends Controller
                 }
             }
         }else{
-            $data = UserCart::query();
-            $data = $data->with('seva')->with('seva_price');
+            $data = UserAddress::query();
+            $data = $data->with('city')->with('country')->with('state');
             if($id==0){
-                if($request->method()=="DELETE"){
-                    $data = $data->where('user_id',$userid)->forceDelete();
-                }else{
-                    $PAGINATELIMIT = PAGINATELIMIT($request);
-                    $data = $data->paginate($PAGINATELIMIT);
-                }
+                $PAGINATELIMIT = PAGINATELIMIT($request);
+                $data = $data->paginate($PAGINATELIMIT);
             }else{
                 $data = $data->find($id);
                 if($request->method()=="DELETE"){

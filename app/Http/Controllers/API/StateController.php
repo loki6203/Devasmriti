@@ -38,7 +38,12 @@ class StateController extends Controller
                             $message = "Added successfully";
                         }else{
                             $data = State::where('id',$id)->update($request->all());
-                            $message = "Updated successfully";
+                            if($data>0){
+                                $message = "Updated successfully";
+                            }else{
+                                $message = "Updating failed";
+                            }
+                            $data = State::find($id);
                         }
                     } catch (\Exception $ex) {
                         $message =  ERRORMESSAGE($ex->getMessage());

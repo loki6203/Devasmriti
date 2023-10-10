@@ -62,8 +62,9 @@ class UserController extends Controller
         $message='';
         $success=0;
         if($validator->fails()) {
-            $message = 'Please enter all (*) fields';
-            $status = $this->err;
+            $message = $validator->errors()->first();
+            $status  = $this->err;
+            $success = 0;
         }else{
             $UserDetail = User::where('otp','=',$request->otp)->where('id','=',$request->user_id)->first();
             if(!is_null($UserDetail)){
@@ -127,7 +128,16 @@ class UserController extends Controller
         try{
             if($request->method()=="PUT"){
                 $data = User::where('id',$userid)->update($request->all());
-                $message = "Updated successfully";
+                if($data>0){
+                    $message = "Updated successfully";
+                }else{
+                    $message = "Updating failed";
+                }
+                $data           = User::where('id',$userid)->with('image')->first();
+                $credited       = UserReward::where('user_id',$userid)->where('is_credited',1)->sum('points');
+                $debited        = UserReward::where('user_id',$userid)->where('is_credited',0)->sum('points');
+                $rewars         = $credited-$debited;
+                $data['wallet'] = ($rewars>0)?$rewars:0;
             }else if($request->method()=="POST"){
                 $file = @$request->file('file');
                 if ($file != '' && $file != null && $file != 'undefined') {
@@ -150,7 +160,6 @@ class UserController extends Controller
                 $credited       = UserReward::where('user_id',$userid)->where('is_credited',1)->sum('points');
                 $debited        = UserReward::where('user_id',$userid)->where('is_credited',0)->sum('points');
                 $rewars         = $credited-$debited;
-                $data['user']   = $data;
                 $data['wallet'] = ($rewars>0)?$rewars:0;
             }
         } catch (\Exception $ex) {

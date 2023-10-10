@@ -16,19 +16,22 @@ class SevaFaqController extends Controller
     public function __construct(){
         // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-    public function index(Request $request,$id=0){
+    public function index(Request $request,$seva_id,$id=0){
         $data=array();
         $message='';
         $success=1;
         $data = SevaFaq::query();
-        if($request->has('seva_id')){
-            $data = $data->where('seva_id',$request->get('seva_id'));
-        }
-        if($id==0){
-            $PAGINATELIMIT = PAGINATELIMIT($request);
-            $data = $data->paginate($PAGINATELIMIT);
+        if($seva_id>0){
+            $data = $data->where('seva_id',$seva_id);
+            if($id==0){
+                $PAGINATELIMIT = PAGINATELIMIT($request);
+                $data = $data->paginate($PAGINATELIMIT);
+            }else{
+                $data = $data->find($id);
+            }
         }else{
-            $data = $data->find($id);
+            $message = "seva_id is required";
+            $success = 0;
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return new CommonreturnResource($resp);

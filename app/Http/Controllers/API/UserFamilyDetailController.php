@@ -22,7 +22,7 @@ class UserFamilyDetailController extends Controller
         $userid = login_User_ID();
         if($request->method()=="POST" || $request->method()=="PUT"){
             $required = [
-                'family_type' => 'required',
+                'family_type' => 'nullable',
                 'full_name' => 'required',
                 'dob' => 'required',
                 'relation_id' => 'required',
@@ -48,7 +48,12 @@ class UserFamilyDetailController extends Controller
                             $message = "Added successfully";
                         }else{
                             $data = UserFamilyDetail::where('id',$id)->update($request->all());
-                            $message = "Updated successfully";
+                            if($data>0){
+                                $message = "Updated successfully";
+                            }else{
+                                $message = "Updating failed";
+                            }
+                            $data = UserFamilyDetail::find($id);
                         }
                     } catch (\Exception $ex) {
                         $message =  ERRORMESSAGE($ex->getMessage());

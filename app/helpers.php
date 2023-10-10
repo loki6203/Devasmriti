@@ -1,7 +1,16 @@
 <?php
+
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+
+if(!function_exists('UniqueMachineID')){
+    function UniqueMachineID($salt = "") {
+        $fingerprint = [php_uname(), disk_total_space('.'), filectime('/'), phpversion()];
+        return hash('sha256', json_encode($fingerprint));
+    }
+}
 
 if(!function_exists('PAGINATELIMIT')){
     function PAGINATELIMIT($request){
@@ -51,8 +60,8 @@ if(!function_exists('login_User_ID')){
 }
 if(!function_exists('Generate_Otp')){
     function Generate_Otp(){
-        //return 1234;
-        return substr(str_shuffle("0123456789"), 0, 5);
+        return 1234;
+        //return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
 if(!function_exists('Generate_Password')){
@@ -71,12 +80,12 @@ if(!function_exists('PAN_ADHAR_TOKEN')){
         return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyOTQzNzE2OSwianRpIjoiOGQxMGYwMmItYmUzZi00YWRjLWEyMzctNDhlZjMyYjZkNzdiIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmNzZWtoYXJjaGFsbGFndW5kbGFAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTYyOTQzNzE2OSwiZXhwIjoxOTQ0Nzk3MTY5LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.LpVw0P5Ix4wyMm5TMHDOwV_OnUNEp9IxkkMsv2BhWuw';
     }
 }
-if(!function_exists('Acc_No_Generate')){
-    function Acc_No_Generate(){
+if(!function_exists('Reff_No_Generate')){
+    function Reff_No_Generate(){
         $Acc_Num = substr(str_shuffle("0123456789"), 0, 12);
-        $Acc_Check = UserDetail::where('acc_number','=',$Acc_Num)->count();
+        $Acc_Check = Order::where('reference_id','=',$Acc_Num)->count();
         if($Acc_Check>0){
-            $this->Acc_No_Generate();
+            $this->Reff_No_Generate();
         }else{
             return $Acc_Num;
         }
@@ -128,51 +137,6 @@ if(!function_exists('Invoice_id')) {
             $dynamic_id   = $string. $last_id;
         }
         return  $dynamic_id;
-    }
-}
-if(!function_exists('Updated_User_Amt')){
-    function Updated_User_Amt($user_id)
-    {
-       $AccountHistory = AccountHistory::where('user_id','=',$user_id)->get();
-       $credit = array();
-       $debit  = array();
-       if(count($AccountHistory)>0){
-            foreach($AccountHistory as $history){
-                if($history->cr_or_dr=='credit'){
-                    $credit[]= $history->amount;
-                }else{
-                    $debit[]= $history->amount;
-                }
-            }
-       }
-       $Amount  = array_sum($credit)-array_sum($debit);
-       $Tot_Amt = round($Amount,2);
-       $UserDetail = UserDetail::where('user_id','=',$user_id)->first();
-       $UserDetail->acc_balance = $Tot_Amt;
-       $UserDetail->save();
-       return $Tot_Amt;
-    }
-}
-if(!function_exists('Cr_Or_Dr_Amount')){
-    function Cr_Or_Dr_Amount($paymtype,$amount,$cr_or_dr,$user_id,$Details)
-    {
-        $Check = AccountHistory::where('txn_id','=',$Details->txn_id)->count();
-        if($Check==0){
-            $AccountHistory                     = new AccountHistory();
-            $AccountHistory->cr_or_dr           = $cr_or_dr;
-            $AccountHistory->user_id            = $user_id;
-            $AccountHistory->amount             = $amount;
-            $AccountHistory->action_type        = $paymtype;
-            $AccountHistory->description        = $Details->description;
-            $AccountHistory->transaction_id     = $Details->id;
-            $AccountHistory->created_at         = curr_dt();
-            $AccountHistory->payment_details    = $Details;
-            $AccountHistory->txn_id             = $Details->txn_id;
-            $AccountHistory->save();
-            $closing = Updated_User_Amt($user_id);
-            $AccountHistory->closing_balance = $closing;
-            $AccountHistory->save();
-        }
     }
 }
 if(!function_exists('Generate_Transaction')){

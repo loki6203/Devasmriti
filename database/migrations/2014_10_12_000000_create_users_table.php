@@ -50,18 +50,21 @@ class CreateUsersTable extends Migration
                 $table->id();
                 $table->string('name')->nullable();
                 $table->boolean('is_active')->default(1);
+                $table->boolean('is_latest')->default(1);
                 $table->timestamps();
             });
         }
         if(!Schema::hasTable('states')){
             Schema::create('states', function (Blueprint $table) {
                 $table->id();
-                $table->string('name');
+                $table->string('name',50)->unique();
                 $table->foreignId('country_id');
                 $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
                 $table->boolean('is_active')->default(1);
+                $table->boolean('is_latest')->default(1);
                 $table->timestamps();
                 $table->softDeletes();
+                $table->unique(['country_id','name']);
             });
         }
         if(!Schema::hasTable('cities')){
@@ -71,6 +74,7 @@ class CreateUsersTable extends Migration
                 $table->foreignId('state_id');
                 $table->foreign('state_id')->references('id')->on('states')->onDelete('cascade');
                 $table->boolean('is_active')->default(1);
+                $table->boolean('is_latest')->default(1);
                 $table->timestamps();
                 $table->softDeletes();
             });
@@ -289,7 +293,8 @@ class CreateUsersTable extends Migration
                 $table->longText('description');
                 $table->boolean('is_active')->default(1);
                 $table->timestamps();  
-                $table->softDeletes();               
+                $table->softDeletes();
+                $table->unique(['family_type','user_id','full_name']);            
             });
         }
         if(!Schema::hasTable('user_addresses')){
@@ -297,6 +302,7 @@ class CreateUsersTable extends Migration
                 $table->id();
                 $table->foreignId('user_id');
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->string('address_name');
                 $table->string('fname');
                 $table->string('lname');
                 $table->string('email')->nullable();
@@ -309,11 +315,12 @@ class CreateUsersTable extends Migration
                 $table->foreignId('city_id');
                 $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
                 $table->longText('address_1');
-                $table->longText('address_2');
+                $table->longText('address_2')->nullable();
                 $table->smallInteger('pincode');
                 $table->boolean('is_active')->default(1);
                 $table->timestamps();  
-                $table->softDeletes();            
+                $table->softDeletes();    
+                $table->unique(['address_name','user_id']);        
             });
         }
         if(!Schema::hasTable('seva_coupons')){
@@ -327,11 +334,35 @@ class CreateUsersTable extends Migration
                 $table->boolean('is_for_new_user_only')->default(0);
                 $table->integer('per_user_limit_count')->default(1);
                 $table->integer('max_users_count')->default(1);
-                $table->longText('users')->nullable();
-                $table->longText('sevas')->nullable();
+                // $table->longText('users')->nullable();
+                // $table->longText('sevas')->nullable();
                 $table->date('start_date');
                 $table->date('end_date');
                 $table->string('description');
+                $table->boolean('is_active')->default(1);
+                $table->timestamps();   
+                $table->softDeletes();         
+            });
+        }
+        if(!Schema::hasTable('seva_coupon_users')){
+            Schema::create('seva_coupon_users', function (Blueprint $table){
+                $table->id();
+                $table->foreignId('seva_coupon_id');
+                $table->foreign('seva_coupon_id')->references('id')->on('images')->onDelete('cascade');
+                $table->foreignId('user_id');
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+                $table->boolean('is_active')->default(1);
+                $table->timestamps();   
+                $table->softDeletes();         
+            });
+        }
+        if(!Schema::hasTable('seva_coupon_sevas')){
+            Schema::create('seva_coupon_sevas', function (Blueprint $table){
+                $table->id();
+                $table->foreignId('seva_id');
+                $table->foreign('seva_id')->references('id')->on('sevas')->onDelete('cascade');
+                $table->foreignId('user_id');
+                $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
                 $table->boolean('is_active')->default(1);
                 $table->timestamps();   
                 $table->softDeletes();         
@@ -353,13 +384,14 @@ class CreateUsersTable extends Migration
                 $table->string('reference_id',50)->unique();
                 $table->string('invoice_id',50)->unique();
                 $table->string('transaction_id',50)->nullable()->unique();
-                $table->float('org_price', 10, 2);
-                $table->float('reward_points', 10, 2);
+                $table->float('original_price', 10, 2)->default(0.00);
+                $table->float('extra_charges', 10, 2)->default(0.00);
+                $table->float('reward_points', 10, 2)->default(0.00);
                 $table->foreignId('seva_coupon_id')->nullable();
                 $table->foreign('seva_coupon_id')->references('id')->on('seva_coupons')->onDelete('cascade');
                 $table->float('coupon_amount', 10, 2)->default(0.00);
                 $table->longText('coupon_information')->nullable();
-                $table->float('final_paid_amount', 10, 2);
+                $table->float('final_paid_amount', 10, 2)->default(0.00);
                 $table->longText('transaction_response')->nullable();
                 $table->timestamps();     
                 $table->softDeletes();         
@@ -376,6 +408,7 @@ class CreateUsersTable extends Migration
                 $table->float('base_price', 10, 2)->default(0.00);
                 $table->float('selling_price', 10, 2)->default(0.00);
                 $table->longText('seva_price_information')->nullable();
+                $table->boolean('is_prasadam_available')->default(0);
                 $table->timestamps();
                 $table->softDeletes();             
             });
@@ -408,7 +441,7 @@ class CreateUsersTable extends Migration
         if(!Schema::hasTable('user_cart')){
             Schema::create('user_cart', function (Blueprint $table){
                 $table->id();
-                $table->string('reference_id');
+                $table->string('reference_id')->nullable();
                 $table->foreignId('user_id')->nullable();
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
                 $table->foreignId('seva_id');
@@ -419,6 +452,7 @@ class CreateUsersTable extends Migration
                 $table->float('base_price', 10, 2)->default(0.00);
                 $table->float('selling_price', 10, 2)->default(0.00);
                 $table->boolean('is_active')->default(1);
+                $table->boolean('is_prasadam_available')->default(0);
                 $table->timestamps();  
                 $table->softDeletes();            
             });
@@ -480,5 +514,7 @@ class CreateUsersTable extends Migration
         Schema::dropIfExists('anouncements');
         Schema::dropIfExists('faqs');
         Schema::dropIfExists('testimonials');
+        Schema::dropIfExists('seva_coupon_users');
+        Schema::dropIfExists('seva_coupon_sevas');
     }
 }

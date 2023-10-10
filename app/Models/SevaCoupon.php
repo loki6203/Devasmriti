@@ -80,4 +80,9 @@ class SevaCoupon extends Model
 	{
 		return $this->hasMany(Order::class);
 	}
+
+	public function sevas()
+	{
+		return $this->hasMany(Seva::class);
+	}
 }
