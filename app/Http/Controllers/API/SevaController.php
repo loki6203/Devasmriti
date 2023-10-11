@@ -50,7 +50,7 @@ class SevaController extends Controller
         $data = $data->withCount(['user_carts' => function ($q) use ($userid) {
             $q->where('user_id',$userid);
         }]);
-        $data = $data->with(["seva_prices.user_carts" => function ($q) use ($userid) {
+        $data = $data->withCount(["seva_prices.user_carts" => function ($q) use ($userid) {
             $q->where('user_id',$userid);
         }]);
         if($request->has('seva_type_id')){
