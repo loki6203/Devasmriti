@@ -141,12 +141,15 @@ class UserController extends Controller
             }else if($request->method()=="POST"){
                 $file = @$request->file('file');
                 if ($file != '' && $file != null && $file != 'undefined') {
-                    $destinationPath = public_path('profile_pics');
+                    if (!file_exists(public_path('User'))){
+                        mkdir(public_path('User'),0777,true);
+                    }
+                    $destinationPath = public_path('User');
                     $url = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();
-                    $data->url          = $url;
+                    $data->url          = $destinationPath.'/'.$url;
                     $data->domain       = url('/');
                     $data->image_type   = 'User';
                     $data->name         = $orgname;
