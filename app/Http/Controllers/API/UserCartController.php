@@ -47,7 +47,11 @@ class UserCartController extends Controller
                         if($request->method()=="POST"){
                             $data = [];
                             foreach($PostedData['cart'] as $cart){
-                                $data[] =   UserCart::create($cart);
+                                $wherecart = $cart;
+                                unset($wherecart['is_prasadam_available']);
+                                if(UserCart::where($wherecart)->count()==0){
+                                    $data[] =   UserCart::create($cart);
+                                }
                             }
                             $message = "Added successfully";
                         }else{

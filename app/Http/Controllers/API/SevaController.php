@@ -19,6 +19,12 @@ class SevaController extends Controller
         $data=array();
         $message='';
         $success=1;
+        $userid = login_User_ID();
+        if($userid!='' && $userid>0){
+            $userid = $userid;
+        }else{
+            $userid = 0;
+        }
         $data = Seva::query();
         if($request->has('is_suggested') && $request->get('is_suggested')==1){
             if($id>0){
@@ -41,6 +47,12 @@ class SevaController extends Controller
         ->with('feature_image_id')
         ->with('banner_image_id')
         ->with('seva_updates');
+        $data = $data->withCount(['user_carts' => function ($q) use ($userid) {
+            $q->where('user_id',$userid);
+        }]);
+        $data = $data->withCount(['seva_prices.user_carts' => function ($q) use ($userid) {
+            $q->where('user_id',$userid);
+        }]);
         if($request->has('seva_type_id')){
             $data = $data->where('seva_type_id',$request->get('seva_type_id'));
         }
