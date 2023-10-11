@@ -34,7 +34,7 @@ class StateController extends Controller
                 if(!empty($request->all())){
                     try {
                         if($request->method()=="POST"){
-                            State::update(['is_latest'=>0]);
+                            State::query()->update(['is_latest'=>0]);
                             $data = State::create($request->all());
                             $message = "Added successfully";
                         }else{

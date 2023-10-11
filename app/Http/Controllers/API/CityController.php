@@ -34,7 +34,7 @@ class CityController extends Controller
                 if(!empty($request->all())){
                     try {
                         if($request->method()=="POST"){
-                            City::update(['is_latest'=>0]);
+                            City::query()->update(['is_latest'=>0]);
                             $data = City::create($request->all());
                             $message = "Added successfully";
                         }else{
