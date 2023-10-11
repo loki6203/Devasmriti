@@ -45,14 +45,13 @@ class SevaController extends Controller
         ->with('background_image_id')
         ->with('feature_image_id')
         ->with('banner_image_id')
-        ->with('seva_updates');
+        ->with('seva_updates')
+        ->with('seva_prices');
         $data = $data->withCount(['user_carts' => function ($q) use ($userid) {
             $q->where('user_id',$userid);
         }]);
-        $data = $data->withCount([
-            'seva_prices', 
-            'seva_prices as user_carts_count' => function ($q) use ($userid) {
-                $q->where('user_id',$userid);
+        $data = $data->with(["seva_prices.user_carts" => function ($q) use ($userid) {
+            $q->where('user_id',$userid);
         }]);
         if($request->has('seva_type_id')){
             $data = $data->where('seva_type_id',$request->get('seva_type_id'));
