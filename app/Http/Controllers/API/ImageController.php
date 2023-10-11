@@ -33,7 +33,7 @@ class ImageController extends Controller
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();
-                    $data->url          = $destinationPath.'/'.$url;
+                    $data->url          = $url;
                     $data->domain       = url('/');
                     $data->image_type   = $request->input('image_type');
                     $data->name         = $orgname;
