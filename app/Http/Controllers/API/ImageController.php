@@ -25,12 +25,15 @@ class ImageController extends Controller
             try{
                 $file = @$request->file('file');
                 if ($file != '' && $file != null && $file != 'undefined') {
-                    $destinationPath = public_path('profile_pics');
+                    if (!file_exists(public_path($request->input('image_type')))){
+                        mkdir(public_path($request->input('image_type')),0777,true);
+                    }
+                    $destinationPath = public_path($request->input('image_type'));
                     $url = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();
-                    $data->url          = $url;
+                    $data->url          = $destinationPath.'/'.$url;
                     $data->domain       = url('/');
                     $data->image_type   = $request->input('image_type');
                     $data->name         = $orgname;
