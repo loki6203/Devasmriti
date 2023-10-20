@@ -64,6 +64,7 @@ class UserFamilyDetailController extends Controller
             }
         }else{
             $data = UserFamilyDetail::query();
+            $data = $data->where('user_id',$userid);
             $data = $data->with('rasi')->with('relation');
             if($id==0){
                 $PAGINATELIMIT = PAGINATELIMIT($request);

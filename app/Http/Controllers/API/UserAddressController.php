@@ -67,6 +67,7 @@ class UserAddressController extends Controller
             }
         }else{
             $data = UserAddress::query();
+            $data = $data->where('user_id',$userid);
             $data = $data->with('city')->with('country')->with('state');
             if($id==0){
                 $PAGINATELIMIT = PAGINATELIMIT($request);
