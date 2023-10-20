@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $name
  * @property int $state_id
  * @property bool $is_active
+ * @property bool $is_latest
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -35,13 +36,15 @@ class City extends Model
 
 	protected $casts = [
 		'state_id' => 'int',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'is_latest' => 'bool'
 	];
 
 	protected $fillable = [
 		'name',
 		'state_id',
-		'is_active'
+		'is_active',
+		'is_latest'
 	];
 
 	public function state()

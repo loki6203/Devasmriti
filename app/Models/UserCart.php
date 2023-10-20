@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class UserCart
  * 
  * @property int $id
- * @property string $reference_id
+ * @property string|null $reference_id
  * @property int|null $user_id
  * @property int $seva_id
  * @property int $seva_price_id
@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $base_price
  * @property float $selling_price
  * @property bool $is_active
+ * @property bool $is_prasadam_available
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -44,7 +45,8 @@ class UserCart extends Model
 		'qty' => 'int',
 		'base_price' => 'float',
 		'selling_price' => 'float',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'is_prasadam_available' => 'bool'
 	];
 
 	protected $fillable = [
@@ -55,7 +57,8 @@ class UserCart extends Model
 		'qty',
 		'base_price',
 		'selling_price',
-		'is_active'
+		'is_active',
+		'is_prasadam_available'
 	];
 
 	public function seva()

@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property Image|null $image
  * @property Collection|Order[] $orders
+ * @property Collection|SevaCouponSeva[] $seva_coupon_sevas
+ * @property Collection|SevaCouponUser[] $seva_coupon_users
  * @property Collection|UserAddress[] $user_addresses
  * @property Collection|UserCart[] $user_carts
  * @property Collection|UserFamilyDetail[] $user_family_details
@@ -83,6 +85,16 @@ class User extends Model
 	public function orders()
 	{
 		return $this->hasMany(Order::class);
+	}
+
+	public function seva_coupon_sevas()
+	{
+		return $this->hasMany(SevaCouponSeva::class);
+	}
+
+	public function seva_coupon_users()
+	{
+		return $this->hasMany(SevaCouponUser::class);
 	}
 
 	public function user_addresses()

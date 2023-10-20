@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class SevaPrice
  * 
  * @property int $id
+ * @property bool $is_default
  * @property int $seva_id
  * @property string $title
  * @property float $base_price
@@ -38,6 +39,7 @@ class SevaPrice extends Model
 	protected $table = 'seva_prices';
 
 	protected $casts = [
+		'is_default' => 'bool',
 		'seva_id' => 'int',
 		'base_price' => 'float',
 		'selling_price' => 'float',
@@ -47,6 +49,7 @@ class SevaPrice extends Model
 	];
 
 	protected $fillable = [
+		'is_default',
 		'seva_id',
 		'title',
 		'base_price',

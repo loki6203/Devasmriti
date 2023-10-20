@@ -22,8 +22,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property bool $is_for_new_user_only
  * @property int $per_user_limit_count
  * @property int $max_users_count
- * @property string|null $users
- * @property string|null $sevas
  * @property Carbon $start_date
  * @property Carbon $end_date
  * @property string $description
@@ -63,8 +61,6 @@ class SevaCoupon extends Model
 		'is_for_new_user_only',
 		'per_user_limit_count',
 		'max_users_count',
-		'users',
-		'sevas',
 		'start_date',
 		'end_date',
 		'description',
@@ -79,10 +75,5 @@ class SevaCoupon extends Model
 	public function orders()
 	{
 		return $this->hasMany(Order::class);
-	}
-
-	public function sevas()
-	{
-		return $this->hasMany(Seva::class);
 	}
 }

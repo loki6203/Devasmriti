@@ -28,6 +28,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $expairy_date
  * @property bool $is_expaired
  * @property string|null $expairy_label
+ * @property string $extracharges_label
+ * @property int $extracharges_percentage
  * @property int $reward_points
  * @property string $description
  * @property string $additional_information
@@ -41,6 +43,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Temple $temple
  * @property Collection|Anouncement[] $anouncements
  * @property Collection|Event[] $events
+ * @property Collection|SevaCouponSeva[] $seva_coupon_sevas
  * @property Collection|SevaFaq[] $seva_faqs
  * @property Collection|SevaPrice[] $seva_prices
  * @property Collection|SevaUpdate[] $seva_updates
@@ -60,6 +63,7 @@ class Seva extends Model
 		'temple_id' => 'int',
 		'seva_type_id' => 'int',
 		'is_expaired' => 'bool',
+		'extracharges_percentage' => 'int',
 		'reward_points' => 'int',
 		'is_active' => 'bool'
 	];
@@ -83,6 +87,8 @@ class Seva extends Model
 		'expairy_date',
 		'is_expaired',
 		'expairy_label',
+		'extracharges_label',
+		'extracharges_percentage',
 		'reward_points',
 		'description',
 		'additional_information',
@@ -116,6 +122,11 @@ class Seva extends Model
 					->withTimestamps();
 	}
 
+	public function seva_coupon_sevas()
+	{
+		return $this->hasMany(SevaCouponSeva::class);
+	}
+
 	public function seva_faqs()
 	{
 		return $this->hasMany(SevaFaq::class);
@@ -134,19 +145,5 @@ class Seva extends Model
 	public function user_carts()
 	{
 		return $this->hasMany(UserCart::class);
-	}
-	public function banner_image_id()
-	{
-		return $this->belongsTo(Image::class, 'banner_image_id');
-	}
-
-	public function background_image_id()
-	{
-		return $this->belongsTo(Image::class, 'background_image_id');
-	}
-
-	public function feature_image_id()
-	{
-		return $this->belongsTo(Image::class, 'feature_image_id');
 	}
 }

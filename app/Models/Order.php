@@ -25,7 +25,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $reference_id
  * @property string $invoice_id
  * @property string|null $transaction_id
- * @property float $org_price
+ * @property float $original_price
+ * @property float $extra_charges
  * @property float $reward_points
  * @property int|null $seva_coupon_id
  * @property float $coupon_amount
@@ -53,7 +54,8 @@ class Order extends Model
 		'user_id' => 'int',
 		'shipping_user_address_id' => 'int',
 		'billing_user_address_id' => 'int',
-		'org_price' => 'float',
+		'original_price' => 'float',
+		'extra_charges' => 'float',
 		'reward_points' => 'float',
 		'seva_coupon_id' => 'int',
 		'coupon_amount' => 'float',
@@ -71,7 +73,8 @@ class Order extends Model
 		'reference_id',
 		'invoice_id',
 		'transaction_id',
-		'org_price',
+		'original_price',
+		'extra_charges',
 		'reward_points',
 		'seva_coupon_id',
 		'coupon_amount',

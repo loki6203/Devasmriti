@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $base_price
  * @property float $selling_price
  * @property string|null $seva_price_information
+ * @property bool $is_prasadam_available
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -39,7 +40,8 @@ class OrderSeva extends Model
 		'seva_price_id' => 'int',
 		'qty' => 'int',
 		'base_price' => 'float',
-		'selling_price' => 'float'
+		'selling_price' => 'float',
+		'is_prasadam_available' => 'bool'
 	];
 
 	protected $fillable = [
@@ -48,7 +50,8 @@ class OrderSeva extends Model
 		'qty',
 		'base_price',
 		'selling_price',
-		'seva_price_information'
+		'seva_price_information',
+		'is_prasadam_available'
 	];
 
 	public function order()

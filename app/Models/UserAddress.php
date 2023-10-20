@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property int $id
  * @property int $user_id
+ * @property string $address_name
  * @property string $fname
  * @property string $lname
  * @property string|null $email
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $state_id
  * @property int $city_id
  * @property string $address_1
- * @property string $address_2
+ * @property string|null $address_2
  * @property int $pincode
  * @property bool $is_active
  * @property Carbon|null $created_at
@@ -56,6 +57,7 @@ class UserAddress extends Model
 
 	protected $fillable = [
 		'user_id',
+		'address_name',
 		'fname',
 		'lname',
 		'email',

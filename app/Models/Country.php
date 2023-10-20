@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string|null $name
  * @property bool $is_active
+ * @property bool $is_latest
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * 
@@ -30,12 +31,14 @@ class Country extends Model
 	protected $table = 'countries';
 
 	protected $casts = [
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'is_latest' => 'bool'
 	];
 
 	protected $fillable = [
 		'name',
-		'is_active'
+		'is_active',
+		'is_latest'
 	];
 
 	public function states()

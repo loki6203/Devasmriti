@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property Collection|EventUpdate[] $event_updates
  * @property Collection|Event[] $events
+ * @property Collection|SevaCouponUser[] $seva_coupon_users
  * @property Collection|SevaCoupon[] $seva_coupons
  * @property Collection|SevaType[] $seva_types
  * @property Collection|SevaUpdate[] $seva_updates
@@ -55,6 +56,11 @@ class Image extends Model
 	public function events()
 	{
 		return $this->hasMany(Event::class, 'feature_image_id');
+	}
+
+	public function seva_coupon_users()
+	{
+		return $this->hasMany(SevaCouponUser::class, 'seva_coupon_id');
 	}
 
 	public function seva_coupons()
