@@ -145,7 +145,7 @@ class UserController extends Controller
                         mkdir(public_path('User'),0777,true);
                     }
                     $destinationPath = public_path('User');
-                    $url = 'User/'.md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalName();
+                    $url = 'User/'.md5($file->getClientOriginalName() . time()) . "_" . $file->getClientOriginalName();
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();

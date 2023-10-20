@@ -29,7 +29,7 @@ class ImageController extends Controller
                         mkdir(public_path($request->input('image_type')),0777,true);
                     }
                     $destinationPath = public_path($request->input('image_type'));
-                    $url = $request->input('image_type').'/'.md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalName();
+                    $url = $request->input('image_type').'/'.md5($file->getClientOriginalName() . time()) . "_" . $file->getClientOriginalName();
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();
