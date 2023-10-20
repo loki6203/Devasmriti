@@ -32,7 +32,8 @@ class UserAddressController extends Controller
                 'city_id' => 'required',
                 'address_1' => 'required',
                 'address_2' => 'nullable',
-                'pincode'=>'required'
+                'address_name'=>'required',
+                'pincode'=>'required',
             ];
             if($request->method()=="PUT"){
                 $required = [];
