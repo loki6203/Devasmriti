@@ -11,7 +11,7 @@ use App\Models\Image;
 
 class ImageController extends Controller
 {
-	public function upload(Request $request,$id=0){
+	public function index(Request $request,$id=0){
         $data=array();
         $message='';
         $success=1;

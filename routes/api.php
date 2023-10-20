@@ -92,4 +92,6 @@ Route::middleware('jwt')->group(function(){
     Route::get('/bookings', 'API\OrderController@index');
     Route::get('/bookings/{id}', 'API\OrderController@index');
     Route::put('/bookings/{id}', 'API\OrderController@index')->middleware('json');
+
+    Route::post('/file/upload', 'API\ImageController@index')->withoutMiddleware('jwt');
 });
