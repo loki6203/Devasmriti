@@ -146,4 +146,19 @@ class Seva extends Model
 	{
 		return $this->hasMany(UserCart::class);
 	}
+	
+	public function banner_image_id()
+	{
+		return $this->belongsTo(Image::class, 'banner_image_id');
+	}
+
+	public function background_image_id()
+	{
+		return $this->belongsTo(Image::class, 'background_image_id');
+	}
+
+	public function feature_image_id()
+	{
+		return $this->belongsTo(Image::class, 'feature_image_id');
+	}
 }
