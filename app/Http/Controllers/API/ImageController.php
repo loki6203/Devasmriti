@@ -29,12 +29,12 @@ class ImageController extends Controller
                         mkdir(public_path($request->input('image_type')),0777,true);
                     }
                     $destinationPath = public_path($request->input('image_type'));
-                    $url = md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalExtension();
+                    $url = $request->input('image_type').'/'.md5($file->getClientOriginalName() . time()) . "." . $file->getClientOriginalName();
                     $file->move($destinationPath,$url);
                     $orgname = $file->getClientOriginalName();
                     $data = new Image();
                     $data->url          = $url;
-                    $data->domain       = url('/');
+                    $data->domain       = url('/').'/';
                     $data->image_type   = $request->input('image_type');
                     $data->name         = $orgname;
                     $data->save();
