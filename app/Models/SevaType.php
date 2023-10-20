@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property int $ordering_number
  * 
  * @property Image $image
  * @property Collection|Seva[] $sevas
@@ -34,13 +35,15 @@ class SevaType extends Model
 
 	protected $casts = [
 		'featured_image_id' => 'int',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'ordering_number' => 'int'
 	];
 
 	protected $fillable = [
 		'featured_image_id',
 		'name',
-		'is_active'
+		'is_active',
+		'ordering_number'
 	];
 
 	public function image()

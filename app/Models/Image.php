@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
  * 
+ * @property Collection|Banner[] $banners
  * @property Collection|EventUpdate[] $event_updates
  * @property Collection|Event[] $events
  * @property Collection|SevaCouponUser[] $seva_coupon_users
@@ -47,6 +48,11 @@ class Image extends Model
 		'url',
 		'image_type'
 	];
+
+	public function banners()
+	{
+		return $this->hasMany(Banner::class);
+	}
 
 	public function event_updates()
 	{

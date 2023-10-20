@@ -33,6 +33,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property bool $is_featured
+ * @property int $ordering_number
  * 
  * @property Image $image
  * @property Collection|EventFaq[] $event_faqs
@@ -52,7 +54,9 @@ class Event extends Model
 		'feature_image_id' => 'int',
 		'is_expaired' => 'bool',
 		'reward_points' => 'int',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'is_featured' => 'bool',
+		'ordering_number' => 'int'
 	];
 
 	protected $dates = [
@@ -75,7 +79,9 @@ class Event extends Model
 		'reward_points',
 		'description',
 		'additional_information',
-		'is_active'
+		'is_active',
+		'is_featured',
+		'ordering_number'
 	];
 
 	public function image()

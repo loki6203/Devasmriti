@@ -37,6 +37,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property bool $is_featured
+ * @property int $ordering_number
  * 
  * @property Image $image
  * @property SevaType $seva_type
@@ -65,7 +67,9 @@ class Seva extends Model
 		'is_expaired' => 'bool',
 		'extracharges_percentage' => 'int',
 		'reward_points' => 'int',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'is_featured' => 'bool',
+		'ordering_number' => 'int'
 	];
 
 	protected $dates = [
@@ -92,7 +96,9 @@ class Seva extends Model
 		'reward_points',
 		'description',
 		'additional_information',
-		'is_active'
+		'is_active',
+		'is_featured',
+		'ordering_number'
 	];
 
 	public function image()
@@ -146,7 +152,7 @@ class Seva extends Model
 	{
 		return $this->hasMany(UserCart::class);
 	}
-	
+
 	public function banner_image_id()
 	{
 		return $this->belongsTo(Image::class, 'banner_image_id');

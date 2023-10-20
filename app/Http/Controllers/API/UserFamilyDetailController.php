@@ -44,8 +44,18 @@ class UserFamilyDetailController extends Controller
                     try {
                         if($request->method()=="POST"){
                             $request['user_id']=$userid;
-                            $data = UserFamilyDetail::create($request->all());
-                            $message = "Added successfully";
+                            $WhereArr = array(
+                                'user_id'=>$request->family_type,
+                                'family_type'=>$request->family_type,
+                                'full_name'=>$request->family_type
+                            );
+                            if(UserFamilyDetail::where($WhereArr)->exists()){
+                                $success = 0;
+                                $message = "family_type and full_name should be unique";
+                            }else{
+                                $data = UserFamilyDetail::create($request->all());
+                                $message = "Added successfully";
+                            }
                         }else{
                             $data = UserFamilyDetail::where('id',$id)->update($request->all());
                             if($data>0){

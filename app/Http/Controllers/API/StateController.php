@@ -35,8 +35,13 @@ class StateController extends Controller
                     try {
                         if($request->method()=="POST"){
                             State::query()->update(['is_latest'=>0]);
-                            $data = State::create($request->all());
-                            $message = "Added successfully";
+                            if(State::where($request->all())->exists()){
+                                $success = 0;
+                                $message = "State already existed for this country";
+                            }else{
+                                $data = State::create($request->all());
+                                $message = "Added successfully";
+                            }
                         }else{
                             $data = State::where('id',$id)->update($request->all());
                             if($data>0){

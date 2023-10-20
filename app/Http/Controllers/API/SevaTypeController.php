@@ -25,6 +25,7 @@ class SevaTypeController extends Controller
         //     $data = $data->where('state_id',$request->get('state_id'));
         // }
         if($id==0){
+            $data = $data->orderBy('ordering_number', 'ASC');
             $PAGINATELIMIT = PAGINATELIMIT($request);
             $data = $data->paginate($PAGINATELIMIT);
         }else{

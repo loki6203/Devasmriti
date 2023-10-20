@@ -57,6 +57,7 @@ class SevaController extends Controller
             $data = $data->where('seva_type_id',$request->get('seva_type_id'));
         }
         if($id==0){
+            $data = $data->orderBy('ordering_number', 'ASC');
             $PAGINATELIMIT = PAGINATELIMIT($request);
             $data = $data->paginate($PAGINATELIMIT);
         }else{

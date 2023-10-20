@@ -48,7 +48,16 @@ class UserAddressController extends Controller
                     try {
                         if($request->method()=="POST"){
                             $request['user_id']=$userid;
-                            $data = UserAddress::create($request->all());
+                            $WhereArr = array(
+                                'user_id'=>$request->family_type,
+                                'address_name'=>$request->address_name
+                            );
+                            if(UserAddress::where($WhereArr)->exists()){
+                                $success = 0;
+                                $message = "address_name already existed";
+                            }else{
+                                $data = UserAddress::create($request->all());
+                            }
                             $message = "Added successfully";
                         }else{
                             $data = UserAddress::where('id',$id)->update($request->all());

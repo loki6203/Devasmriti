@@ -9,6 +9,7 @@ use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\UserReward;
 use App\Models\Order;
 use App\Models\OrderSeva;
+use App\Models\UserFamilyDetail;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -37,6 +38,7 @@ class OrderController extends Controller
                     'cart.*.is_prasadam_available'  => 'nullable|boolean',
                     'cart.*.seva_id'                => 'required|integer',
                     'cart.*.seva_price_id'          => 'required|integer',
+                    'cart.*.user_family_detail_id'  => 'required|integer',
                     "shipping_user_address_id"      => 'required', 
                     "billing_user_address_id "      => 'required', 
                     "coupon_code"                   => 'nullable',
@@ -72,7 +74,12 @@ class OrderController extends Controller
                             $orderData = Order::create($ProdData);
                             if($orderData){
                                 foreach($Cart as $ord){
-                                    OrderSeva::create($ord);
+                                    $OrderSeva = OrderSeva::create($ord);
+                                    $user_family_details =  UserFamilyDetail::find($ord);
+                                    if(!is_null($user_family_details)){
+                                        $user_family_details->user_family_details = json_encode($user_family_details,true);
+                                        $user_family_details->save();
+                                    }
                                 }
                                 $message = "Please continue with payment if your order was pending. ";
                                 $data = Order::with('order_sevas')->find($orderData->id);

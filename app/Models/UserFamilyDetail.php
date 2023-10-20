@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Rasi $rasi
  * @property Relation $relation
  * @property User $user
+ * @property Collection|OrderSeva[] $order_sevas
  *
  * @package App\Models
  */
@@ -76,5 +78,10 @@ class UserFamilyDetail extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	public function order_sevas()
+	{
+		return $this->hasMany(OrderSeva::class);
 	}
 }
