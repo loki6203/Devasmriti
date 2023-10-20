@@ -36,9 +36,13 @@ class EventSevaController extends Controller
         ->with('sevas.feature_image_id')
         ->with('sevas.banner_image_id')
         ->with('sevas.seva_updates');
-        // if($request->has('state_id')){
-        //     $data = $data->where('state_id',$request->get('state_id'));
-        // }
+        $data = $data->where('is_active',1);
+        if($request->has('is_expaired')){
+            $data = $data->where('is_expaired',1);
+        }
+        if($request->has('is_featured')){
+            $data = $data->where('is_featured',1);
+        }
         if($id==0){
             $data = $data->orderBy('ordering_number', 'ASC');
             $PAGINATELIMIT = PAGINATELIMIT($request);

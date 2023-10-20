@@ -47,6 +47,7 @@ class SevaController extends Controller
         ->with('banner_image_id')
         ->with('seva_updates')
         ->with('seva_prices');
+        $data = $data->where('is_active',1);
         $data = $data->withCount(['user_carts' => function ($q) use ($userid) {
             $q->where('user_id',$userid);
         }]);
@@ -55,6 +56,21 @@ class SevaController extends Controller
         }]);
         if($request->has('seva_type_id')){
             $data = $data->where('seva_type_id',$request->get('seva_type_id'));
+        }
+        if($request->has('temple_id ')){
+            $data = $data->where('temple_id ',$request->get('temple_id'));
+        }
+        if($request->has('is_featured')){
+            $data = $data->where('is_featured',$request->get('is_featured'));
+        }
+        if($request->has('is_expaired')){
+            $data = $data->where('is_expaired',$request->get('is_expaired'));
+        }
+        if($request->has('event_id')){
+            $event_id = $request->get('event_id');
+            $data = $data->whereHas('events',function ($q) use ($event_id){
+                $q->where('event_id','=',$event_id);
+            });
         }
         if($id==0){
             $data = $data->orderBy('ordering_number', 'ASC');

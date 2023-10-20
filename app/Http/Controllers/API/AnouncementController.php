@@ -4,118 +4,39 @@
  * Created by Reliese Controller.
  */
 
-namespace App\Http\Controllers\API;
-use App\Http\Controllers\Controller; 
+ namespace App\Http\Controllers\API;
+ use App\Http\Controllers\Controller; 
+ use Illuminate\Support\Facades\Hash;
+ use Illuminate\Support\Facades\Validator;
+ use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\Anouncement;
 use Illuminate\Http\Request;
 
 class AnouncementController extends Controller
 {
-	/**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $Anouncements = Anouncement::latest()->paginate(10);
-        return [
-            "status" => 1,
-            "data" => $Anouncements
-        ];
+	public $succ = 200;
+    public $err  = 202;
+    public function __construct(){
+        // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Anouncement = Anouncement::create($request->all());
-        return [
-            "status" => 1,
-            "data" => $Anouncement
-        ];
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Anouncement  $Anouncement
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Anouncement $Anouncement)
-    {
-        return [
-            "status" => 1,
-            "data" =>$Anouncement
-        ];
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Anouncement  $Anouncement
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Anouncement $Anouncement)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Anouncement  $Anouncement
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Anouncement $Anouncement)
-    {
-        $request->validate([
-            'title' => 'required',
-            'body' => 'required',
-        ]);
-
-        $Anouncement->update($request->all());
-
-        return [
-            "status" => 1,
-            "data" => $Anouncement,
-            "msg" => "Anouncement updated successfully"
-        ];
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Anouncement  $Anouncement
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Anouncement $Anouncement)
-    {
-        $Anouncement->delete();
-        return [
-            "status" => 1,
-            "data" => $Anouncement,
-            "msg" => "Anouncement deleted successfully"
-        ];
+    public function index(Request $request,$id=0){
+        $data=array();
+        $message='';
+        $success=1;
+        $data = Anouncement::query();
+        $data = $data->where('is_active',1);
+        if($id==0){
+            $data = $data->orderBy('ordering_number', 'ASC');
+            $PAGINATELIMIT = PAGINATELIMIT($request);
+            $data = $data->paginate($PAGINATELIMIT);
+        }else{
+            $data = $data->find($id);
+            if($request->method()=="DELETE"){
+                $data->delete();
+                $message = "Deleted successfully";
+            }
+        }
+        $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
+        return new CommonreturnResource($resp);
     }
 }

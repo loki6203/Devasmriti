@@ -48,6 +48,9 @@ Route::middleware('jwt')->group(function(){
     Route::get('/rasi', 'API\RasiController@index')->withoutMiddleware('jwt');
     Route::get('/rasi/{id}', 'API\RasiController@index')->withoutMiddleware('jwt');
 
+    Route::get('/anouncement', 'API\AnouncementController@index')->withoutMiddleware('jwt');
+    Route::get('/anouncement/{id}', 'API\AnouncementController@index')->withoutMiddleware('jwt');
+
     Route::get('/relation', 'API\RelationController@index')->withoutMiddleware('jwt');
     Route::get('/relation/{id}', 'API\RelationController@index')->withoutMiddleware('jwt');
 

@@ -25,9 +25,7 @@ class SevaCouponController extends Controller
         if($request->has('code')){
             $data = $data->where('code', 'like', '%' . $request->get('code') . '%');
         }
-        if($userid>0){
-            
-        }
+        if($userid>0){}
         if($id==0){
             $PAGINATELIMIT = PAGINATELIMIT($request);
             $data = $data->paginate($PAGINATELIMIT);
