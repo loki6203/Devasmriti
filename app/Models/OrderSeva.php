@@ -24,9 +24,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property int $user_family_detail_id
+ * @property string|null $user_family_details
  * 
  * @property Order $order
  * @property SevaPrice $seva_price
+ * @property UserFamilyDetail $user_family_detail
  *
  * @package App\Models
  */
@@ -41,7 +44,8 @@ class OrderSeva extends Model
 		'qty' => 'int',
 		'base_price' => 'float',
 		'selling_price' => 'float',
-		'is_prasadam_available' => 'bool'
+		'is_prasadam_available' => 'bool',
+		'user_family_detail_id' => 'int'
 	];
 
 	protected $fillable = [
@@ -51,7 +55,9 @@ class OrderSeva extends Model
 		'base_price',
 		'selling_price',
 		'seva_price_information',
-		'is_prasadam_available'
+		'is_prasadam_available',
+		'user_family_detail_id',
+		'user_family_details'
 	];
 
 	public function order()
@@ -62,5 +68,10 @@ class OrderSeva extends Model
 	public function seva_price()
 	{
 		return $this->belongsTo(SevaPrice::class);
+	}
+
+	public function user_family_detail()
+	{
+		return $this->belongsTo(UserFamilyDetail::class);
 	}
 }

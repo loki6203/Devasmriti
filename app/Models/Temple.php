@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property int $ordering_number
  * 
  * @property City $city
  * @property Country $country
@@ -52,7 +53,8 @@ class Temple extends Model
 		'pincode' => 'int',
 		'latitude' => 'int',
 		'longitude' => 'int',
-		'is_active' => 'bool'
+		'is_active' => 'bool',
+		'ordering_number' => 'int'
 	];
 
 	protected $fillable = [
@@ -67,7 +69,8 @@ class Temple extends Model
 		'address',
 		'latitude',
 		'longitude',
-		'is_active'
+		'is_active',
+		'ordering_number'
 	];
 
 	public function city()

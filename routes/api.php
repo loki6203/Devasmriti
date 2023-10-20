@@ -51,6 +51,9 @@ Route::middleware('jwt')->group(function(){
     Route::get('/relation', 'API\RelationController@index')->withoutMiddleware('jwt');
     Route::get('/relation/{id}', 'API\RelationController@index')->withoutMiddleware('jwt');
 
+    Route::get('/home/banners', 'API\BannerController@index')->withoutMiddleware('jwt');
+    Route::get('/home/banners/{id}', 'API\BannerController@index')->withoutMiddleware('jwt');
+
     Route::get('/home/faqs', 'API\FaqController@index')->withoutMiddleware('jwt');
     Route::get('/home/faqs/{id}', 'API\FaqController@index')->withoutMiddleware('jwt');
 
