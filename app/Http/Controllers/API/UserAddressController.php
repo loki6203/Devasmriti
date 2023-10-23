@@ -49,7 +49,7 @@ class UserAddressController extends Controller
                         if($request->method()=="POST"){
                             $request['user_id']=$userid;
                             $WhereArr = array(
-                                'user_id'=>$request->family_type,
+                                'user_id'=>$userid,
                                 'address_name'=>$request->address_name
                             );
                             if(UserAddress::where($WhereArr)->exists()){
