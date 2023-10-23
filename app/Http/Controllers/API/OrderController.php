@@ -40,7 +40,7 @@ class OrderController extends Controller
                     'cart.*.seva_price_id'          => 'required|integer',
                     'cart.*.user_family_detail_id'  => 'required|integer',
                     "shipping_user_address_id"      => 'required', 
-                    "billing_user_address_id "      => 'required', 
+                    "billing_user_address_id"       => 'required', 
                     "coupon_code"                   => 'nullable',
                     "original_price"                => 'required',
                     "reward_points"                 => 'nullable', 
