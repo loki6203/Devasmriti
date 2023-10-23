@@ -24,7 +24,7 @@ class OrderController extends Controller
         $message='';
         $success=1;
         $userid = login_User_ID();
-        if($userid){
+        if($userid>0){
             if($request->method()=="POST" || $request->method()=="PUT"){
                 // $required = [
                 //     "seva_price_id"         => ['required|numeric','array'],
@@ -141,7 +141,7 @@ class OrderController extends Controller
                 }
             }
         }else{
-            $status=0;
+            $success=0;
             $message="Please login to continue";
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
