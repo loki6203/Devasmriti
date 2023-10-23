@@ -97,9 +97,9 @@ class UserFamilyDetailController extends Controller
             }
             if($request->has('is_my_family')){
                 if($request->get('is_my_family')==1 || $request->get('is_my_family')==true){
-                    $data = $data->where('family_type',NULL)->or_where('family_type', '');
+                    $data = $data->where('family_type',NULL)->orWhere('family_type', '');
                 }else{
-                    $data = $data->where('family_type','!=','')->or_where('family_type','!=',NULL);
+                    $data = $data->where('family_type','!=','')->orWhere('family_type','!=',NULL);
                 }
             }
             $data = $data->where('user_id',$userid);

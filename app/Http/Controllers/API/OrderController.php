@@ -71,8 +71,6 @@ class OrderController extends Controller
                             if($request->method()=="POST"){
                                 $ProdData['user_id']=$userid;
                                 $Cart     = $ProdData['cart'];
-                                $user_family_detail_id = $ProdData['user_family_detail_id'];
-                                unset($ProdData['user_family_detail_id']);
                                 unset($ProdData['cart']);
                                 unset($ProdData['is_from_cart']);
                                 $ProdData['reference_id'] = Reff_No_Generate();
@@ -81,6 +79,8 @@ class OrderController extends Controller
                                 $orderData = Order::create($ProdData);
                                 if($orderData){
                                     foreach($Cart as $ord){
+                                        $user_family_detail_id = $ord['user_family_detail_id'];
+                                        unset($ord['user_family_detail_id']);
                                         $ord['qty'] = 1;
                                         $ord['order_id'] = $orderData->id;
                                         $OrderSeva = OrderSeva::create($ord);
@@ -93,7 +93,7 @@ class OrderController extends Controller
                                         }
                                         if($user_family_detail_id){
                                             foreach($user_family_detail_id as $id){
-                                                $user_family_details =  UserFamilyDetail::find('id',$id);
+                                                $user_family_details =  UserFamilyDetail::find($id);
                                                 if(!is_null($user_family_details)){
                                                     $InstArr = array(
                                                         'user_family_detail_id'=>$id,
