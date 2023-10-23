@@ -9,6 +9,7 @@ use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\UserReward;
 use App\Models\Order;
 use App\Models\OrderSeva;
+use App\Models\SevaPrice;
 use App\Models\UserFamilyDetail;
 use Illuminate\Validation\Rule;
 
@@ -80,6 +81,13 @@ class OrderController extends Controller
                                         $ord['qty'] = 1;
                                         $ord['order_id'] = $orderData->id;
                                         $OrderSeva = OrderSeva::create($ord);
+                                        try{
+                                            $seva_price_information = SevaPrice::find($ord['seva_price_id'])->with('seva');
+                                            $uPsV = array('seva_price_information'=>$seva_price_information);
+                                            OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
+                                        } catch (\Exception $ex) {
+                                            // $message =  ERRORMESSAGE($ex->getMessage());
+                                        }
                                         $user_family_details =  UserFamilyDetail::find($ord['user_family_detail_id']);
                                         if(!is_null($user_family_details)){
                                             $uPsV = array('user_family_details'=>$user_family_details);
