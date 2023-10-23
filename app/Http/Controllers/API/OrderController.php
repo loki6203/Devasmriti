@@ -82,7 +82,7 @@ class OrderController extends Controller
                                         $ord['order_id'] = $orderData->id;
                                         $OrderSeva = OrderSeva::create($ord);
                                         try{
-                                            $seva_price_information = SevaPrice::find($ord['seva_price_id'])->with('seva');
+                                            $seva_price_information = SevaPrice::find($ord['seva_price_id']);
                                             $uPsV = array('seva_price_information'=>$seva_price_information);
                                             OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
                                         } catch (\Exception $ex) {
