@@ -76,7 +76,7 @@ class OrderController extends Controller
                             $orderData = Order::create($ProdData);
                             if($orderData){
                                 foreach($Cart as $ord){
-                                    $ProdData['order_id'] = $orderData;
+                                    $ProdData['order_id'] = $orderData->id;
                                     $OrderSeva = OrderSeva::create($ord);
                                     $user_family_details =  UserFamilyDetail::find($ord);
                                     if(!is_null($user_family_details)){
