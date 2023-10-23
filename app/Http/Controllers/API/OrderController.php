@@ -40,7 +40,7 @@ class OrderController extends Controller
                         'cart.*.is_prasadam_available'  => 'nullable|boolean',
                         'cart.*.seva_id'                => 'required|integer',
                         'cart.*.seva_price_id'          => 'required|integer',
-                        'cart.*.user_family_detail_id'  => 'required|integer',
+                        'cart.*.user_family_detail_id'  => 'required|array',
                         "shipping_user_address_id"      => 'required', 
                         "billing_user_address_id"       => 'required', 
                         "coupon_code"                   => 'nullable',
@@ -70,6 +70,8 @@ class OrderController extends Controller
                             if($request->method()=="POST"){
                                 $ProdData['user_id']=$userid;
                                 $Cart     = $ProdData['cart'];
+                                $user_family_detail_id = $ProdData['user_family_detail_id'];
+                                unset($ProdData['user_family_detail_id']);
                                 unset($ProdData['cart']);
                                 unset($ProdData['is_from_cart']);
                                 $ProdData['reference_id'] = Reff_No_Generate();
@@ -88,10 +90,18 @@ class OrderController extends Controller
                                         } catch (\Exception $ex) {
                                             // $message =  ERRORMESSAGE($ex->getMessage());
                                         }
-                                        $user_family_details =  UserFamilyDetail::find($ord['user_family_detail_id']);
-                                        if(!is_null($user_family_details)){
-                                            $uPsV = array('user_family_details'=>$user_family_details);
-                                            OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
+                                        if($user_family_detail_id){
+                                            foreach($user_family_detail_id as $id){
+                                                $user_family_details =  UserFamilyDetail::find('id',$id);
+                                                if(!is_null($user_family_details)){
+                                                    $InstArr = array(
+                                                        'user_family_detail_id'=>$id,
+                                                        'user_family_details'=>$user_family_details,
+                                                        'order_seva_id'=>$OrderSeva->id
+                                                    );
+                                                    // OrderSeva::create($InstArr);
+                                                }
+                                            }
                                         }
                                     }
                                     $message = "Please continue with payment if your order was pending. ";

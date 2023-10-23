@@ -74,6 +74,34 @@ class UserFamilyDetailController extends Controller
             }
         }else{
             $data = UserFamilyDetail::query();
+            if($request->has('is_kartha')){
+                if($request->get('is_kartha')==1 || $request->get('is_kartha')==true){
+                    $data = $data->where('family_type','kartha');
+                }else{
+                    $data = $data->where('family_type','!=','kartha');
+                }
+            }
+            if($request->has('is_ancestors')){
+                if($request->get('is_ancestors')==1 || $request->get('is_ancestors')==true){
+                    $data = $data->where('family_type','ancestors');
+                }else{
+                    $data = $data->where('family_type','!=','ancestors');
+                }
+            }
+            if($request->has('is_kartha_ancestors')){
+                if($request->get('is_kartha_ancestors')==1 || $request->get('is_kartha_ancestors')==true){
+                    $data = $data->where('family_type','kartha_ancestors');
+                }else{
+                    $data = $data->where('family_type','!=','kartha_ancestors');
+                }
+            }
+            if($request->has('is_my_family')){
+                if($request->get('is_my_family')==1 || $request->get('is_my_family')==true){
+                    $data = $data->where('family_type',NULL)->or_where('family_type', '');
+                }else{
+                    $data = $data->where('family_type','!=','')->or_where('family_type','!=',NULL);
+                }
+            }
             $data = $data->where('user_id',$userid);
             $data = $data->with('rasi')->with('relation');
             if($id==0){
