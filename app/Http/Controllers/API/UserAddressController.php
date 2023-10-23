@@ -58,7 +58,6 @@ class UserAddressController extends Controller
                             }else{
                                 $data = UserAddress::create($request->all());
                             }
-                            $message = "Added successfully";
                         }else{
                             $data = UserAddress::where('id',$id)->update($request->all());
                             if($data>0){
