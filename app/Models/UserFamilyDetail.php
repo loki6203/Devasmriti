@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Rasi $rasi
  * @property Relation $relation
  * @property User $user
- * @property Collection|OrderSeva[] $order_sevas
+ * @property Collection|OrderSevaFamilyDetail[] $order_seva_family_details
  *
  * @package App\Models
  */
@@ -80,8 +80,8 @@ class UserFamilyDetail extends Model
 		return $this->belongsTo(User::class);
 	}
 
-	public function order_sevas()
+	public function order_seva_family_details()
 	{
-		return $this->hasMany(OrderSeva::class);
+		return $this->hasMany(OrderSevaFamilyDetail::class);
 	}
 }

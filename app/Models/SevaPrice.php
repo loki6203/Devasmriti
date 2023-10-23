@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property Seva $seva
  * @property Collection|OrderSeva[] $order_sevas
+ * @property Collection|SevaPriceFamilyDetail[] $seva_price_family_details
  * @property Collection|UserCart[] $user_carts
  *
  * @package App\Models
@@ -67,6 +68,11 @@ class SevaPrice extends Model
 	public function order_sevas()
 	{
 		return $this->hasMany(OrderSeva::class);
+	}
+
+	public function seva_price_family_details()
+	{
+		return $this->hasMany(SevaPriceFamilyDetail::class);
 	}
 
 	public function user_carts()

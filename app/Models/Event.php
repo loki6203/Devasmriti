@@ -120,4 +120,5 @@ class Event extends Model
 	{
 		return $this->belongsTo(Image::class, 'feature_image_id');
 	}
+
 }

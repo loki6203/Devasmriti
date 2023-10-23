@@ -10,6 +10,7 @@ use App\Models\UserReward;
 use App\Models\Order;
 use App\Models\OrderSeva;
 use App\Models\SevaPrice;
+use App\Models\OrderSevaFamilyDetail;
 use App\Models\UserFamilyDetail;
 use Illuminate\Validation\Rule;
 
@@ -99,7 +100,7 @@ class OrderController extends Controller
                                                         'user_family_details'=>$user_family_details,
                                                         'order_seva_id'=>$OrderSeva->id
                                                     );
-                                                    // OrderSeva::create($InstArr);
+                                                    OrderSevaFamilyDetail::create($InstArr);
                                                 }
                                             }
                                         }
@@ -146,7 +147,7 @@ class OrderController extends Controller
                 }
             }else{
                 $data = Order::query();
-                $data = $data->with('order_sevas');
+                $data = $data->with('order_sevas.order_seva_family_details');
                 if($id==0){
                     $PAGINATELIMIT = PAGINATELIMIT($request);
                     $data = $data->paginate($PAGINATELIMIT);

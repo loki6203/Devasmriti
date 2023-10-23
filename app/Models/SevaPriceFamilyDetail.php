@@ -11,41 +11,35 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Anouncement
+ * Class SevaPriceFamilyDetail
  * 
  * @property int $id
- * @property int $seva_id
- * @property string $title
- * @property bool $is_active
+ * @property string|null $family_type
+ * @property int $seva_price_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property int $ordering_number
  * 
- * @property Seva $seva
+ * @property SevaPrice $seva_price
  *
  * @package App\Models
  */
-class Anouncement extends Model
+class SevaPriceFamilyDetail extends Model
 {
 	use SoftDeletes;
-	protected $table = 'anouncements';
+	protected $table = 'seva_price_family_details';
 
 	protected $casts = [
-		'seva_id' => 'int',
-		'is_active' => 'bool',
-		'ordering_number' => 'int'
+		'seva_price_id' => 'int'
 	];
 
 	protected $fillable = [
-		'seva_id',
-		'title',
-		'is_active',
-		'ordering_number'
+		'family_type',
+		'seva_price_id'
 	];
 
-	public function seva()
+	public function seva_price()
 	{
-		return $this->belongsTo(Seva::class);
+		return $this->belongsTo(SevaPrice::class);
 	}
 }
