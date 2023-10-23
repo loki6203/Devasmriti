@@ -76,12 +76,13 @@ class OrderController extends Controller
                             $orderData = Order::create($ProdData);
                             if($orderData){
                                 foreach($Cart as $ord){
-                                    $ProdData['order_id'] = $orderData->id;
+                                    $ord['qty'] = 1;
+                                    $ord['order_id'] = $orderData->id;
                                     $OrderSeva = OrderSeva::create($ord);
-                                    $user_family_details =  UserFamilyDetail::find($ord);
+                                    $user_family_details =  UserFamilyDetail::find($ord['user_family_detail_id']);
                                     if(!is_null($user_family_details)){
-                                        $user_family_details->user_family_details = json_encode($user_family_details,true);
-                                        $user_family_details->save();
+                                        $uPsV = array('user_family_details'=>$user_family_details);
+                                        OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
                                     }
                                 }
                                 $message = "Please continue with payment if your order was pending. ";
