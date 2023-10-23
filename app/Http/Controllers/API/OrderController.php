@@ -72,10 +72,11 @@ class OrderController extends Controller
                             unset($ProdData['is_from_cart']);
                             $ProdData['reference_id'] = Reff_No_Generate();
                             $ProdData['invoice_id'] = $ProdData['reference_id'];
-                            $ProdData['order_id'] = $ProdData['reference_id'];
+                            // $ProdData['order_id'] = $ProdData['reference_id'];
                             $orderData = Order::create($ProdData);
                             if($orderData){
                                 foreach($Cart as $ord){
+                                    $ProdData['order_id'] = $orderData;
                                     $OrderSeva = OrderSeva::create($ord);
                                     $user_family_details =  UserFamilyDetail::find($ord);
                                     if(!is_null($user_family_details)){
