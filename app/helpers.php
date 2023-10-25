@@ -112,6 +112,11 @@ if(!function_exists('Date_Month_Name')){
         return date("M-d-Y", strtotime($original_date));
     }
 }
+if(!function_exists('Date_With_Time')){
+    function Date_With_Time($original_date){
+        return date("H:i:s", strtotime($original_date));
+    }
+}
 if(!function_exists('Delivery_Date_With_Time')){
     function Delivery_Date_With_Time($original_date){
         return date("M-d-Y H:i:s", strtotime($original_date));
