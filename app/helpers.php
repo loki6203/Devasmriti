@@ -17,6 +17,8 @@ if(!function_exists('PAGINATELIMIT')){
         $headers = $request->header();
         if(isset($headers['paginate'][0]) && $headers['paginate'][0]>=0){
             return $headers['paginate'][0];
+        }elseif(isset($headers['paginate'][0]) && $headers['paginate'][0]==0){
+                return 1000;
         }else{
             return 15;
         }
