@@ -32,6 +32,7 @@ class UserController extends Controller
             $password='root@$123';
             $Ph_check = User::where('mobile_number', '=', $request->mobile_number)->first();
             $otp = Generate_Otp();
+            SendMsg($request->mobile_number,$otp);
             if(is_null($Ph_check)){
                 $NewUser = new User();
                 $NewUser->user_type     = 'user';
