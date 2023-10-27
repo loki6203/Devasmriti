@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
+use App\Models\User;
 use App\Models\UserReward;
 use App\Models\Order;
 use App\Models\OrderSeva;
@@ -21,12 +22,15 @@ class OrderController extends Controller
     public function __construct(){
         // $this->middleware('jwt', ['except' => ['login_signup','login_with_otp']]);
     }
+    public function payment_checksum(Request $request){
+        echo '<pre>';print_r($request->all());exit;
+    }
     public function index(Request $request,$id=0){
         $data=array();
         $message='';
         $success=1;
         $userid = login_User_ID();
-        if($userid>0){
+        if($userid){
             if($request->method()=="POST" || $request->method()=="PUT"){
                 // $required = [
                 //     "seva_price_id"         => ['required|numeric','array'],
@@ -69,44 +73,81 @@ class OrderController extends Controller
                         $ProdData = $request->all();
                         try {
                             if($request->method()=="POST"){
-                                $ProdData['user_id']=$userid;
-                                $Cart     = $ProdData['cart'];
-                                unset($ProdData['cart']);
-                                unset($ProdData['is_from_cart']);
-                                $ProdData['reference_id'] = Reff_No_Generate();
-                                $ProdData['invoice_id'] = $ProdData['reference_id'];
-                                // $ProdData['order_id'] = $ProdData['reference_id'];
-                                $orderData = Order::create($ProdData);
-                                if($orderData){
-                                    foreach($Cart as $ord){
-                                        $user_family_detail_id = $ord['user_family_detail_id'];
-                                        unset($ord['user_family_detail_id']);
-                                        $ord['qty'] = 1;
-                                        $ord['order_id'] = $orderData->id;
-                                        $OrderSeva = OrderSeva::create($ord);
-                                        try{
-                                            $seva_price_information = SevaPrice::find($ord['seva_price_id']);
-                                            $uPsV = array('seva_price_information'=>$seva_price_information);
-                                            OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
-                                        } catch (\Exception $ex) {
-                                            // $message =  ERRORMESSAGE($ex->getMessage());
-                                        }
-                                        if($user_family_detail_id){
-                                            foreach($user_family_detail_id as $id){
-                                                $user_family_details =  UserFamilyDetail::find($id);
-                                                if(!is_null($user_family_details)){
-                                                    $InstArr = array(
-                                                        'user_family_detail_id'=>$id,
-                                                        'user_family_details'=>$user_family_details,
-                                                        'order_seva_id'=>$OrderSeva->id
-                                                    );
-                                                    OrderSevaFamilyDetail::create($InstArr);
+                                if($userid>0){
+                                    $ProdData['user_id']=$userid;
+                                    $Cart     = $ProdData['cart'];
+                                    unset($ProdData['cart']);
+                                    unset($ProdData['is_from_cart']);
+                                    $ProdData['reference_id'] = Reff_No_Generate();
+                                    $ProdData['invoice_id'] = $ProdData['reference_id'];
+                                    // $ProdData['order_id'] = $ProdData['reference_id'];
+                                    $orderData = Order::create($ProdData);
+                                    if($orderData){
+                                        foreach($Cart as $ord){
+                                            $user_family_detail_id = $ord['user_family_detail_id'];
+                                            unset($ord['user_family_detail_id']);
+                                            $ord['qty'] = 1;
+                                            $ord['order_id'] = $orderData->id;
+                                            $OrderSeva = OrderSeva::create($ord);
+                                            try{
+                                                $seva_price_information = SevaPrice::find($ord['seva_price_id']);
+                                                $uPsV = array('seva_price_information'=>$seva_price_information);
+                                                OrderSeva::where('id',$OrderSeva->id)->update($uPsV);
+                                            } catch (\Exception $ex) {
+                                                // $message =  ERRORMESSAGE($ex->getMessage());
+                                            }
+                                            if($user_family_detail_id){
+                                                foreach($user_family_detail_id as $id){
+                                                    $user_family_details =  UserFamilyDetail::find($id);
+                                                    if(!is_null($user_family_details)){
+                                                        $InstArr = array(
+                                                            'user_family_detail_id'=>$id,
+                                                            'user_family_details'=>$user_family_details,
+                                                            'order_seva_id'=>$OrderSeva->id
+                                                        );
+                                                        OrderSevaFamilyDetail::create($InstArr);
+                                                    }
                                                 }
                                             }
                                         }
+                                        $message        = "Please continue with payment if your order was pending. ";
+                                        $data           = Order::with('order_sevas')->find($orderData->id);
+                                        $Reference_id   = $ProdData['reference_id'];
+                                        $UserDetails = User::find($userid);
+                                        $phonenumber = @$UserDetails->mobile_number;
+                                        $Pay_Load_Request = array(
+                                            'merchantId'            =>  'DEVASMRITIONLINE',
+                                            'merchantTransactionId' =>  $Reference_id,
+                                            'merchantUserId'        =>  $userid,
+                                            'amount'                =>  'DEVASMRITIONLINE',
+                                            'redirectUrl'           =>  WEB_API_LINK().'payment/status',
+                                            'redirectMode'          =>  'REDIRECT',
+                                            'callbackUrl'           =>  url('/api/payment_checksum'),
+                                            'mobileNumber'          =>  $phonenumber,
+                                            'paymentInstrument'     =>  array('type'=>'PAY_PAGE')
+                                        );
+                                        // $curl = curl_init();
+                                        // curl_setopt_array($curl,array(
+                                        //     CURLOPT_URL => 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay',
+                                        //     CURLOPT_RETURNTRANSFER => true,
+                                        //     CURLOPT_ENCODING => '',
+                                        //     CURLOPT_MAXREDIRS => 10,
+                                        //     CURLOPT_TIMEOUT => 0,
+                                        //     CURLOPT_FOLLOWLOCATION => true,
+                                        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                                        //     CURLOPT_CUSTOMREQUEST => 'POST',
+                                        //     CURLOPT_POSTFIELDS =>json_encode($Pay_Load_Request,true),
+                                        //     CURLOPT_HTTPHEADER => array(
+                                        //         'Content-Type' => 'application/json',
+                                        //         'accept'       => 'application/json',
+                                        //     ),
+                                        // ));
+                                        // $data = curl_exec($curl);
+                                        // curl_close($curl);
+                                    }else{
+                                        $success=0;
+                                        $message="Please login to continue";
                                     }
-                                    $message = "Please continue with payment if your order was pending. ";
-                                    $data = Order::with('order_sevas')->find($orderData->id);
                                 }else{
                                     $success = 0;
                                     $message = "Ordering failed try again...";
@@ -115,6 +156,7 @@ class OrderController extends Controller
                             }else{
                                 $data = Order::where('id',$id)->update($request->all());
                                 $data = Order::find($id);
+                                $userid = $data->user_id;
                                 if($ProdData['payment_status']=='Success'){
                                     if($data['reward_points']>0){
                                         $WhereDr = array('user_id'=>$userid,'is_credited'=>0,'points'=>$data['reward_points'],'order_id'=>$id);
@@ -129,7 +171,7 @@ class OrderController extends Controller
                                             $totalRewards[]=$SevaPrice['seva_price']['seva']['reward_points'];
                                         }
                                         try{
-                                            $UserDetails = logined_User();
+                                            $UserDetails = User::find($userid);
                                             $phonenumber = @$UserDetails->mobile_number;
                                             if(strstr($phonenumber,'+')==""){
                                                 $phonenumber = '91'.trim($phonenumber);
@@ -218,7 +260,7 @@ class OrderController extends Controller
                                         }
                                     }
                                 }
-                                // $message = "Updated successfully";
+                                $message = "Updated successfully";
                             }
                         } catch (\Exception $ex) {
                             $message =  ERRORMESSAGE($ex->getMessage());

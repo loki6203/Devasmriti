@@ -78,11 +78,6 @@ if(!function_exists('Generate_Tpin')){
         return substr(str_shuffle("0123456789"), 0, 5);
     }
 }
-if(!function_exists('PAN_ADHAR_TOKEN')){
-    function PAN_ADHAR_TOKEN(){
-        return 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyOTQzNzE2OSwianRpIjoiOGQxMGYwMmItYmUzZi00YWRjLWEyMzctNDhlZjMyYjZkNzdiIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmNzZWtoYXJjaGFsbGFndW5kbGFAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTYyOTQzNzE2OSwiZXhwIjoxOTQ0Nzk3MTY5LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.LpVw0P5Ix4wyMm5TMHDOwV_OnUNEp9IxkkMsv2BhWuw';
-    }
-}
 if(!function_exists('Reff_No_Generate')){
     function Reff_No_Generate(){
         $Acc_Num = substr(str_shuffle("0123456789"), 0, 12);
@@ -147,6 +142,7 @@ if(!function_exists('Invoice_id')) {
         return  $dynamic_id;
     }
 }
+
 if(!function_exists('Generate_Transaction')){
     function Generate_Transaction($paymtype)
     {
@@ -159,6 +155,7 @@ if(!function_exists('Generate_Transaction')){
         }
     }
 }
+
 if(!function_exists('SendMsg')){
     function SendMsg($mobile,$otp,$type)
     {
