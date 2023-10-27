@@ -16,7 +16,7 @@ if(!function_exists('PAGINATELIMIT')){
     function PAGINATELIMIT($request){
         $headers = $request->header();
         // print_r($headers);
-        if(isset($headers['paginate'][0]) && $headers['paginate'][0]>=0){
+        if(isset($headers['paginate'][0]) && $headers['paginate'][0]>0){
             return $headers['paginate'][0];
         }elseif(isset($headers['paginate'][0]) && $headers['paginate'][0]==0){
                 return 1000;
@@ -205,5 +205,12 @@ if(!function_exists('SendEmail')){
         // return Mail::send('template', $ArrayData, function ($message) use ($to , $subject) {
 		// 	$message->to($to,config('global.SITE_NAME'))->from(config('global.FROM_MAIL'))->subject($subject);
 		// });
+    }
+}
+
+if(!function_exists('WEB_API_LINK')){
+    function WEB_API_LINK()
+    {
+        return 'https://devasmrithi.netlify.app/';
     }
 }
