@@ -15,6 +15,7 @@ if(!function_exists('UniqueMachineID')){
 if(!function_exists('PAGINATELIMIT')){
     function PAGINATELIMIT($request){
         $headers = $request->header();
+        print_r($headers);
         if(isset($headers['paginate'][0]) && $headers['paginate'][0]>=0){
             return $headers['paginate'][0];
         }elseif(isset($headers['paginate'][0]) && $headers['paginate'][0]==0){
