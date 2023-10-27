@@ -102,3 +102,5 @@ Route::middleware('jwt')->group(function(){
     Route::post('/file/upload', 'API\ImageController@index')->withoutMiddleware('jwt');
     Route::post('/payment_checksum', 'API\OrderController@payment_checksum')->withoutMiddleware('jwt');
 });
+// Route::get('/ccavenue/requestHandler/{order_id}', 'API\OrderController@requestHandler');
+// Route::post('/ccavenue/requestHandler','API\OrderController@requestHandler');

@@ -12,5 +12,5 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', 'Admin\SuperadminController@index');
+Route::get('/ccavenue/requestHandler/{order_id}', 'API\OrderController@requestHandler');
+Route::post('/ccavenue/requestHandler','API\OrderController@requestHandler');

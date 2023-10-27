@@ -157,22 +157,11 @@ if(!function_exists('Generate_Transaction')){
 }
 
 if(!function_exists('SendMsg')){
-    function SendMsg($mobile,$otp,$type)
+    function SendMsg($mobile,$otp)
     {
-        if($type==1){
-            $msg = "Greetings from DevaSmriti Your one time password OTP is ".$otp." for your account Registration process. Please complete this process within 10 minutes.";
-        }else if($type==2){
-            $msg="Greetings from DevaSmriti Your one time password OTP is ".$otp." to login into your account . Please complete this process within 10 minutes.";
-        }else{
-            $msg="Greetings from DevaSmriti Your one time password OTP is ".$otp." to reset your password. Please complete this process within 10 minutes.";
-        }
-        // $Notification               = new Notification();
-        // $Notification->user_id      = 1;
-        // $Notification->is_read      = 0;
-        // $Notification->message      = $msg;
-        // $Notification->save();
-        $senderid = 'PayAgt';
-        $url = "https://smslogin.co/v3/api.php?username=Brainum&apikey=ceda2751f67d7f96b2e5&senderid=$senderid&mobile=$mobile&message=".urlencode($msg);
+        $senderid = 'STRIMS';
+        $msg = "Your OTP ".$otp." for Devasmriti and Valid for 15 minutes - Devasmriti";
+        $url = "https://smslogin.co/v3/api.php?username=S3Micro&apikey=71f2b686e90adbc08c65&senderid=$senderid&mobile=$mobile&message=".urlencode($msg);
         $ret = file($url);
     }
 }
@@ -180,12 +169,7 @@ if(!function_exists('SendMsg')){
 if(!function_exists('Add_Notif')){
     function Add_Notif($action_type,$user_id,$is_read,$message)
     {
-        $Notification               = new Notification();
-        $Notification->action_type  = $action_type;
-        $Notification->user_id      = $user_id;
-        $Notification->is_read      = $is_read;
-        $Notification->message      = $message;
-        $Notification->save();
+        
     }
 }
 if(!function_exists('SendEmail')){
@@ -210,4 +194,44 @@ if(!function_exists('WEB_API_LINK')){
     {
         return 'https://devasmrithi.netlify.app/';
     }
+}
+if(!function_exists('encrypt')){
+    function encrypt($plainText,$key)
+    {
+        $key = hextobin(md5($key));
+        $initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
+        $openMode = openssl_encrypt($plainText, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $initVector);
+        $encryptedText = bin2hex($openMode);
+        return $encryptedText;
+    }
+}
+if(!function_exists('decrypt')){
+    function decrypt($encryptedText,$key)
+    {
+        $key = hextobin(md5($key));
+        $initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
+        $encryptedText = hextobin($encryptedText);
+        $decryptedText = openssl_decrypt($encryptedText, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $initVector);
+        return $decryptedText;
+    }
+}
+if(!function_exists('hextobin')){
+    function hextobin($hexString){ 
+        $length = strlen($hexString); 
+        $binString="";   
+        $count=0; 
+        while($count<$length) 
+        {       
+            $subString =substr($hexString,$count,2);           
+            $packedString = pack("H*",$subString); 
+            if ($count==0)
+            {
+                $binString=$packedString;
+            }else{
+                $binString.=$packedString;
+            } 
+            $count+=2; 
+        } 
+        return $binString; 
+  }
 }
