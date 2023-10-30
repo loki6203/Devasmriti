@@ -49,6 +49,13 @@ class OrderController extends Controller
             $Shipping['cancel_url']         = url('ccavenue/requestHandler');
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
+            $DeliveryDetails                = json_decode($orderData->shipping_address,true);
+            if(empty($biilingDetails)){
+                $biilingDetails             = $DeliveryDetails;
+            }
+            if(empty($DeliveryDetails)){
+                $DeliveryDetails             = $biilingDetails;
+            }
             $BENVnAME = '';
             if(isset($biilingDetails['lname']) && $biilingDetails['lname']!=''){
                 $BENVnAME = $biilingDetails['fname'].' '.$biilingDetails['lname'];
@@ -63,7 +70,6 @@ class OrderController extends Controller
             $Shipping['billing_country']    = $biilingDetails['country']['name'];
             $Shipping['billing_tel']        = $biilingDetails['phone_no'];
             $Shipping['billing_email']      = $biilingDetails['email'];
-            $DeliveryDetails                = json_decode($orderData->shipping_address,true);
             $dENVnAME = '';
             if(isset($DeliveryDetails['lname']) && $DeliveryDetails['lname']!=''){
                 $dENVnAME = $DeliveryDetails['fname'].' '.$DeliveryDetails['lname'];
@@ -85,7 +91,9 @@ class OrderController extends Controller
             $Shipping['customer_identifier']='';
             $data['respdata']               =$Shipping;
             if($isTesting==1){
-                echo '<pre>';print_r($data);exit;
+                echo '<pre>Billing =>';print_r($biilingDetails);
+                echo '<pre>Shipping =>';print_r($DeliveryDetails);
+                echo '<hr><pre>Order =>';print_r($data);exit;
             }
         }else{
             $data['isValid']=0;
