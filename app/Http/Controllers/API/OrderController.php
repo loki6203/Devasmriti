@@ -60,29 +60,29 @@ class OrderController extends Controller
             if(isset($biilingDetails['lname']) && $biilingDetails['lname']!=''){
                 $BENVnAME = $biilingDetails['fname'].' '.$biilingDetails['lname'];
             }else{
-                $BENVnAME = $biilingDetails['lname'];
+                $BENVnAME = @$biilingDetails['lname'];
             }
             $Shipping['billing_name']       = $BENVnAME;
-            $Shipping['billing_address']    = $biilingDetails['address_1'];
-            $Shipping['billing_city']       = $biilingDetails['city']['name'];
-            $Shipping['billing_state']      = $biilingDetails['state']['name'];
-            $Shipping['billing_zip']        = $biilingDetails['pincode'];
-            $Shipping['billing_country']    = $biilingDetails['country']['name'];
-            $Shipping['billing_tel']        = $biilingDetails['phone_no'];
-            $Shipping['billing_email']      = $biilingDetails['email'];
+            $Shipping['billing_address']    = @$biilingDetails['address_1'];
+            $Shipping['billing_city']       = @$biilingDetails['city']['name'];
+            $Shipping['billing_state']      = @$biilingDetails['state']['name'];
+            $Shipping['billing_zip']        = @$biilingDetails['pincode'];
+            $Shipping['billing_country']    = @$biilingDetails['country']['name'];
+            $Shipping['billing_tel']        = @$biilingDetails['phone_no'];
+            $Shipping['billing_email']      = @$biilingDetails['email'];
             $dENVnAME = '';
             if(isset($DeliveryDetails['lname']) && $DeliveryDetails['lname']!=''){
                 $dENVnAME = $DeliveryDetails['fname'].' '.$DeliveryDetails['lname'];
             }else{
-                $dENVnAME = $DeliveryDetails['lname'];
+                $dENVnAME = @$DeliveryDetails['lname'];
             }
             $Shipping['delivery_name']      = $dENVnAME;
-            $Shipping['delivery_address']   = $DeliveryDetails['address_1'];
-            $Shipping['delivery_city']      = $DeliveryDetails['city']['name'];
-            $Shipping['delivery_state']     = $DeliveryDetails['state']['name'];
-            $Shipping['delivery_zip']       = $DeliveryDetails['pincode'];
-            $Shipping['delivery_country']   = $DeliveryDetails['country']['name'];
-            $Shipping['delivery_tel']       = $DeliveryDetails['phone_no'];
+            $Shipping['delivery_address']   = @$DeliveryDetails['address_1'];
+            $Shipping['delivery_city']      = @$DeliveryDetails['city']['name'];
+            $Shipping['delivery_state']     = @$DeliveryDetails['state']['name'];
+            $Shipping['delivery_zip']       = @$DeliveryDetails['pincode'];
+            $Shipping['delivery_country']   = @$DeliveryDetails['country']['name'];
+            $Shipping['delivery_tel']       = @$DeliveryDetails['phone_no'];
             $Shipping['merchant_param1']    = '';
             $Shipping['merchant_param2']    = '';
             $Shipping['merchant_param3']    = '';
