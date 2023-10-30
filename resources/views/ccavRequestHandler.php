@@ -5,15 +5,16 @@
 <body>
 <center>
 <?php 
+if($isValid>0){
 	error_reporting(0);
 	$merchant_data='';
-	
 	foreach ($respdata as $key => $value){
 		$merchant_data.=$key.'='.$value.'&';
 	}
-
 	$encrypted_data=encrypt($merchant_data,$working_key); // Method for encrypting the data.
-
+}else{
+	
+}
 ?>
 <form method="post" name="redirect" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction"> 
 <?php
