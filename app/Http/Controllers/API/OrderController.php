@@ -32,7 +32,7 @@ class OrderController extends Controller
 
     public function __construct(){
     }
-    public function requestHandler(Request $request,$order_id=''){
+    public function requestHandler(Request $request,$order_id='',$isTesting=0){
         $Shipping=array();
         $orderData = Order::find($order_id);
         $data=array();
@@ -49,7 +49,13 @@ class OrderController extends Controller
             $Shipping['cancel_url']         = url('ccavenue/requestHandler');
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
-            $Shipping['billing_name']       = $biilingDetails['fname'].($biilingDetails['lname']!='')?$biilingDetails['lname']:'';
+            $BENVnAME = '';
+            if(isset($biilingDetails['lname']) && $biilingDetails['lname']!=''){
+                $BENVnAME = $biilingDetails['fname'].' '.$biilingDetails['lname'];
+            }else{
+                $BENVnAME = $biilingDetails['lname'];
+            }
+            $Shipping['billing_name']       = $BENVnAME;
             $Shipping['billing_address']    = $biilingDetails['address_1'];
             $Shipping['billing_city']       = $biilingDetails['city']['name'];
             $Shipping['billing_state']      = $biilingDetails['state']['name'];
@@ -58,7 +64,13 @@ class OrderController extends Controller
             $Shipping['billing_tel']        = $biilingDetails['phone_no'];
             $Shipping['billing_email']      = $biilingDetails['email'];
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
-            $Shipping['delivery_name']      = $DeliveryDetails['fname'].($DeliveryDetails['lname']!='')?$DeliveryDetails['lname']:'';
+            $dENVnAME = '';
+            if(isset($DeliveryDetails['lname']) && $DeliveryDetails['lname']!=''){
+                $dENVnAME = $DeliveryDetails['fname'].' '.$DeliveryDetails['lname'];
+            }else{
+                $dENVnAME = $DeliveryDetails['lname'];
+            }
+            $Shipping['delivery_name']      = $dENVnAME;
             $Shipping['delivery_address']   = $DeliveryDetails['address_1'];
             $Shipping['delivery_city']      = $DeliveryDetails['city']['name'];
             $Shipping['delivery_state']     = $DeliveryDetails['state']['name'];
@@ -72,7 +84,9 @@ class OrderController extends Controller
             $Shipping['promo_code']         = '';
             $Shipping['customer_identifier']='';
             $data['respdata']               =$Shipping;
-            // echo '<pre>';print_r($data['respdata']);exit;
+            if($isTesting==1){
+                echo '<pre>';print_r($data);exit;
+            }
         }else{
             $data['isValid']=0;
             return redirect(WEB_API_LINK().'payment/0/Invalid');
