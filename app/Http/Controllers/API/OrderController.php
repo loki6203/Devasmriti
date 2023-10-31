@@ -50,8 +50,10 @@ class OrderController extends Controller
             $Shipping['order_id']           = $orderData->invoice_id;
             $Shipping['amount']             = $orderData->final_paid_amount;
             $Shipping['currency']           = 'INR';
-            $Shipping['redirect_url']       = url('ccavenue/requestHandler');
-            $Shipping['cancel_url']         = url('ccavenue/requestHandler');
+            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/ccavenue/requestHandler';
+            // url('ccavenue/requestHandler');
+            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/ccavenue/requestHandler';
+            // url('ccavenue/requestHandler');
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
