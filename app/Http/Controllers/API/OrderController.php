@@ -90,10 +90,10 @@ class OrderController extends Controller
             $Shipping['delivery_zip']       = @$DeliveryDetails['pincode'];
             $Shipping['delivery_country']   = @$DeliveryDetails['country']['name'];
             $Shipping['delivery_tel']       = @$DeliveryDetails['phone_no'];
-            $Shipping['merchant_param1']    = '';
-            $Shipping['merchant_param2']    = '';
-            $Shipping['merchant_param3']    = '';
-            $Shipping['merchant_param4']    = '';
+            $Shipping['merchant_param1']    = 'additional Info.';
+            $Shipping['merchant_param2']    = 'additional Info.';
+            $Shipping['merchant_param3']    = 'additional Info.';
+            $Shipping['merchant_param4']    = 'additional Info.';
             $Shipping['promo_code']         = '';
             $Shipping['customer_identifier']='';
             $data['respdata']               =$Shipping;
