@@ -55,7 +55,7 @@ class OrderController extends Controller
             $Shipping['redirect_url']       =  'https://api-backend.devasmriti.com/ccavenue/responseHandler';
 
             // $Shipping['cancel_url']         = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
-            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
+            $Shipping['cancel_url']       = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
