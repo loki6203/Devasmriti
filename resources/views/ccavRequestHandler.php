@@ -12,8 +12,7 @@ if($isValid>0){
 		$merchant_data.=$key.'='.$value.'&';
 	}
 	
-	// $merchant_data='merchant_id=2742697&order_id=1234&currency=INR&amount=1.00&redirect_url=https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler&cancel_url=https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler&language=EN&billing_name=Peter&billing_address=Santacruz&billing_city=Mumbai&billing_state=MH&billing_zip=400054&billing_country=India&billing_tel=9876543210&billing_email=testing%40domain.com&delivery_name=Sam&delivery_address=Vile+Parle&delivery_city=Mumbai&delivery_state=Maharashtra&delivery_zip=400038&delivery_country=India&delivery_tel=0123456789&merchant_param1=additional+Info.&merchant_param2=additional+Info.&merchant_param3=additional+Info.&merchant_param4=additional+Info.&merchant_param5=additional+Info.&promo_code=&customer_identifier=';
-	
+	$merchant_data='tid=1698760365497&merchant_id=2742697&order_id=123654532&amount=1.00¤cy=INR&redirect_url=https://api-backend.devasmriti.com/ccavenue/responseHandler&cancel_url=https://api-backend.devasmriti.com/ccavenue/responseHandler&language=EN&billing_name=Charli&billing_address=Room no 1101, near Railway station Ambad&billing_city=Indore&billing_state=MP&billing_zip=425001&billing_country=India&billing_tel=9876543210&billing_email=test@test.com&delivery_name=Chaplin&delivery_address=room no.701 near bus stand&delivery_city=Hyderabad&delivery_state=Andhra&delivery_zip=425001&delivery_country=India&delivery_tel=9876543210&merchant_param1=additional Info.&merchant_param2=additional Info.&merchant_param3=additional Info.&merchant_param4=additional Info.&merchant_param5=additional Info.&promo_code=&customer_identifier=&';
 	echo $merchant_data;
 	echo '<hr>';
 	echo $working_key;
