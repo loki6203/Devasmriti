@@ -46,11 +46,11 @@ class OrderController extends Controller
             $data['working_key']            = $this->working_key;
             $data['access_code']            = $this->access_code;
             $data['ccurl']                  = $this->ccurl;
-            $Shipping['tid']                = time();
+            // $Shipping['tid']                = time();
+            $Shipping['tid']                = '1698760762874';
             $Shipping['merchant_id']        = $this->merchant_id;
             $Shipping['order_id']           = $orderData->invoice_id;
             $Shipping['amount']             = $orderData->final_paid_amount;
-            // $Shipping['amount']             = '1.00';
             $Shipping['currency']           = 'INR';
             $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
             $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
