@@ -43,7 +43,7 @@ class OrderController extends Controller
         $data=array();
         if(!is_null($orderData)){
             $data['isValid']=1;
-            $data['working_key']            = $this->merchant_id;
+            $data['working_key']            = $this->working_key;
             $data['access_code']            = $this->access_code;
             $Shipping['tid']                = time();
             $Shipping['merchant_id']        = $this->merchant_id;
