@@ -23,15 +23,16 @@ class OrderController extends Controller
 {
 	public $succ = 200;
     public $err  = 202;
-    public $working_key = '664AB39BBF9119447E372FEF436DCA7D';       //Shared by CCAVENUES
-    public $access_code = 'AVHN05KJ30CF33NHFC';                     //Shared by CCAVENUES
-    public $merchant_id = '2742697';                                //Shared by CCAVENUES
-    public $ccurl = ' https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
 
-    // public $working_key = 'D31380092DBE36A182BC8FEF363A6E95';       //Shared by CCAVENUES
-    // public $access_code = 'AVPB26KJ94CL28BPLC';                     //Shared by CCAVENUES
-    // public $merchant_id = '2742697';                                //Shared by CCAVENUES
-    // public $ccurl = 'https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+    // public $working_key = '664AB39BBF9119447E372FEF436DCA7D';
+    // public $access_code = 'AVHN05KJ30CF33NHFC';
+    // public $merchant_id = '2742697';
+    // public $ccurl = ' https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
+
+    public $working_key = 'D31380092DBE36A182BC8FEF363A6E95';
+    public $access_code = 'AVPB26KJ94CL28BPLC';
+    public $merchant_id = '2742697';
+    public $ccurl = 'https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
 
 
     public function __construct(){
@@ -48,14 +49,11 @@ class OrderController extends Controller
             $Shipping['tid']                = time();
             $Shipping['merchant_id']        = $this->merchant_id;
             $Shipping['order_id']           = $orderData->invoice_id;
-            // $Shipping['amount']             = '1.00';
-            $Shipping['amount']             = $orderData->final_paid_amount;
+            // $Shipping['amount']             = $orderData->final_paid_amount;
+            $Shipping['amount']             = '1.00';
             $Shipping['currency']           = 'INR';
-            // $Shipping['redirect_url']       = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
-            $Shipping['redirect_url']       =  'https://api-backend.devasmriti.com/ccavenue/responseHandler';
-
-            // $Shipping['cancel_url']         = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
-            $Shipping['cancel_url']       = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
+            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
+            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
