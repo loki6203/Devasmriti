@@ -45,16 +45,17 @@ class OrderController extends Controller
             $data['working_key']            = $this->working_key;
             $data['access_code']            = $this->access_code;
             $data['ccurl']                  = $this->ccurl;
-            // $Shipping['tid']                = time();
+            $Shipping['tid']                = time();
             $Shipping['merchant_id']        = $this->merchant_id;
             $Shipping['order_id']           = $orderData->invoice_id;
-            $Shipping['amount']             = '1.00';
-            // $Shipping['amount']             = $orderData->final_paid_amount;
+            // $Shipping['amount']             = '1.00';
+            $Shipping['amount']             = $orderData->final_paid_amount;
             $Shipping['currency']           = 'INR';
-            $Shipping['redirect_url']       = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
-            // url('ccavenue/requestHandler');
-            $Shipping['cancel_url']         = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
-            // url('ccavenue/requestHandler');
+            // $Shipping['redirect_url']       = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
+            $Shipping['redirect_url']       =  'https://api-backend.devasmriti.com/ccavenue/responseHandler';
+
+            // $Shipping['cancel_url']         = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FresponseHandler';
+            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/ccavenue/responseHandler';
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
