@@ -52,7 +52,7 @@ class OrderController extends Controller
             // $Shipping['tid']                = time();
             $Shipping['merchant_id']        = $this->merchant_id;
             $Shipping['order_id']           = $orderData->invoice_id;
-            $Shipping['amount']             = 1.00;
+            $Shipping['amount']             = '1.00';
             // $Shipping['amount']             = $orderData->final_paid_amount;
             $Shipping['currency']           = 'INR';
             $Shipping['redirect_url']       = 'https%3A%2F%2Fapi-backend.devasmriti.com%2Fccavenue%2FrequestHandler';
