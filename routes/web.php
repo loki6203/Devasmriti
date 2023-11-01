@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::post('/ccavenue/requestHandler/{order_id}', 'API\OrderController@requestHandler');
+Route::post('/ccavenue/requestHandler.php', 'API\OrderController@requestHandler');
 Route::get('/ccavenue/requestHandler/{order_id}/{isTesting}', 'API\OrderController@requestHandler');
-Route::get('/ccavenue/payment','API\OrderController@payment');
-Route::post('/ccavenue/responseHandler','API\OrderController@responseHandler');
+Route::get('/ccavenue/payment.php','API\OrderController@payment');
+Route::post('/ccavenue/responseHandler.php','API\OrderController@responseHandler');

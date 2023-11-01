@@ -46,6 +46,9 @@ class OrderController extends Controller
     }
     public function requestHandler(Request $request,$order_id='',$isTesting=0){
         $Shipping=array();
+        if($order_id==""){
+            $order_id = 83;
+        }
         $orderData = Order::find($order_id);
         $data=array();
         if(!is_null($orderData)){
