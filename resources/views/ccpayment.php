@@ -27,16 +27,16 @@
 					<td>Order Id	:</td><td><input type="text" name="order_id" value="<?php echo @$respdata['order_id'];?>"/></td>
 				</tr>
 				<tr>
-					<td>Amount	:</td><td><input type="text" name="amount" value="1.00"/></td>
+					<td>Amount	:</td><td><input type="text" name="amount" value="<?php echo @$respdata['amount'];?>"/></td>
 				</tr>
 				<tr>
-					<td>Currency	:</td><td><input type="text" name="currency" value="INR"/></td>
+					<td>Currency	:</td><td><input type="text" name="currency" value="<?php echo @$respdata['currency'];?>"/></td>
 				</tr>
 				<tr>
-					<td>Redirect URL	:</td><td><input type="text" name="redirect_url" value="https://api-backend.devasmriti.com/cc/ccavResponseHandler.php"/></td>
+					<td>Redirect URL	:</td><td><input type="text" name="redirect_url" value="<?php echo @$respdata['redirect_url'];?>"/></td>
 				</tr>
 			 	<tr>
-			 		<td>Cancel URL	:</td><td><input type="text" name="cancel_url" value="https://api-backend.devasmriti.com/cc/ccavResponseHandler.php"/></td>
+			 		<td>Cancel URL	:</td><td><input type="text" name="cancel_url" value="<?php echo @$respdata['cancel_url'];?>"/></td>
 			 	</tr>
 			 	<tr>
 					<td>Language	:</td><td><input type="text" name="language" value="EN"/></td>

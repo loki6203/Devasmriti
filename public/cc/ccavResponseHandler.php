@@ -8,6 +8,7 @@
 	$rcvdString=decrypt($encResponse,$workingKey);		//Crypto Decryption used as per the specified working key.
 	$order_status="";
 	$order_id = 0;
+	$tracking_id='';
 	$decryptValues=explode('&', $rcvdString);
 	$dataSize=sizeof($decryptValues);
 	echo "<center>";
@@ -16,6 +17,7 @@
 	{
 		$information=explode('=',$decryptValues[$i]);
 		if($i==3)	$order_status=$information[1];
+		if($i==1)	$tracking_id=$information[1];
 		if($i==0)	$order_id=$information[1];
 	}
 
