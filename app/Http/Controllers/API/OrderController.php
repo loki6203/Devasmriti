@@ -123,22 +123,23 @@ class OrderController extends Controller
         if(empty($postData)){
             $postData = $_POST;
         }
-        echo '<pre>';print_r($postData);exit;
         if(!empty($postData)){
-            $encResponse=$postData["encResp"];		
+            $encResponse=$postData["encResp"];	
+            $decryptValues=explode('&',$encResponse);
+            echo '<pre>';print_r($decryptValues);exit;
             //This is the response sent by the CCAvenue Server
-            $workingKey=$this->working_key;
-            $rcvdString=decrypt($encResponse,$workingKey);		
+            // $workingKey=$this->working_key;
+            // $rcvdString=decrypt($encResponse,$workingKey);		
             //Crypto Decryption used as per the specified working key.
             $order_status="";
             $order_id = 0;
-            $decryptValues=explode('&', $rcvdString);
-            $dataSize=sizeof($decryptValues);
-            for($i = 0; $i < $dataSize; $i++){
-                $information=explode('=',$decryptValues[$i]);
-                if($i==3)	$order_status=$information[1];
-                if($i==0)	$order_id=$information[1];
-            }
+            // $decryptValues=explode('&', $rcvdString);
+            // $dataSize=sizeof($decryptValues);
+            // for($i = 0; $i < $dataSize; $i++){
+            //     $information=explode('=',$decryptValues[$i]);
+            //     if($i==3)	$order_status=$information[1];
+            //     if($i==0)	$order_id=$information[1];
+            // }
             $payment_status = $order_status;
             if($order_status==="Success"){
                 // echo "<br>Thank you for shopping with us. Your credit card has been charged and your transaction is successful. We will be shipping your order to you soon.";

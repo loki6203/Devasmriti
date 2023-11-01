@@ -33,10 +33,10 @@
 					<td>Currency	:</td><td><input type="text" name="currency" value="INR"/></td>
 				</tr>
 				<tr>
-					<td>Redirect URL	:</td><td><input type="text" name="redirect_url" value="https://api-backend.devasmriti.com/api/ccavenue/responseHandler"/></td>
+					<td>Redirect URL	:</td><td><input type="text" name="redirect_url" value="https://api-backend.devasmriti.com/cc/ccavResponseHandler.php"/></td>
 				</tr>
 			 	<tr>
-			 		<td>Cancel URL	:</td><td><input type="text" name="cancel_url" value="https://api-backend.devasmriti.com/api/ccavenue/responseHandler"/></td>
+			 		<td>Cancel URL	:</td><td><input type="text" name="cancel_url" value="https://api-backend.devasmriti.com/cc/ccavResponseHandler.php"/></td>
 			 	</tr>
 			 	<tr>
 					<td>Language	:</td><td><input type="text" name="language" value="EN"/></td>

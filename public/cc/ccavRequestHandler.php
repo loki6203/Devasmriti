@@ -17,13 +17,7 @@
 	foreach ($_POST as $key => $value){
 		$merchant_data.=$key.'='.$value.'&';
 	}
-	// echo $merchant_data;
-	// echo '<hr>';
-	// echo $access_code;
-	// echo '<hr>';
-	// echo $working_key;
 	$encrypted_data=encrypt($merchant_data,$working_key); // Method for encrypting the data.
-
 ?>
 <form method="post" name="redirect" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction"> 
 <?php
