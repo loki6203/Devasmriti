@@ -49,3 +49,9 @@
 	echo "</table><br>";
 	echo "</center>";
 ?>
+<form method="post" name="redirect" action="/ccavenue/responseHandler"> 
+<?php
+echo "<input type=hidden name=encResp value=$encResponse>";
+?>
+<input type="submit"/>
+</form>

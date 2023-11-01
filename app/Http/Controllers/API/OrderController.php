@@ -454,6 +454,56 @@ class OrderController extends Controller
                                         //     // $data = ["Fail"];
                                         //     $data =$Pay_Load_Request;
                                         // }
+                                        $Shipping['tid']                = time();
+                                        $Shipping['merchant_id']        = $this->merchant_id;
+                                        $Shipping['order_id']           = $orderData->invoice_id;
+                                        $Shipping['amount']             = $orderData->final_paid_amount;
+                                        $Shipping['currency']           = 'INR';
+                                        $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
+                                        $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
+                                        $Shipping['language']           = 'EN';
+                                        $biilingDetails                 = json_decode($orderData->billing_address,true);
+                                        $DeliveryDetails                = json_decode($orderData->shipping_address,true);
+                                        if(empty($biilingDetails)){
+                                            $biilingDetails             = $DeliveryDetails;
+                                        }
+                                        if(empty($DeliveryDetails)){
+                                            $DeliveryDetails             = $biilingDetails;
+                                        }
+                                        $BENVnAME = '';
+                                        if(isset($biilingDetails['lname']) && $biilingDetails['lname']!=''){
+                                            $BENVnAME = $biilingDetails['fname'].' '.$biilingDetails['lname'];
+                                        }else{
+                                            $BENVnAME = @$biilingDetails['lname'];
+                                        }
+                                        $Shipping['billing_name']       = $BENVnAME;
+                                        $Shipping['billing_address']    = @$biilingDetails['address_1'];
+                                        $Shipping['billing_city']       = @$biilingDetails['city']['name'];
+                                        $Shipping['billing_state']      = @$biilingDetails['state']['name'];
+                                        $Shipping['billing_zip']        = @$biilingDetails['pincode'];
+                                        $Shipping['billing_country']    = @$biilingDetails['country']['name'];
+                                        $Shipping['billing_tel']        = @$biilingDetails['phone_no'];
+                                        $Shipping['billing_email']      = @$biilingDetails['email'];
+                                        $dENVnAME = '';
+                                        if(isset($DeliveryDetails['lname']) && $DeliveryDetails['lname']!=''){
+                                            $dENVnAME = $DeliveryDetails['fname'].' '.$DeliveryDetails['lname'];
+                                        }else{
+                                            $dENVnAME = @$DeliveryDetails['lname'];
+                                        }
+                                        $Shipping['delivery_name']      = $dENVnAME;
+                                        $Shipping['delivery_address']   = @$DeliveryDetails['address_1'];
+                                        $Shipping['delivery_city']      = @$DeliveryDetails['city']['name'];
+                                        $Shipping['delivery_state']     = @$DeliveryDetails['state']['name'];
+                                        $Shipping['delivery_zip']       = @$DeliveryDetails['pincode'];
+                                        $Shipping['delivery_country']   = @$DeliveryDetails['country']['name'];
+                                        $Shipping['delivery_tel']       = @$DeliveryDetails['phone_no'];
+                                        $Shipping['merchant_param1']    = 'additional Info.';
+                                        $Shipping['merchant_param2']    = 'additional Info.';
+                                        $Shipping['merchant_param3']    = 'additional Info.';
+                                        $Shipping['merchant_param4']    = 'additional Info.';
+                                        $Shipping['promo_code']         = '';
+                                        $Shipping['customer_identifier']='';
+                                        $data['respdata']               =$Shipping;
                                     }else{
                                         $success=0;
                                         $message="Please login to continue";

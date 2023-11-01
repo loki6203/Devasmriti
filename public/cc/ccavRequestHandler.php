@@ -17,11 +17,11 @@
 	foreach ($_POST as $key => $value){
 		$merchant_data.=$key.'='.$value.'&';
 	}
-	echo $merchant_data;
-	echo '<hr>';
-	echo $access_code;
-	echo '<hr>';
-	echo $working_key;
+	// echo $merchant_data;
+	// echo '<hr>';
+	// echo $access_code;
+	// echo '<hr>';
+	// echo $working_key;
 	$encrypted_data=encrypt($merchant_data,$working_key); // Method for encrypting the data.
 
 ?>
@@ -30,10 +30,10 @@
 echo "<input type=hidden name=encRequest value=$encrypted_data>";
 echo "<input type=hidden name=access_code value=$access_code>";
 ?>
-<input type="submit"/>
+<!-- <input type="submit"/> -->
 </form>
 </center>
-<!-- <script language='javascript'>document.redirect.submit();</script> -->
+<script language='javascript'>document.redirect.submit();</script>
 </body>
 </html>
 
