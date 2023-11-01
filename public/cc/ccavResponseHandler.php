@@ -54,7 +54,7 @@
 <?php
 echo "<input type=hidden name=encResp value=$rcvdString>";
 ?>
-<!-- <input type="submit"/> -->
+<input type="submit"/>
 </form>
 <center><b>Please Wait...</b></center>
-<script language='javascript'>document.redirect.submit();</script>
+<!-- <script language='javascript'>document.redirect.submit();</script> -->
