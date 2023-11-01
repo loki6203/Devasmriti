@@ -154,7 +154,7 @@ class OrderController extends Controller
                 // echo "<br>Security Error. Illegal access detected";
             }
             $UserAddressUp = array('payment_status'=>$payment_status);
-            if(!Order::where('invoice_id',$order_id)->where('tracking_id',$tracking_id)->exists()){
+            if(!Order::where('invoice_id',$order_id)->where('transaction_id',$tracking_id)->exists()){
                 $UserAddressUp = array_merge($UserAddressUp,array('transaction_id'=>$tracking_id));
             }
             Order::where('invoice_id',$order_id)->update($UserAddressUp);
