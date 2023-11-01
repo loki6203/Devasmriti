@@ -52,7 +52,7 @@
 ?>
 <form method="post" name="redirect" action="/api/ccavenue/responseHandler"> 
 <?php
-echo "<input type=hidden name=encResp value=$decryptValues>";
+echo "<input type=hidden name=encResp value=$rcvdString>";
 ?>
 <input type="submit"/>
 </form>
