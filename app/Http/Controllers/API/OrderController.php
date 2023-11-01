@@ -124,47 +124,47 @@ class OrderController extends Controller
             $postData = $_POST;
         }
         echo '<pre>';print_r($postData);exit;
-        if(!empty($postData)){
-            $encResponse=$postData["encResp"];		
-            //This is the response sent by the CCAvenue Server
-            $workingKey=$this->working_key;
-            $rcvdString=decrypt($encResponse,$workingKey);		
-            //Crypto Decryption used as per the specified working key.
-            $order_status="";
-            $order_id = 0;
-            $decryptValues=explode('&', $rcvdString);
-            $dataSize=sizeof($decryptValues);
-            for($i = 0; $i < $dataSize; $i++){
-                $information=explode('=',$decryptValues[$i]);
-                if($i==3)	$order_status=$information[1];
-                if($i==0)	$order_id=$information[1];
-            }
-            $payment_status = $order_status;
-            if($order_status==="Success"){
-                // echo "<br>Thank you for shopping with us. Your credit card has been charged and your transaction is successful. We will be shipping your order to you soon.";
-            }else if($order_status==="Aborted"){
-                $payment_status = 'Processing';
-                // echo "<br>Thank you for shopping with us.We will keep you posted regarding the status of your order through e-mail";
-            }else if($order_status==="Failure"){
-                $payment_status = 'Faield';
-                // echo "<br>Thank you for shopping with us.However,the transaction has been declined.";
-            }else{
-                $payment_status = 'Processing';
-                $order_status = "Securityerror";
-                // echo "<br>Security Error. Illegal access detected";
-            }
-            $UserAddressUp = array('payment_status'=>$payment_status);
-            Order::where('id',$order_id)->update($UserAddressUp);
-            if($order_status==="Success"){
-                $data   = Order::find($order_id);
-                $invoice_id = $data->invoice_id;
-                $this->SuccPaymentData($data);
-            }
-        }else{
-            $invoice_id = 0;
-            $order_status = 'Invalid';
-        }
-        return redirect(WEB_API_LINK().'payment/'.$invoice_id.'/'.$order_status);
+        // if(!empty($postData)){
+        //     $encResponse=$postData["encResp"];		
+        //     //This is the response sent by the CCAvenue Server
+        //     $workingKey=$this->working_key;
+        //     $rcvdString=decrypt($encResponse,$workingKey);		
+        //     //Crypto Decryption used as per the specified working key.
+        //     $order_status="";
+        //     $order_id = 0;
+        //     $decryptValues=explode('&', $rcvdString);
+        //     $dataSize=sizeof($decryptValues);
+        //     for($i = 0; $i < $dataSize; $i++){
+        //         $information=explode('=',$decryptValues[$i]);
+        //         if($i==3)	$order_status=$information[1];
+        //         if($i==0)	$order_id=$information[1];
+        //     }
+        //     $payment_status = $order_status;
+        //     if($order_status==="Success"){
+        //         // echo "<br>Thank you for shopping with us. Your credit card has been charged and your transaction is successful. We will be shipping your order to you soon.";
+        //     }else if($order_status==="Aborted"){
+        //         $payment_status = 'Processing';
+        //         // echo "<br>Thank you for shopping with us.We will keep you posted regarding the status of your order through e-mail";
+        //     }else if($order_status==="Failure"){
+        //         $payment_status = 'Faield';
+        //         // echo "<br>Thank you for shopping with us.However,the transaction has been declined.";
+        //     }else{
+        //         $payment_status = 'Processing';
+        //         $order_status = "Securityerror";
+        //         // echo "<br>Security Error. Illegal access detected";
+        //     }
+        //     $UserAddressUp = array('payment_status'=>$payment_status);
+        //     Order::where('id',$order_id)->update($UserAddressUp);
+        //     if($order_status==="Success"){
+        //         $data   = Order::find($order_id);
+        //         $invoice_id = $data->invoice_id;
+        //         $this->SuccPaymentData($data);
+        //     }
+        // }else{
+        //     $invoice_id = 0;
+        //     $order_status = 'Invalid';
+        // }
+        // return redirect(WEB_API_LINK().'payment/'.$invoice_id.'/'.$order_status);
 	}
     function SuccPaymentData($data){
         $userid = $data->user_id;

@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 // Route::post('/ccavenue/requestHandler', 'API\OrderController@requestHandler');
 // Route::get('/ccavenue/requestHandler/{order_id}/{isTesting}', 'API\OrderController@requestHandler');
 // Route::get('/ccavenue/payment','API\OrderController@payment');
-Route::post('/ccavenue/responseHandler','API\OrderController@responseHandler');
+// Route::post('/ccavenue/responseHandler','API\OrderController@responseHandler');

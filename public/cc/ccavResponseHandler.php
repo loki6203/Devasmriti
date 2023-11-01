@@ -50,7 +50,7 @@
 	echo "</center>";
 	$decryptValues = json_encode($decryptValues);
 ?>
-<form method="post" name="redirect" action="/ccavenue/responseHandler"> 
+<form method="post" name="redirect" action="/api/ccavenue/responseHandler"> 
 <?php
 echo "<input type=hidden name=encResp value=$decryptValues>";
 ?>
