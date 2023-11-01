@@ -154,10 +154,10 @@ class OrderController extends Controller
                 // echo "<br>Security Error. Illegal access detected";
             }
             $UserAddressUp = array('payment_status'=>$payment_status,'transaction_id'=>$tracking_id);
-            Order::where('id',$order_id)->update($UserAddressUp);
+            Order::where('invoice_id',$order_id)->update($UserAddressUp);
             if($order_status==="Success"){
-                $data   = Order::find($order_id);
-                $invoice_id = $data->invoice_id;
+                $data   = Order::where('invoice_id',$order_id)->first();
+                $invoice_id = $order_id;
                 $this->SuccPaymentData($data);
             }
         }else{
