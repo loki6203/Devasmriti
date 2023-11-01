@@ -155,9 +155,9 @@ class OrderController extends Controller
             }
             $UserAddressUp = array('payment_status'=>$payment_status,'transaction_id'=>$tracking_id);
             Order::where('invoice_id',$order_id)->update($UserAddressUp);
+            $invoice_id = $order_id;
             if($order_status==="Success"){
                 $data   = Order::where('invoice_id',$order_id)->first();
-                $invoice_id = $order_id;
                 $this->SuccPaymentData($data);
             }
         }else{
