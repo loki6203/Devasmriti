@@ -46,7 +46,7 @@ class OrderController extends Controller
     }
     public function requestHandler(Request $request,$order_id='',$isTesting=0){
         $Shipping=array();
-        $orderData = Order::where('invoice_id',$order_id)->last();
+        $orderData = Order::where('invoice_id',$order_id)->first();
         $data=array();
         if(!is_null($orderData)){
             $data['isValid']=1;
@@ -58,8 +58,8 @@ class OrderController extends Controller
             $Shipping['order_id']           = $orderData->invoice_id;
             $Shipping['amount']             = $orderData->final_paid_amount;
             $Shipping['currency']           = 'INR';
-            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/api/ccavenue/responseHandler';
-            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/api/ccavenue/responseHandler';
+            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
+            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
