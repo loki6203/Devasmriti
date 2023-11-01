@@ -7,15 +7,17 @@
 	$encResponse=$_POST["encResp"];			//This is the response sent by the CCAvenue Server
 	$rcvdString=decrypt($encResponse,$workingKey);		//Crypto Decryption used as per the specified working key.
 	$order_status="";
+	$order_id = 0;
 	$decryptValues=explode('&', $rcvdString);
 	$dataSize=sizeof($decryptValues);
-	// echo "<center>";
+	echo "<center>";
 
-	// for($i = 0; $i < $dataSize; $i++) 
-	// {
-	// 	$information=explode('=',$decryptValues[$i]);
-	// 	if($i==3)	$order_status=$information[1];
-	// }
+	for($i = 0; $i < $dataSize; $i++) 
+	{
+		$information=explode('=',$decryptValues[$i]);
+		if($i==3)	$order_status=$information[1];
+		if($i==0)	$order_id=$information[1];
+	}
 
 	// if($order_status==="Success")
 	// {
@@ -47,14 +49,15 @@
 	// }
 
 	// echo "</table><br>";
-	// echo "</center>";
+	echo "<b>Please Wait...</b>";
+	echo "</center>";
 	$decryptValues = json_encode($decryptValues);
 ?>
 <form method="post" name="redirect" action="/api/ccavenue/responseHandler"> 
 <?php
-echo "<input type=hidden name=encResp value=$rcvdString>";
+echo "<input type=hidden name=order_id value=$order_id>";
+echo "<input type=hidden name=tracking_id value=$tracking_id>";
+echo "<input type=hidden name=order_status value=$order_status>";
 ?>
-<input type="submit"/>
 </form>
-<center><b>Please Wait...</b></center>
-<!-- <script language='javascript'>document.redirect.submit();</script> -->
+<script language='javascript'>document.redirect.submit();</script>

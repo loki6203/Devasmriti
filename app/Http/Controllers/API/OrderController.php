@@ -115,7 +115,8 @@ class OrderController extends Controller
             $data['isValid']=0;
             return redirect(WEB_API_LINK().'payment/0/Invalid');
         }
-		return view('ccavRequestHandler',$data);
+		// return view('ccavRequestHandler',$data);
+		return view('ccpayment',$data);
 	}
 	public function responseHandler(Request $request){
         $json       = file_get_contents('php://input');
@@ -124,15 +125,16 @@ class OrderController extends Controller
             $postData = $_POST;
         }
         if(!empty($postData)){
-            $encResponse=$postData["encResp"];	
-            $decryptValues=explode('&',$encResponse);
-            echo '<pre>';print_r($decryptValues);exit;
+            // $encResponse=$postData["encResp"];	
+            // $decryptValues=explode('&',$encResponse);
+            // echo '<pre>';print_r($decryptValues);exit;
             //This is the response sent by the CCAvenue Server
             // $workingKey=$this->working_key;
             // $rcvdString=decrypt($encResponse,$workingKey);		
             //Crypto Decryption used as per the specified working key.
-            $order_status="";
-            $order_id = 0;
+            $order_status   = $postData["order_status"];
+            $order_id       = $postData["order_id"];
+            $tracking_id    = $postData["tracking_id"];
             // $decryptValues=explode('&', $rcvdString);
             // $dataSize=sizeof($decryptValues);
             // for($i = 0; $i < $dataSize; $i++){
@@ -154,7 +156,7 @@ class OrderController extends Controller
                 $order_status = "Securityerror";
                 // echo "<br>Security Error. Illegal access detected";
             }
-            $UserAddressUp = array('payment_status'=>$payment_status);
+            $UserAddressUp = array('payment_status'=>$payment_status,'transaction_id'=>$tracking_id);
             Order::where('id',$order_id)->update($UserAddressUp);
             if($order_status==="Success"){
                 $data   = Order::find($order_id);
@@ -375,7 +377,7 @@ class OrderController extends Controller
                                         $data           = Order::with('order_sevas')->find($orderData->id);
                                         $Reference_id   = $ProdData['reference_id'];
                                         $UserDetails    = User::find($userid);
-                                        $data['checkout_url'] = url('ccavenue/requestHandler/'.$orderData->id);
+                                        $data['checkout_url'] = url('api/ccavenue/payment/'.$orderData->id);
                                         $phonenumber = @$UserDetails->mobile_number;
                                         $merchantId     = 'DEVASMRITIONLINE';
                                         $merchantIdKey  = '9fbd4b68-81b1-4ccb-9788-00ff26e0d641';
@@ -455,56 +457,6 @@ class OrderController extends Controller
                                         //     // $data = ["Fail"];
                                         //     $data =$Pay_Load_Request;
                                         // }
-                                        $Shipping['tid']                = time();
-                                        $Shipping['merchant_id']        = $this->merchant_id;
-                                        $Shipping['order_id']           = $orderData->invoice_id;
-                                        $Shipping['amount']             = $orderData->final_paid_amount;
-                                        $Shipping['currency']           = 'INR';
-                                        $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
-                                        $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
-                                        $Shipping['language']           = 'EN';
-                                        $biilingDetails                 = json_decode($orderData->billing_address,true);
-                                        $DeliveryDetails                = json_decode($orderData->shipping_address,true);
-                                        if(empty($biilingDetails)){
-                                            $biilingDetails             = $DeliveryDetails;
-                                        }
-                                        if(empty($DeliveryDetails)){
-                                            $DeliveryDetails             = $biilingDetails;
-                                        }
-                                        $BENVnAME = '';
-                                        if(isset($biilingDetails['lname']) && $biilingDetails['lname']!=''){
-                                            $BENVnAME = $biilingDetails['fname'].' '.$biilingDetails['lname'];
-                                        }else{
-                                            $BENVnAME = @$biilingDetails['lname'];
-                                        }
-                                        $Shipping['billing_name']       = $BENVnAME;
-                                        $Shipping['billing_address']    = @$biilingDetails['address_1'];
-                                        $Shipping['billing_city']       = @$biilingDetails['city']['name'];
-                                        $Shipping['billing_state']      = @$biilingDetails['state']['name'];
-                                        $Shipping['billing_zip']        = @$biilingDetails['pincode'];
-                                        $Shipping['billing_country']    = @$biilingDetails['country']['name'];
-                                        $Shipping['billing_tel']        = @$biilingDetails['phone_no'];
-                                        $Shipping['billing_email']      = @$biilingDetails['email'];
-                                        $dENVnAME = '';
-                                        if(isset($DeliveryDetails['lname']) && $DeliveryDetails['lname']!=''){
-                                            $dENVnAME = $DeliveryDetails['fname'].' '.$DeliveryDetails['lname'];
-                                        }else{
-                                            $dENVnAME = @$DeliveryDetails['lname'];
-                                        }
-                                        $Shipping['delivery_name']      = $dENVnAME;
-                                        $Shipping['delivery_address']   = @$DeliveryDetails['address_1'];
-                                        $Shipping['delivery_city']      = @$DeliveryDetails['city']['name'];
-                                        $Shipping['delivery_state']     = @$DeliveryDetails['state']['name'];
-                                        $Shipping['delivery_zip']       = @$DeliveryDetails['pincode'];
-                                        $Shipping['delivery_country']   = @$DeliveryDetails['country']['name'];
-                                        $Shipping['delivery_tel']       = @$DeliveryDetails['phone_no'];
-                                        $Shipping['merchant_param1']    = 'additional Info.';
-                                        $Shipping['merchant_param2']    = 'additional Info.';
-                                        $Shipping['merchant_param3']    = 'additional Info.';
-                                        $Shipping['merchant_param4']    = 'additional Info.';
-                                        $Shipping['promo_code']         = '';
-                                        $Shipping['customer_identifier']='';
-                                        $data['respdata']               =$Shipping;
                                     }else{
                                         $success=0;
                                         $message="Please login to continue";

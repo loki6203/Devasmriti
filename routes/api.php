@@ -104,5 +104,5 @@ Route::middleware('jwt')->group(function(){
 });
 // Route::get('/ccavenue/requestHandler/{order_id}', 'API\OrderController@requestHandler');
 // Route::post('/ccavenue/requestHandler','API\OrderController@requestHandler');
-Route::get('/ccavenue/payment/{order_id}','API\OrderController@payment');
+Route::get('/ccavenue/payment/{order_id}','API\OrderController@requestHandler');
 Route::post('/ccavenue/responseHandler','API\OrderController@responseHandler');
