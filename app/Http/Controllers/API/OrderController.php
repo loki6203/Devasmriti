@@ -120,6 +120,7 @@ class OrderController extends Controller
         if(empty($postData)){
             $postData = $_POST;
         }
+        echo '<pre>';print_r($postData);exit;
         if(!empty($postData)){
             $encResponse=$postData["encResp"];		
             //This is the response sent by the CCAvenue Server
