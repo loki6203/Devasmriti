@@ -21,10 +21,10 @@
 					<td>TID	:</td><td><input type="text" name="tid" id="tid" readonly /></td>
 				</tr>
 				<tr>
-					<td>Merchant Id	:</td><td><input type="text" name="merchant_id" value="2742697"/></td>
+					<td>Merchant Id	:</td><td><input type="text" name="merchant_id" value="<?php echo @$respdata['merchant_id'];?>"/></td>
 				</tr>
 				<tr>
-					<td>Order Id	:</td><td><input type="text" name="order_id" value="123654532"/></td>
+					<td>Order Id	:</td><td><input type="text" name="order_id" value="<?php echo @$respdata['order_id'];?>"/></td>
 				</tr>
 				<tr>
 					<td>Amount	:</td><td><input type="text" name="amount" value="1.00"/></td>

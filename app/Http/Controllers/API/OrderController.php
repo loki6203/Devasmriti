@@ -46,10 +46,7 @@ class OrderController extends Controller
     }
     public function requestHandler(Request $request,$order_id='',$isTesting=0){
         $Shipping=array();
-        if($order_id==""){
-            $order_id = 83;
-        }
-        $orderData = Order::find($order_id);
+        $orderData = Order::where('invoice_id',$order_id)->last();
         $data=array();
         if(!is_null($orderData)){
             $data['isValid']=1;
@@ -377,7 +374,7 @@ class OrderController extends Controller
                                         $data           = Order::with('order_sevas')->find($orderData->id);
                                         $Reference_id   = $ProdData['reference_id'];
                                         $UserDetails    = User::find($userid);
-                                        $data['checkout_url'] = url('api/ccavenue/payment/'.$orderData->id);
+                                        $data['checkout_url'] = url('api/ccavenue/payment/'.$ProdData['invoice_id']);
                                         $phonenumber = @$UserDetails->mobile_number;
                                         $merchantId     = 'DEVASMRITIONLINE';
                                         $merchantIdKey  = '9fbd4b68-81b1-4ccb-9788-00ff26e0d641';
