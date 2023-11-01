@@ -37,7 +37,7 @@ class OrderController extends Controller
 
     public function __construct(){
     }
-    public function payment(Request $request){
+    public function payment(Request $request,$order_id){
         $data['working_key']            = $this->working_key;
         $data['access_code']            = $this->access_code;
         $data['ccurl']                  = $this->ccurl;
@@ -61,8 +61,8 @@ class OrderController extends Controller
             $Shipping['order_id']           = $orderData->invoice_id;
             $Shipping['amount']             = $orderData->final_paid_amount;
             $Shipping['currency']           = 'INR';
-            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
-            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/cc/ccavResponseHandler.php';
+            $Shipping['redirect_url']       = 'https://api-backend.devasmriti.com/api/ccavenue/responseHandler';
+            $Shipping['cancel_url']         = 'https://api-backend.devasmriti.com/api/ccavenue/responseHandler';
             $Shipping['language']           = 'EN';
             $biilingDetails                 = json_decode($orderData->billing_address,true);
             $DeliveryDetails                = json_decode($orderData->shipping_address,true);
@@ -123,48 +123,47 @@ class OrderController extends Controller
         if(empty($postData)){
             $postData = $_POST;
         }
-        echo '<pre>';print_r($postData);exit;
-        // if(!empty($postData)){
-        //     $encResponse=$postData["encResp"];		
-        //     //This is the response sent by the CCAvenue Server
-        //     $workingKey=$this->working_key;
-        //     $rcvdString=decrypt($encResponse,$workingKey);		
-        //     //Crypto Decryption used as per the specified working key.
-        //     $order_status="";
-        //     $order_id = 0;
-        //     $decryptValues=explode('&', $rcvdString);
-        //     $dataSize=sizeof($decryptValues);
-        //     for($i = 0; $i < $dataSize; $i++){
-        //         $information=explode('=',$decryptValues[$i]);
-        //         if($i==3)	$order_status=$information[1];
-        //         if($i==0)	$order_id=$information[1];
-        //     }
-        //     $payment_status = $order_status;
-        //     if($order_status==="Success"){
-        //         // echo "<br>Thank you for shopping with us. Your credit card has been charged and your transaction is successful. We will be shipping your order to you soon.";
-        //     }else if($order_status==="Aborted"){
-        //         $payment_status = 'Processing';
-        //         // echo "<br>Thank you for shopping with us.We will keep you posted regarding the status of your order through e-mail";
-        //     }else if($order_status==="Failure"){
-        //         $payment_status = 'Faield';
-        //         // echo "<br>Thank you for shopping with us.However,the transaction has been declined.";
-        //     }else{
-        //         $payment_status = 'Processing';
-        //         $order_status = "Securityerror";
-        //         // echo "<br>Security Error. Illegal access detected";
-        //     }
-        //     $UserAddressUp = array('payment_status'=>$payment_status);
-        //     Order::where('id',$order_id)->update($UserAddressUp);
-        //     if($order_status==="Success"){
-        //         $data   = Order::find($order_id);
-        //         $invoice_id = $data->invoice_id;
-        //         $this->SuccPaymentData($data);
-        //     }
-        // }else{
-        //     $invoice_id = 0;
-        //     $order_status = 'Invalid';
-        // }
-        // return redirect(WEB_API_LINK().'payment/'.$invoice_id.'/'.$order_status);
+        if(!empty($postData)){
+            $encResponse=$postData["encResp"];		
+            //This is the response sent by the CCAvenue Server
+            $workingKey=$this->working_key;
+            $rcvdString=decrypt($encResponse,$workingKey);		
+            //Crypto Decryption used as per the specified working key.
+            $order_status="";
+            $order_id = 0;
+            $decryptValues=explode('&', $rcvdString);
+            $dataSize=sizeof($decryptValues);
+            for($i = 0; $i < $dataSize; $i++){
+                $information=explode('=',$decryptValues[$i]);
+                if($i==3)	$order_status=$information[1];
+                if($i==0)	$order_id=$information[1];
+            }
+            $payment_status = $order_status;
+            if($order_status==="Success"){
+                // echo "<br>Thank you for shopping with us. Your credit card has been charged and your transaction is successful. We will be shipping your order to you soon.";
+            }else if($order_status==="Aborted"){
+                $payment_status = 'Processing';
+                // echo "<br>Thank you for shopping with us.We will keep you posted regarding the status of your order through e-mail";
+            }else if($order_status==="Failure"){
+                $payment_status = 'Faield';
+                // echo "<br>Thank you for shopping with us.However,the transaction has been declined.";
+            }else{
+                $payment_status = 'Processing';
+                $order_status = "Securityerror";
+                // echo "<br>Security Error. Illegal access detected";
+            }
+            $UserAddressUp = array('payment_status'=>$payment_status);
+            Order::where('id',$order_id)->update($UserAddressUp);
+            if($order_status==="Success"){
+                $data   = Order::find($order_id);
+                $invoice_id = $data->invoice_id;
+                $this->SuccPaymentData($data);
+            }
+        }else{
+            $invoice_id = 0;
+            $order_status = 'Invalid';
+        }
+        return redirect(WEB_API_LINK().'payment/'.$invoice_id.'/'.$order_status);
 	}
     function SuccPaymentData($data){
         $userid = $data->user_id;
