@@ -48,10 +48,11 @@
 
 	echo "</table><br>";
 	echo "</center>";
+	$decryptValues = json_encode($decryptValues);
 ?>
 <form method="post" name="redirect" action="/ccavenue/responseHandler"> 
 <?php
-echo "<input type=hidden name=encResp value=$encResponse>";
+echo "<input type=hidden name=encResp value=$decryptValues>";
 ?>
 <input type="submit"/>
 </form>
