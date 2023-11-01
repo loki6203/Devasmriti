@@ -37,6 +37,13 @@ class OrderController extends Controller
 
     public function __construct(){
     }
+    public function payment(Request $request){
+        $data['working_key']            = $this->working_key;
+        $data['access_code']            = $this->access_code;
+        $data['ccurl']                  = $this->ccurl;
+        $data['merchant_id']            = $this->merchant_id;
+        return view('ccpayment',$data);
+    }
     public function requestHandler(Request $request,$order_id='',$isTesting=0){
         $Shipping=array();
         $orderData = Order::find($order_id);
@@ -46,8 +53,7 @@ class OrderController extends Controller
             $data['working_key']            = $this->working_key;
             $data['access_code']            = $this->access_code;
             $data['ccurl']                  = $this->ccurl;
-            // $Shipping['tid']                = time();
-            $Shipping['tid']                = '1698760762874';
+            $Shipping['tid']                = time();
             $Shipping['merchant_id']        = $this->merchant_id;
             $Shipping['order_id']           = $orderData->invoice_id;
             $Shipping['amount']             = $orderData->final_paid_amount;
