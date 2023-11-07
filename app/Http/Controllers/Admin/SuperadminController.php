@@ -455,7 +455,7 @@ class SuperadminController extends Controller
 		]);
 		
 		//$userCredentials = $request->only('username', 'password');
-		$userCredentials = array('mobile_number'=>$request->username, 'password' =>$request->password);
+		$userCredentials = array('mobile_number'=>$request->username, 'password' =>$request->password ,'user_type'=>'superadmin');
 		if (Auth::attempt($userCredentials)) {
 			$Username = $request->username;
 			$Password = bcrypt($request->password);
