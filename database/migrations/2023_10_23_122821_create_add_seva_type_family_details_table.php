@@ -17,7 +17,7 @@ class CreateAddSevaTypeFamilyDetailsTable extends Migration
         if(!Schema::hasTable('seva_price_family_details')){
             Schema::create('seva_price_family_details', function (Blueprint $table){
                 $table->id();
-                $table->enum('family_type',['kartha','ancestors','kartha_ancestors',''])->nullable();
+                $table->enum('family_type',['kartha','ancestors','kartha_ancestors','self',''])->nullable();
                 $table->foreignId('seva_price_id');
                 $table->foreign('seva_price_id')->references('id')->on('seva_prices')->onDelete('cascade');
                 $table->timestamps();  

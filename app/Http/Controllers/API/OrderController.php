@@ -210,7 +210,8 @@ class OrderController extends Controller
                 $time=$SevaPrice['order']['created_at'];
                 $date=$SevaPrice['order']['created_at'];
                 $event_link=$SevaPrice['seva_price']['seva']['event'];
-                
+                // $event_link = WEB_API_LINK().'sevas/'.$sev_id;
+                // $event_link = WEB_API_LINK().'event/'.$event_id;
                 $SbArr = array(
                     array(
                     "name"=> "name",
@@ -382,6 +383,7 @@ class OrderController extends Controller
                                         $merchantId     = 'DEVASMRITIONLINE';
                                         $merchantIdKey  = '9fbd4b68-81b1-4ccb-9788-00ff26e0d641';
                                         $keyIndex       = '1';
+
                                         // $merchantId     = 'PGTESTPAYUAT';
                                         // $merchantIdKey  = '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
                                         // $keyIndex       = '1';
@@ -457,6 +459,7 @@ class OrderController extends Controller
                                         //     // $data = ["Fail"];
                                         //     $data =$Pay_Load_Request;
                                         // }
+
                                     }else{
                                         $success=0;
                                         $message="Please login to continue";

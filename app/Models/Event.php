@@ -105,7 +105,6 @@ class Event extends Model
 	{
 		return $this->hasMany(EventUpdate::class);
 	}
-
 	public function banner_image_id()
 	{
 		return $this->belongsTo(Image::class, 'banner_image_id');
@@ -120,5 +119,4 @@ class Event extends Model
 	{
 		return $this->belongsTo(Image::class, 'feature_image_id');
 	}
-
 }

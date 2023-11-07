@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $family_type
  * @property string $full_name
  * @property Carbon $dob
- * @property int $relation_id
+ * @property int|null $relation_id
  * @property int $rasi_id
  * @property string $gothram
  * @property string $nakshatram
@@ -30,7 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $deleted_at
  * 
  * @property Rasi $rasi
- * @property Relation $relation
+ * @property Relation|null $relation
  * @property User $user
  * @property Collection|OrderSevaFamilyDetail[] $order_seva_family_details
  *

@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
+ * @property string|null $family_type
  * 
  * @property Seva $seva
  * @property Collection|OrderSeva[] $order_sevas
@@ -57,7 +58,8 @@ class SevaPrice extends Model
 		'selling_price',
 		'is_rewards_available',
 		'is_prasadam_available',
-		'is_active'
+		'is_active',
+		'family_type'
 	];
 
 	public function seva()

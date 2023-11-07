@@ -25,7 +25,6 @@ class UserFamilyDetailController extends Controller
                 'family_type' => 'nullable',
                 'full_name' => 'required',
                 'dob' => 'required',
-                'relation_id' => 'required',
                 'rasi_id' => 'required',
                 'gothram' => 'required',
                 'nakshatram' => 'required',
@@ -100,6 +99,13 @@ class UserFamilyDetailController extends Controller
                     $data = $data->where('family_type',NULL)->orWhere('family_type', '');
                 }else{
                     $data = $data->where('family_type','!=','')->orWhere('family_type','!=',NULL);
+                }
+            }
+            if($request->has('is_self')){
+                if($request->get('is_self')==1 || $request->get('is_self')==true){
+                    $data = $data->where('family_type','self');
+                }else{
+                    $data = $data->where('family_type','!=','self');
                 }
             }
             $data = $data->where('user_id',$userid);

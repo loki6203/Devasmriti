@@ -281,7 +281,7 @@ class CreateUsersTable extends Migration
                 $table->id();
                 $table->foreignId('user_id');
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-                $table->enum('family_type',['kartha','ancestors','kartha_ancestors',''])->nullable();
+                $table->enum('family_type',['kartha','ancestors','kartha_ancestors','self',''])->nullable();
                 $table->string('full_name');
                 $table->date('dob');
                 $table->foreignId('relation_id');
