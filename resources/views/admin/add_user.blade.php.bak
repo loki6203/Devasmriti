@@ -33,7 +33,7 @@
             </div>
             <!-- end page title -->
             <div class="row">
-				<!--@if ($errors->any())
+				@if ($errors->any())
 					<div class="alert alert-danger">
 						<ul>
 							@foreach ($errors->all() as $key=>$error)
@@ -44,7 +44,7 @@
 							@endforeach
 						</ul>
 					</div>
-				@endif -->
+				@endif
                 <div class="col-12">
                     <div class="card">
 						<form action="/save_user" enctype="multipart/form-data" method="post">

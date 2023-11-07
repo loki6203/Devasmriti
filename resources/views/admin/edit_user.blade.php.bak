@@ -33,7 +33,7 @@
                     <div class="card">
                         <div class="card-body">
                             <!-- <h4 class="card-title">Example</h4> -->
-                            <form action="/update_user/{{ $user->id }}" class=" repeater"
+                            <form action="/update_user/{{ $user->user_id }}" class=" repeater"
                                 enctype="multipart/form-data" method="post">
                                 <input name="_token" type="hidden" value="{{ csrf_token() }}" />
 								

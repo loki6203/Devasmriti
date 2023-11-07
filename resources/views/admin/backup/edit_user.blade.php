@@ -1,0 +1,193 @@
+@extends('layouts.layout')
+@section('content')
+<!-- ============================================================== -->
+<!-- Start right Content here -->
+<!-- ============================================================== -->
+<div class="main-content">
+
+    <div class="page-content">
+        <div class="container-fluid">
+            <!-- start page title -->
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <div class="page-title-box">
+                        <h4 class="font-size-18">Edit User</h4>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/">DevaSmriti</a></li>
+                            <li class="breadcrumb-item"><a href="admin_management">Admin Management</a></li>
+                            <li class="breadcrumb-item active">Edit User</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="float-right">
+                        <a href="user_management" class="btn btn-primary waves-effect waves-light">
+                            <i class="mdi mdi-arrow-left mr-2"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- end page title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- <h4 class="card-title">Example</h4> -->
+                            <form action="/update_user/{{ $user[0]['user_id'] }}" class=" repeater"
+                                enctype="multipart/form-data">
+                                <input name="_token" type="hidden" value="{{ csrf_token() }}" />
+								
+                                    <div data-repeater-item class="row">
+                                        <div class="form-group col-lg-3">
+										<label for="fname">First Name</label>
+										<input type="text" id="fname" name="fname" class="form-control @error('fname') is-invalid @enderror"
+											placeholder="Enter First Name" value="{{ $user[0]['fname'] }}"/>
+										@error('fname')
+											<div class="alert alert-danger">{{ $message }}</div>
+										@enderror
+
+									</div>
+									<div class="form-group col-lg-3">
+										<label for="lname">Last Name</label>
+										<input type="text" id="lname" name="lname" class="form-control"
+											placeholder="Enter Last Name" value="{{ $user[0]['lname'] }}"/>
+									</div>
+
+									<div class="form-group col-lg-3">
+										<label for="email">Email</label>
+										<input type="email" id="email" class="form-control @error('email') is-invalid @enderror" name="email" placeholder="Enter Email" value="{{ $user[0]['email'] }}" />
+										@error('email')
+											<div class="alert alert-danger">{{ $message }}</div>
+										@enderror
+									</div>
+
+									<div class="form-group col-lg-3">
+										<label for="mobile_number">Phone</label>
+										<input type="text" name="mobile_number" id="mobile_number"
+											class="form-control" placeholder="Enter Mobile No" value="{{ $user[0]['mobile_number'] }}"/>
+										@error('mobile_number')
+											<div class="alert alert-danger">{{ $message }}</div>
+										@enderror
+									</div>
+									
+									<div class="form-group col-lg-3">
+										<label for="file">Profile Pic</label>
+										<input type="file" name="file" id="file"
+											class="form-control" placeholder="Enter Profile Pic" />
+											<img src="{{ asset('public/uploads/users/'.$user[0]['profile_pic_name']) }}" alt="">
+									</div>
+									<div class="form-group col-lg-3">
+										<label for="dob">DOB</label>
+										<input type="date" name="dob" id="dob"
+											class="form-control" placeholder="Enter Date Of Birth"  value="{{date('Y-m-d', strtotime($user[0]['dob']))}}"/>
+									</div>
+									<div class="form-group col-lg-3">
+										<label for="about_me">About Me</label>
+										<textarea name="about_me" id="about_me"
+											class="form-control" placeholder="Enter About Me">{{ $user[0]['about_me'] }}</textarea>
+									</div>
+                                    </div>
+
+									<h5>Address Details</h5>
+									<div class="_addr_area">
+										<div class="row alert alert-success alert-dismissible fade show _addr_single">
+											<div class="form-group col-lg-4">
+												<label for="address_name">Name</label>
+												<input type="text" name="address_name[]" class="form-control address_name" placeholder="Enter Address Name"  value="{{ $user[0]['address_name'] }}"/>
+												
+											</div>
+											<div class="form-group col-lg-4">
+												<label for="whatsup_no">Whatsup No</label>
+												<input type="text" name="whatsup_no[]" class="form-control whatsup_no" placeholder="Enter Mobile No"  value="{{ $user[0]['whatsup_no'] }}"/>
+											</div>
+											<div class="form-group col-lg-4">
+												<label for="pincode">Pincode</label>
+												<input type="text" name="pincode[]" class="form-control pincode" placeholder="Enter Pincode"  value="{{ $user[0]['pincode'] }}" />
+											</div>
+											<div class="form-group col-lg-4">
+												<label for="country">Country</label>
+												<select name="country[]" class="form-control country"/>
+													@foreach ($country as $id=>$name)
+														<option value="{{ $id }}" >{{ $name }}</option>
+													@endforeach
+												</select>
+												
+											</div>
+											<div class="form-group col-lg-4">
+												<label for="state">State</label>
+												<select name="state[]" class="form-control state"/>
+													@foreach ($state as $id=>$name)
+														<option value="{{ $id }}">{{ $name }}</option>
+													@endforeach
+												</select>
+												
+											</div>
+											<div class="form-group col-lg-4">
+												<label for="city">City</label>
+												<select name="city[]" class="form-control city"/>
+												<option>--</option>
+													<?php /* @foreach ($state as $res)
+														<option value="{{ $res->id }}">{{ $res->name }}</option>
+													@endforeach */ ?>
+												</select>
+												
+											</div>
+											
+											<div class="form-group col-lg-6">
+												<label for="address_1">Address 1</label>
+												<textarea name="address_1[]" class="form-control address_1" placeholder="Enter Address 1">{{ $user[0]['address_1'] }}</textarea>
+												
+											</div>
+											<div class="form-group col-lg-6">
+												<label for="address_2">Address 2</label>
+												<textarea name="address_2[]" class="form-control address_2" placeholder="Enter Address 2">{{ $user[0]['address_2'] }}</textarea>
+											</div>
+										</div>
+									</div>
+									<button type="button" name="_addr_add" id="_addr_add" class="btn btn-sm btn-success float-right"><i class="fa fa-plus">&nbsp;</i> Add More</button>
+								
+									
+									
+									
+                                <div class="submit_cnt">
+                                    <button class="btn btn-primary waves-effect waves-light"
+                                        type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- container-fluid -->
+    </div>
+    <!-- End Page-content -->
+
+    @endsection
+	
+	
+@section('endscript')
+<script type="text/javascript">
+	$(document).ready(function(){	  
+		$(document).on('change', '.state', function (e) {
+			THIS = $(this);
+			var idState = this.value; //alert("{{url('api/city')}}?state_id="+idState);
+			$('.city').html('');
+			$.ajax({
+				url: "{{url('api/city')}}?state_id="+idState,
+				type: "GET",
+				data: {
+					_token: '{{csrf_token()}}'
+				},
+				contentType: "application/json",
+				dataType: 'json',
+				success: function (res) { //console.log(res.data); return false;
+					$('.city').html('<option value="">-- Select City --</option>');
+					$.each(res.data.data, function (key, value) { //console.log(value);
+						$('.city').append('<option value="' + value.id + '">' + value.name + '</option>');
+					});
+				}
+			});
+		});	
+	});
+</script>
+@endsection

@@ -49,16 +49,16 @@
                                 <img src="assets/images/logo.svg" alt="" height="22">
                             </span>
                             <span class="logo-lg">
-                                <img src="assets/images/logo.svg" alt="" height="17">
+                                <img src="assets/images/logo-dark.png" alt="" height="17">
                             </span>
                         </a>
 
                         <a href="index.html" class="logo logo-light">
                             <span class="logo-sm">
-                                <img src="assets/images/logo.svg" alt="" width="30px">
+                                <img src="assets/images/logo-sm-light.png" alt="" width="30px">
                             </span>
                             <span class="logo-lg">
-                                <img src="assets/images/logo.svg" alt="" width="150px">
+                                <img src="assets/images/logo-light.png" alt="" width="150px">
                             </span>
                         </a>
                     </div>
@@ -78,7 +78,7 @@
                         </button>
                     </div>
 
-                    <!-- <div class="dropdown d-inline-block">
+                    <div class="dropdown d-inline-block">
                         <button type="button" class="btn header-item noti-icon waves-effect"
                             id="page-header-notifications-dropdown" data-toggle="dropdown" aria-haspopup="true"
                             aria-expanded="false">
@@ -182,7 +182,7 @@
                                 </a>
                             </div>
                         </div>
-                    </div> -->
+                    </div>
 
                     <div class="dropdown d-inline-block">
                         <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
@@ -192,8 +192,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             <!-- item-->
-                            <!-- <a class="dropdown-item" href="#"><i
-                                    class="mdi mdi-account-circle font-size-17 align-middle mr-1"></i> Profile</a> -->
+                            <a class="dropdown-item" href="#"><i
+                                    class="mdi mdi-account-circle font-size-17 align-middle mr-1"></i> Profile</a>
                             <a class="dropdown-item" href="{{ url('change_password') }}"><i
                                     class="mdi mdi-wallet font-size-17 align-middle mr-1"></i> Change Password</a>
                             <div class="dropdown-divider"></div>
@@ -277,7 +277,7 @@
                                 <span>Bookings</span>
                             </a>
                         </li>
-						<li style="display:none;">
+						<li>
                             <a href="{{ url('seva') }}" class=" waves-effect">
                                 <i class="ti-user"></i>
                                 <span>Sevas</span>

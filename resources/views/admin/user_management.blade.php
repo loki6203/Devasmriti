@@ -58,24 +58,31 @@
                                         <td>{{ $res->name }}</td>
                                         <td>{{ $res->email }}</td>
                                         <td>{{ $res->mobile_number }}</td>
-                                        <td>@if($res->is_active=='active')
+                                        <td>@if($res->is_active=='1')
                                             <button class="btn btn-success  waves-effect waves-light"
-                                                onclick="change_status({{ $res->id }},'inactive');">
+                                                onclick="change_status({{ $res->id }},'0');">
                                                 Active</button>
-                                            @elseif($res->is_active=='not_verified')
+                                            @elseif($res->is_active=='2')
                                             <button class="btn btn-success  waves-effect waves-light"
-                                                onclick="change_status({{ $res->id }},'{{ $res->is_active }}');">
+                                                onclick="change_status({{ $res->id }},'1');">
                                                 Not Verified</button>
                                             @else
                                             <button class="btn btn-danger  waves-effect waves-light"
-                                                onclick="change_status({{ $res->id }},'active');">
+                                                onclick="change_status({{ $res->id }},'1');">
                                                 Inactive</button>
                                             @endif
 
                                         </td>
                                         <td align="center"><a href="edit_user/{{ $res->id }}"
-                                                class="btn btn-primary  waves-effect waves-light" href="#"><i
-                                                    class="ti-pencil mr-2"></i>Edit</a></td>
+                                                class="btn btn-primary btn-sm waves-effect waves-light" href="#"><i
+                                                    class="ti-pencil mr-2"></i>Edit</a>
+													<a href="user_family/{{ $res->id }}"
+                                                class="btn btn-info btn-sm waves-effect waves-light" href="#"><i
+                                                    class="ti-user mr-2"></i>Family</a>
+													<a href="user_address/{{ $res->id }}"
+                                                class="btn btn-warning btn-sm waves-effect waves-light" href="#"><i
+                                                    class="ti-user mr-2"></i>Address</a>
+													</td>
                                     </tr>
                                     <?php $i++ ?>
                                     @endforeach
