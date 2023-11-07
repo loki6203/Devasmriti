@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+URL::forceScheme('https');
 /*
 |--------------------------------------------------------------------------
 | API Routes
