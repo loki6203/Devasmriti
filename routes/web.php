@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // Auth::routes();
-
+URL::forceScheme('https');
 Route::get('/', 'Admin\SuperadminController@index');
 Route::get('/login', 'Admin\SuperadminController@index');
 Route::get('/index', 'Admin\SuperadminController@index')->name('index');
