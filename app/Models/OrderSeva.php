@@ -70,4 +70,9 @@ class OrderSeva extends Model
 	{
 		return $this->hasMany(OrderSevaFamilyDetail::class);
 	}
+
+	public function userFamilyDetail()
+	{
+		return $this->belongsTo(UserFamilyDetail::class);
+	}
 }

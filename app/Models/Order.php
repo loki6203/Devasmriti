@@ -107,4 +107,9 @@ class Order extends Model
 	{
 		return $this->hasMany(UserReward::class);
 	}
+
+	public function user_billing()
+	{
+		return $this->belongsTo(UserAddress::class, 'billing_user_address_id');
+	}
 }

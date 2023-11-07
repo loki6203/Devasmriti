@@ -50,7 +50,7 @@
                                     @foreach ($city as $res)
                                     <tr>
                                         <td>{{ $i }}</td>
-                                        <td>{{ @$res->country->name }}</td>
+                                        <td>{{ //$res->country->name }}</td>
                                         <td>{{ $res->state->name }}</td>
                                         <td>{{ $res->name }}</td>
                                         <td>@if($res->is_active=='active')

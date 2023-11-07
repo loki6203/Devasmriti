@@ -33,7 +33,7 @@
             </div>
             <!-- end page title -->
             <div class="row">
-				<!--@if ($errors->any())
+				@if ($errors->any())
 					<div class="alert alert-danger">
 						<ul>
 							@foreach ($errors->all() as $key=>$error)
@@ -44,7 +44,7 @@
 							@endforeach
 						</ul>
 					</div>
-				@endif -->
+				@endif
                 <div class="col-12">
                     <div class="card">
 						<form action="/save_user" enctype="multipart/form-data" method="post">
@@ -99,6 +99,63 @@
 											class="form-control" placeholder="Enter About Me">{{ old('about_me') }}</textarea>
 									</div>
 								</div>
+								<h5>Address Details</h5>
+								<div class="_addr_area">
+								<div class="row alert alert-success alert-dismissible fade show _addr_single">
+									<div class="form-group col-lg-4">
+										<label for="address_name">Name</label>
+										<input type="text" name="address_name[]" class="form-control address_name" placeholder="Enter Address Name"  value="{{ old('address_name.0') }}"/>
+										
+									</div>
+									<div class="form-group col-lg-4">
+										<label for="whatsup_no">Whatsup No</label>
+										<input type="text" name="whatsup_no[]" class="form-control whatsup_no" placeholder="Enter Mobile No"  value="{{ old('whatsup_no.0') }}"/>
+									</div>
+									<div class="form-group col-lg-4">
+										<label for="pincode">Pincode</label>
+										<input type="text" name="pincode[]" class="form-control pincode" placeholder="Enter Pincode"  value="{{ old('pincode.0') }}" />
+									</div>
+									<div class="form-group col-lg-4">
+										<label for="country">Country</label>
+										<select name="country[]" class="form-control country"/>
+											@foreach ($country as $id=>$name)
+												<option value="{{ $id }}">{{ $name }}</option>
+											@endforeach
+										</select>
+										
+									</div>
+									<div class="form-group col-lg-4">
+										<label for="state">State</label>
+										<select name="state[]" class="form-control state"/>
+											@foreach ($state as $id=>$name)
+												<option value="{{ $id }}">{{ $name }}</option>
+											@endforeach
+										</select>
+										
+									</div>
+									<div class="form-group col-lg-4">
+										<label for="city">City</label>
+										<select name="city[]" class="form-control city"/>
+										<option>--</option>
+											<?php /* @foreach ($state as $res)
+												<option value="{{ $res->id }}">{{ $res->name }}</option>
+											@endforeach */ ?>
+										</select>
+										
+									</div>
+									
+									<div class="form-group col-lg-6">
+										<label for="address_1">Address 1</label>
+										<textarea name="address_1[]" class="form-control address_1" placeholder="Enter Address 1">{{ old('address_1.0') }}</textarea>
+										
+									</div>
+									<div class="form-group col-lg-6">
+										<label for="address_2">Address 2</label>
+										<textarea name="address_2[]" class="form-control address_2" placeholder="Enter Address 2">{{ old('address_2.0') }}</textarea>
+									</div>
+								</div>
+								</div>
+								<button type="button" name="_addr_add" id="_addr_add" class="btn btn-sm btn-success float-right"><i class="fa fa-plus">&nbsp;</i> Add More</button>
 							</div>
 							<div class="submit_cnt">
 								<button class="btn btn-primary waves-effect waves-light" type="submit">Submit</button>
@@ -112,14 +169,79 @@
 </div>
 <!-- End Page-content -->
 
-
+		
+<div class="d-none _addr_html">
+<div class="row alert alert-success alert-dismissible fade show _addr_single" role="alert">
+	<button type="button" class="btn btn-xs close btn-danger" data-dismiss="alert" aria-label="Close">
+		<span aria-hidden="true">×</span>
+	</button>
+	<div class="form-group col-lg-4">
+		<label for="address_name">Name</label>
+		<input type="text" name="address_name[]" class="form-control address_name" placeholder="Enter Address Name" />
+	</div>
+	<div class="form-group col-lg-4">
+		<label for="whatsup_no">Whatsup No</label>
+		<input type="text" name="whatsup_no[]" class="form-control whatsup_no" placeholder="Enter Mobile No" />
+	</div>
+	<div class="form-group col-lg-4">
+		<label for="pincode">Pincode</label>
+		<input type="text" name="pincode[]" class="form-control pincode" placeholder="Enter Pincode" />
+	</div>
+	<div class="form-group col-lg-4">
+		<label for="country">Country</label>
+		<select name="country[]" class="form-control country"/>
+			@foreach ($country as $id=>$name)
+				<option value="{{ $id }}">{{ $name }}</option>
+			@endforeach
+		</select>
+	</div>
+	<div class="form-group col-lg-4">
+		<label for="state">State</label>
+		<select name="state[]" class="form-control state"/>
+			@foreach ($state as $id=>$name)
+				<option value="{{ $id }}">{{ $name }}</option>
+			@endforeach
+		</select>
+	</div>
+	<div class="form-group col-lg-4">
+		<label for="city">City</label>
+		<select name="city[]" class="form-control city"/>
+		<option>--</option>
+			<?php /* @foreach ($state as $res)
+				<option value="{{ $res->id }}">{{ $res->name }}</option>
+			@endforeach */ ?>
+		</select>
+	</div>
+	
+	<div class="form-group col-lg-6">
+		<label for="address_1">Address 1</label>
+		<textarea name="address_1[]" class="form-control address_1" placeholder="Enter Address 1"></textarea>
+	</div>
+	<div class="form-group col-lg-6">
+		<label for="address_2">Address 2</label>
+		<textarea name="address_2[]" class="form-control address_2" placeholder="Enter Address 2"></textarea>
+	</div>
+</div>
+</div>
 @endsection
 
 
 
 @section('endscript')
 <script type="text/javascript">
-	$(document).ready(function(){	  
+	$(document).ready(function(){      
+		var i=1;  
+		$('#_addr_add').click(function(){
+			i++;  
+			$('._addr_area').append($('._addr_html').html());  
+		});  
+
+		$(document).on('click', '.btn_remove', function(){  
+		
+           var button_id = $(this).attr("id");   
+           $('#row'+button_id+'').remove();  
+		}); 
+	  
 		$(document).on('change', '.state', function (e) {
 			THIS = $(this);
 			var idState = this.value; //alert("{{url('api/city')}}?state_id="+idState);
@@ -139,7 +261,9 @@
 					});
 				}
 			});
-		});			
+		});
+			
 	});	
+	
 </script>
 @endsection
