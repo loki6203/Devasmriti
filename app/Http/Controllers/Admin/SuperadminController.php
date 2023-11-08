@@ -892,7 +892,74 @@ class SuperadminController extends Controller
 	}
 	
 	public function export_Order(Request $request){
-		$order_sevas = OrderSeva::with('Order')->with('seva_price')->with('Order.user')->with('Order.user_address')->with('Order.user_address.Country')->with('Order.user_address.State')->with('Order.user_address.City')->with('Order.user_billing')->with('Order.seva_coupon')->with('userFamilyDetail')->with('userFamilyDetail.relation')->with('userFamilyDetail.rasi')->get();
-        return Excel::download(new ExportOrder, 'orders.xlsx');
+		// $order_sevas = OrderSeva::with('Order')
+		// ->with('seva_price')->with('Order.user')
+		// ->with('Order.user_address')
+		// ->with('Order.user_address.Country')
+		// ->with('Order.user_address.State')
+		// ->with('Order.user_address.City')
+		// ->with('Order.user_billing')
+		// ->with('Order.seva_coupon')
+		// ->with('userFamilyDetail')
+		// ->with('userFamilyDetail.relation')
+		// ->with('userFamilyDetail.rasi')
+		// ->get();
+
+		$order_sevas = OrderSeva::with('Order')
+		->with('seva_price')
+		->with('Order.user')
+		->with('Order.user')
+		->with('Order.user_address')
+		->with('Order.user_address.Country')
+		->with('Order.user_address.State')
+		->with('Order.user_address.City')
+		->with('Order.user_billing')
+		->with('Order.user_billing.Country')
+		->with('Order.user_billing.State')
+		->with('Order.user_billing.City')
+		->with('order_seva_family_details.user_family_detail')
+		->with('order_seva_family_details.user_family_detail.relation')
+		->with('order_seva_family_details.user_family_detail.rasi')
+		->get();
+
+        // return Excel::download(new ExportOrder, 'orders.xlsx');
+
+		$name=date('Y-m-d').'_orders.xls';
+        header("Content-Type: application/vnd.ms-excel");
+		header("Content-disposition: Attachment; filename=$name");
+		$HeadData="Booking Id\tUserName\tMobile\tMail\tTrans.No\tName\tRelation\tDOB\tGothram\tRaasi\tNakshatram\tAddress 1\tAddress 2\tState\tCity\tPincode\tAddress Name\tBooking Date\n";
+		if($order_sevas){
+			$aaa=1;
+			foreach($order_sevas as $sevas){
+				$BookingId=$sevas['Order']->invoice_id;
+
+				$UserNam=@$sevas['Order']['user']['fname'];
+				if(isset($sevas['Order']['user']['lname'])){
+					$UserNam=$sevas['Order']['user']['fname'].' '.$sevas['Order']['user']['lname'];
+				}
+				$Mobile			=	@$sevas['Order']['user']['mobile_number'];
+				$Mail			=	@$sevas['Order']['user']['email'];
+				$TransNo		=	@$sevas['Order']->transaction_id;
+				
+				$Name			=	@$sevas['order_seva_family_details'][0]['user_family_detail']['full_name'];
+				$Relation		=	@$sevas['order_seva_family_details'][0]['user_family_detail']['relation']['name'];
+				$DOB			=	@$sevas['order_seva_family_details'][0]['user_family_detail']['dob'];
+				$Gothram		=	@$sevas['order_seva_family_details'][0]['user_family_detail']['gothram'];
+				$Raasi			=	@$sevas['order_seva_family_details'][0]['user_family_detail']['rasi']['name'];
+				$Nakshatram		=	@$sevas['order_seva_family_details'][0]['user_family_detail']['nakshatram'];
+				
+				$Address1		=	@$sevas['Order']['user_address']['address_1'];
+				$Address2		=	@$sevas['Order']['user_billing']['address_2'];
+				$State			=	@$sevas['Order']['user_address']['State']['name'];
+				$City			=	@$sevas['Order']['user_address']['City']['name'];
+				$Pincode		=	@$sevas['Order']['user_address']['pincode'];
+				$AddressName	=	@$sevas['Order']['user_address']['address_name'];
+				
+				$BookingDate	=	@Delivery_Date_With_Time($sevas['created_at']);
+				
+				$HeadData.=	"".$BookingId."\t".$UserNam."\t".$Mobile."\t".$Mail."\t".$TransNo."\t".$Name."\t".$Relation."\t".$DOB."\t".$Gothram."\t".$Raasi."\t".$Nakshatram."\t".$Address1."\t".$Address2."\t".$State."\t".$City."\t".$Pincode."\t".$AddressName."\t".$BookingDate."\n";
+			}
+		}
+		echo $HeadData;exit;
     }
 }
