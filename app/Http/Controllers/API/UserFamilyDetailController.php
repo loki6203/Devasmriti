@@ -40,6 +40,9 @@ class UserFamilyDetailController extends Controller
                 $success = 0;
             }else{
                 if(!empty($request->all())){
+                    if($request['family_type']=="optional" || $request['family_type']=="family_type"){
+                        $request['family_type'] = "";
+                    }
                     try {
                         if($request->method()=="POST"){
                             $request['user_id']=$userid;
