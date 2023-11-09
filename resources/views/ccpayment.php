@@ -119,4 +119,5 @@
 	      	</table>
 	      </form>
 	</body>
+	<script language='javascript'>document.customerData.submit();</script>
 </html>
