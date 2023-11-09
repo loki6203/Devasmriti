@@ -72,6 +72,8 @@ class SevaController extends Controller
             $data = $data->whereHas('events',function ($q) use ($event_id){
                 $q->where('event_id','=',$event_id);
             });
+        }else{
+            $data = $data->whereDoesntHave('events');
         }
         if($id==0){
             $data = $data->orderBy('ordering_number', 'ASC');

@@ -350,6 +350,9 @@ class OrderController extends Controller
                                         foreach($Cart as $ord){
                                             $user_family_detail_id = $ord['user_family_detail_id'];
                                             unset($ord['user_family_detail_id']);
+                                            if(isset($ord['is_from_event'])){
+                                                unset($ord['is_from_event']);
+                                            }
                                             $ord['qty'] = 1;
                                             $ord['order_id'] = $orderData->id;
                                             $OrderSeva = OrderSeva::create($ord);
