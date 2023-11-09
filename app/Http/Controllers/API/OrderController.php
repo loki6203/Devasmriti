@@ -17,6 +17,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\UserAddress;
+use App\Models\EventSeva;
 use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
@@ -210,8 +211,14 @@ class OrderController extends Controller
                 $time=$SevaPrice['order']['created_at'];
                 $date=$SevaPrice['order']['created_at'];
                 $event_link=$SevaPrice['seva_price']['seva']['event'];
-                // $event_link = WEB_API_LINK().'sevas/'.$sev_id;
-                // $event_link = WEB_API_LINK().'event/'.$event_id;
+                $seva_id = @$SevaPrice['seva_price']['seva']['id'];
+                $IsEvent = EventSeva::where('id','=',$seva_id)->first();
+                if(is_null($IsEvent)){
+                    $event_link = WEB_API_LINK().'sevas/'.$seva_id;
+                }else{
+                    $event_id =$IsEvent->event_id;
+                    $event_link = WEB_API_LINK().'event/'.$event_id;
+                }
                 $SbArr = array(
                     array(
                     "name"=> "name",
@@ -382,10 +389,11 @@ class OrderController extends Controller
                                         $Reference_id   = $ProdData['reference_id'];
                                         $UserDetails    = User::find($userid);
                                         $data['checkout_url'] = url('api/ccavenue/payment/'.$ProdData['invoice_id']);
-                                        $phonenumber = @$UserDetails->mobile_number;
-                                        $merchantId     = 'DEVASMRITIONLINE';
-                                        $merchantIdKey  = '9fbd4b68-81b1-4ccb-9788-00ff26e0d641';
-                                        $keyIndex       = '1';
+
+                                        // $phonenumber    = @$UserDetails->mobile_number;
+                                        // $merchantId     = 'DEVASMRITIONLINE';
+                                        // $merchantIdKey  = '9fbd4b68-81b1-4ccb-9788-00ff26e0d641';
+                                        // $keyIndex       = '1';
 
                                         // $merchantId     = 'PGTESTPAYUAT';
                                         // $merchantIdKey  = '099eb0cd-02cf-4e2a-8aca-3e6c6aff0399';
