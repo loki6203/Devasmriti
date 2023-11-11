@@ -75,8 +75,8 @@ class SevaController extends Controller
                 $q->where('event_id','=',$event_id);
             });
         }else{
-            $data = $data->where('seva_type_id',2000);
-            // $data = $data->doesntHave('events');
+            // $data = $data->where('seva_type_id',2000);
+            $data = $data->doesntHave('events');
         }
         if($id==0){
             $data = $data->orderBy('ordering_number', 'ASC');
