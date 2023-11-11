@@ -106,3 +106,4 @@ Route::middleware('jwt')->group(function(){
 // Route::post('/ccavenue/requestHandler','API\OrderController@requestHandler');
 Route::get('/ccavenue/payment/{order_id}','API\OrderController@requestHandler');
 Route::post('/ccavenue/responseHandler','API\OrderController@responseHandler');
+Route::get('/sevas_cron','API\SevaController@SevasCron');

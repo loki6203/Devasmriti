@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\Commonreturn as CommonreturnResource;
 use App\Models\Seva;
+use App\Models\Event;
+use Doctrine\DBAL\Events;
 
 class SevaController extends Controller
 {
@@ -73,7 +75,7 @@ class SevaController extends Controller
                 $q->where('event_id','=',$event_id);
             });
         }else{
-            $data = $data->whereDoesntHave('events');
+            $data = $data->doesntHave('events');
         }
         if($id==0){
             $data = $data->orderBy('ordering_number', 'ASC');
@@ -84,5 +86,53 @@ class SevaController extends Controller
         }
         $resp = array('success'=>$success,'message'=>$message,'data'=>$data);
         return new CommonreturnResource($resp);
+    }
+    public function SevasCron(Request $request){
+        $SevasData = Seva::where('is_expaired','=',0)->get();
+        if(!is_null($SevasData)){
+            foreach($SevasData as $svdata){
+                $checkExp = Seva::where('expairy_date','>',date('Y-m-d'))->where('id','=',$svdata->id)->count();
+                if($checkExp>1){
+                    Seva::where('id','=',$svdata->id)->update(['is_expaired'=>1]);
+                }else{
+                    $curDAteTime = date('Y-m-d');
+                    $dbdate      = YY_MM_DD($svdata->expairy_date);
+                    $days        = dateDiff($curDAteTime,$dbdate); 
+                    if($days==2){
+                        $expairy_label = 'Expires in 2 days. ';
+                    }else if($days==1){
+                        $expairy_label = 'Expires Tomorrow. ';
+                    }else if($days==0){
+                        $expairy_label = 'Expires Today. ';
+                    }else{
+                        $expairy_label = '';
+                    }
+                    Seva::where('id','=',$svdata->id)->update(['expairy_label'=>$expairy_label]);
+                }
+            }   
+        }
+        $EvsData = Event::where('is_expaired','=',0)->get();
+        if(!is_null($EvsData)){
+            foreach($EvsData as $svdata){
+                $checkExp = Event::where('DATE(expairy_date)','>',date('Y-m-d'))->where('id','=',$svdata->id)->count();
+                if($checkExp>1){
+                    Event::where('id','=',$svdata->id)->update(['is_expaired'=>1]);
+                }else{
+                    $curDAteTime = date('Y-m-d');
+                    $dbdate      = YY_MM_DD($svdata->expairy_date);
+                    $days        = dateDiff($curDAteTime,$dbdate); 
+                    if($days==2){
+                        $expairy_label = 'Expires in 2 days. ';
+                    }else if($days==1){
+                        $expairy_label = 'Expires Tomorrow. ';
+                    }else if($days==0){
+                        $expairy_label = 'Expires Today. ';
+                    }else{
+                        $expairy_label = '';
+                    }
+                    Event::where('id','=',$svdata->id)->update(['expairy_label'=>$expairy_label]);
+                }
+            }   
+        }
     }
 }
